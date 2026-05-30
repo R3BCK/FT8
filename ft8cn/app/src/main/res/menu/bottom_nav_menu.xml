@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom Navigation Menu for FT8CN Application -->
+<!-- IMPORTANT: Maximum 5 items supported by BottomNavigationView -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ============================================ -->
+    <!-- SCAN MODE (NEW) - First item, leftmost -->
+    <!-- Frequency scanning with station counting -->
+    <!-- ============================================ -->
+    <item
+        android:id="@+id/menu_nav_scan"
+        android:icon="@drawable/ic_baseline_radar_24"
+        android:title="@string/nav_menu_title_scan"
+        android:orderInCategory="0" />
+
+    <!-- ============================================ -->
+    <!-- DECODE LIST - Shows decoded FT8 messages -->
+    <!-- ============================================ -->
+    <item
+        android:id="@+id/menu_nav_calling_list"
+        android:icon="@drawable/nav_calling_list_image"
+        android:title="@string/nav_menu_title_decode_list"
+        android:orderInCategory="1" />
+
+    <!-- ============================================ -->
+    <!-- MY CALLING - Transmit queue and CQ calling -->
+    <!-- ============================================ -->
+    <item
+        android:id="@+id/menu_nav_mycalling"
+        android:icon="@drawable/nav_my_calling_image"
+        android:title="@string/nav_menu_title_my_calling"
+        android:orderInCategory="2" />
+
+    <!-- ============================================ -->
+    <!-- SPECTRUM - Real-time waterfall (CRITICAL for audio freq) -->
+    <!-- ============================================ -->
+    <item
+        android:id="@+id/menu_nav_spectrum"
+        android:icon="@drawable/ic_nav_spectrum_24"
+        android:title="@string/spectrum"
+        android:orderInCategory="3" />
+
+    <!-- ============================================ -->
+    <!-- HISTORY / LOGS - QSO and SWL logs -->
+    <!-- ============================================ -->
+    <item
+        android:id="@+id/menu_nav_history"
+        android:icon="@drawable/ic_baseline_history_24"
+        android:title="@string/nav_menu_title_history"
+        android:orderInCategory="4" />
+
+</menu>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="31dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp">
+
+    <CheckBox android:id="@+id/cbRowHide" android:layout_width="28dp" android:layout_height="28dp" android:padding="0dp" />
+    <CheckBox android:id="@+id/cbRowSelect" android:layout_width="28dp" android:layout_height="28dp" android:padding="0dp" />
+    <TextView android:id="@+id/tvRowFreq" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="3" android:layout_marginStart="-15dp" android:gravity="center" android:textSize="14sp" android:textColor="@android:color/black" />
+    <TextView android:id="@+id/tvRowTot" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="-10dp" android:gravity="center" android:textSize="14sp" android:textColor="@android:color/black" />
+    <TextView android:id="@+id/tvRowD" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textColor="@android:color/black" />
+    <TextView android:id="@+id/tvRowC" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textColor="@android:color/black" />
+    <TextView android:id="@+id/tvRowI" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textColor="@android:color/black" />
+    <TextView android:id="@+id/tvRowNew" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/button_start_color" />
+    <Button android:id="@+id/btnRowGo" android:layout_width="72dp" android:layout_height="32dp" android:text="Switch" android:textSize="10sp" android:textColor="@android:color/white" android:backgroundTint="@color/button_start_color" android:padding="0dp" />
+</LinearLayout>

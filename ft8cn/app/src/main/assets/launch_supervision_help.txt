@@ -1,0 +1,7 @@
+关于发射监管
+  与JT65等协议的1分钟通联时序，用户可以有大约10秒钟的时间来决定是否继续下一阶段的动作，而FT8和FT4的较短序列需要更快的响应，在实际使用中需要软件内置适量的自动化，这就是FT8CN中使用自动程序的原因。
+  FT8CN赞同乔尔·泰勒理念，反对使用机器人用于FT8操作，只能有限度地使用自动化程序，所以FT8CN要对自动程序进行监管，当无人干预超过发射监管时间限制后，发射程序将自动停止。
+
+  With 1-minute contact timing in protocols such as JT65, the operator usually has about 10 seconds to decide whether to continue to the next step. FT8 and FT4 use much shorter sequences and therefore require faster responses. In real-world use, software needs a moderate amount of built-in automation, which is why FT8CN uses an automatic program.
+
+  FT8CN agrees with Joel Taylor’s philosophy and opposes using bots for FT8 operation; only limited automation should be used. Therefore, FT8CN supervises the automatic program: if there is no user intervention for longer than the transmission supervision timeout, the transmission process will stop automatically.

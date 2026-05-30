@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FT8CN</string>
+    <string name="nav_menu_title_call_list">コンテンツ</string>
+    <string name="nav_menu_title_decode_list">デコード</string>
+    <string name="nav_menu_title_my_calling">呼び出し</string>
+    <string name="nav_menu_title_history">QSOログ</string>
+    <string name="nav_menu_title_config">設定</string>
+    <string name="map_name" translatable="false">nightUSGS4Layer.sqlite</string>
+
+    <string name="run_decode">デコード開始</string>
+    <string name="db">dB</string>
+    <string name="dt">Δt</string>
+    <string name="locate">位置</string>
+    <string name="message">メッセージ</string>
+    <string name="freq">周波数</string>
+    <string name="decode">デコード</string>
+    <string name="delete">削除</string>
+    <string name="sequence">順</string>
+    <string name="dist">距離</string>
+    <string name="location">場所</string>
+    <string name="mycall">コールサイン</string>
+    <string name="pl_mycall">コールサインを入力してください</string>
+    <string name="headGrid">メイデンヘッドグリッド</string>
+    <string name="pl_grid">メイデンヘッドグリッドを入力してください</string>
+    <string name="decoding">デコード中…</string>
+    <string name="send">送信</string>
+    <string name="check">確認</string>
+    <string name="sendFreq">送信周波数</string>
+    <string name="sendDefaultFreq">音声周波数</string>
+    <string name="pl_sendFreq">音声周波数範囲 0~2900</string>
+    <string name="transmitting">送信中 …</string>
+    <string name="synFrequency">TX=RXロック</string>
+    <string name="spectrum">スペクトル</string>
+    <string name="pl_trans_delay">送信遅延時間（ミリ秒）</string>
+    <string name="tran_delay">送信遅延</string>
+
+    <string name="timeOffset">手動時間オフセット</string>
+    <string name="help">ヘルプ</string>
+    <string name="scroll_down">▾</string>
+    <string name="about_me">FT8CNについて</string>
+
+    <string name="connectMode">制御</string>
+    <string name="VOX">VOX</string>
+    <string name="CAT">CAT</string>
+    <string name="operationBand">周波数</string>
+    <string name="civ_address">CI-V</string>
+    <string name="pl_civ_address">リグのCI-Vアドレス</string>
+    <string name="serial_port">シリアルポート</string>
+    <string name="bau_rate">ボーレート</string>
+    <string name="pl_select_serial_port">シリアルポートを選択してください</string>
+    <string name="close">閉じる</string>
+    <string name="rig_name">リグ</string>
+    <string name="debug">デバッグ</string>
+    <string name="logo_image">FT8CN</string>
+    <string name="RTS">RTS</string>
+    <string name="FAQ">FAQ</string>
+    <string name="launch_supervision">TXウォッチドッグ</string>
+    <string name="no_response_count">応答なし</string>
+    <string name="break_launch">停止</string>
+    <string name="follow_cq">CQ自動追跡</string>
+    <string name="auto_call_follow">自動呼び出し追跡</string>
+    <string name="DTR">DTR</string>
+    <string name="launch">送信</string>
+    <string name="export">エクスポート</string>
+    <string name="view_style">表示モード</string>
+    <string name="ptt_delay">PTT遅延</string>
+    <string name="filter">フィルタ</string>
+    <string name="pl_filter">フィルタを選択してください</string>
+    <string name="filter_all">すべて表示</string>
+    <string name="filter_is_qsl">確認済みを表示</string>
+    <string name="filter_none_qsl">未確認を表示</string>
+    <string name="cable_connect">USB</string>
+    <string name="bluetooth_connect">Bluetooth</string>
+    <string name="cable_mode">接続タイプ</string>
+    <string name="pl_select_bluetooth">利用可能なBluetoothデバイスを選択してください</string>
+    <string name="bluetooth_set">Bluetooth設定</string>
+    <string name="spp_device">Bluetooth SPPデバイス</string>
+    <string name="headset_device">Bluetoothヘッドセット</string>
+    <string name="disconnect_rig">リグとの接続が切れました</string>
+    <string name="connected_rig">リグとの接続に成功しました。</string>
+    <string name="current_frequency">現在の周波数：%s</string>
+    <string name="radio_communication_error">リグとの通信エラー：%s</string>
+    <string name="does_not_support_recording">Bluetoothデバイスは録音をサポートしていません</string>
+    <string name="bluetooth_headset_mode">Bluetoothヘッドセットモードに入ります</string>
+    <string name="bluetooth_Headset_mode_cancelled">Bluetoothヘッドセットモードを終了します</string>
+
+    <string name="version_info">FT8CN Ver %s\nBG7YOZ\n%s</string>
+
+    <string name="exit">終了</string>
+    <string name="cancel">キャンセル</string>
+    <string name="exit_confirmation">本当に終了しますか？</string>
+
+    <!-- FT8Message -->
+    <string name="std_msg">標準メッセージ</string>
+    <string name="none_std_msg">非標準コール</string>
+    <string name="free_text">フリーテキスト</string>
+    <string name="dXpedition">DXペディション</string>
+    <string name="field_day">フィールドデー</string>
+    <string name="telemetry">テレメトリ</string>
+    <string name="rtty_ru_msg">RTTY RU</string>
+
+    <!-- Config bar -->
+    <string name="offset_time_sec">%.1f 秒</string>
+
+    <!-- Spectrum -->
+    <string name="decoding_takes_milliseconds">デコード完了：%d ミリ秒</string>
+    <string name="sound_frequency_is_set_to">音声周波数は %d Hz です</string>
+    <string name="de_noise">ノイズ除去</string>
+    <string name="raw_spectrum_data">オリジナル</string>
+    <string name="markMessage">メッセージ表示</string>
+    <string name="unMarkMessage">メッセージ非表示</string>
+
+    <!-- Bluetooth device dialog -->
+    <string name="select_bluetooth_device">Bluetoothデバイスを選択：%s</string>
+
+    <!-- PTT delay milliseconds -->
+    <string name="milliseconds">%d ミリ秒</string>
+    <!-- No reply count -->
+    <string name="ignore">無視</string>
+    <string name="times">%d 回</string>
+
+    <!-- Calling bar -->
+    <string name="sound_frequency_is">周波数：%.0f Hz</string>
+    <string name="target_callsign">ターゲット：%s</string>
+    <string name="transmission_sequence">シーケンシャル：%d</string>
+    <string name="message_count">メッセージ（%d）</string>
+
+    <!-- Log export bar -->
+    <string name="export_info">このデバイスと同じLAN上の他のデバイスのWebブラウザを使用して、バックグラウンドからエクスポートしてください。\nブラウザにURLを入力してください：\nhttp://%s:%d</string>
+    <!-- TX watchdog -->
+    <string name="minutes">%d 分</string>
+
+    <!-- TX watchdog -->
+    <string name="freq_syn">TX=RXロック</string>
+    <string name="freq_asyn">TX/RXスプリット</string>
+    <string name="auto_follow_cq">CQ自動追跡</string>
+    <string name="not_concerned_about_CQ">CQ追跡なし</string>
+    <string name="automatic_call_following">自動呼び出し追跡</string>
+    <string name="do_not_call_the_following_callsign">追跡呼び出しなし</string>
+
+    <!-- Decode bar -->
+    <string name="message_count_count">メッセージ（%d/%d）</string>
+    <string name="average_offset_seconds">平均オフセット：%.2f 秒</string>
+    <string name="my_grid">グリッド：%s</string>
+
+    <!-- Decode list -->
+    <string name="tracking_receiver">受信機追跡 %s（%s）</string>
+    <string name="calling_receiver">受信機呼び出し %s（%s）</string>
+    <string name="reply_to">返信 %s（%s）</string>
+    <string name="tracking">追跡 %s（%s）</string>
+    <string name="calling">呼び出し %s（%s）</string>
+
+    <!-- Grid distance calculation -->
+    <string name="distance">%.0f km</string>
+
+    <!-- Log list -->
+    <string name="confirmed">確認済み</string>
+    <string name="unconfirmed">未確認</string>
+    <string name="lotw_confirmation">LoTW確認済み</string>
+    <string name="manual_confirmation">手動確認済み</string>
+    <string name="log_start_time">開始時刻：%s</string>
+    <string name="log_end_time">終了時刻：%s</string>
+    <string name="log_last_time">最後のQSO：%s</string>
+    <string name="log_grid">グリッド：%s</string>
+    <string name="log_mode">モード：%s</string>
+    <string name="log_cancel_confirmation">確認をキャンセル（%s）</string>
+    <string name="log_manual_confirmation">手動確認（%s）</string>
+
+    <!-- QSL log list -->
+    <string name="qsl_grid">グリッド：%s</string>
+    <string name="qsl_start_time">開始時刻：%s</string>
+    <string name="qsl_end_time">終了時刻：%s</string>
+    <string name="qsl_rst_rcvd">受信RST：%s</string>
+    <string name="html_rst_rcvd">受信RST</string>
+    <string name="qsl_rst_sent">送信RST：%s</string>
+    <string name="html_rst_sent">送信RST</string>
+    <string name="qsl_band">バンド：%s</string>
+    <string name="qsl_freq">周波数：%s</string>
+    <string name="qsl_mode">モード：%s</string>
+    <string name="qsl_lotw_confirmation">LoTW確認済み</string>
+    <string name="qsl_manual_confirmation">手動確認済み</string>
+    <string name="qsl_unconfirmed">未確認</string>
+    <string name="qsl_cancel_confirmation">確認をキャンセル（%s）</string>
+    <string name="qsl_manual_confirmation_s">手動確認（%s）</string>
+    <string name="qsl_qrz_confirmation_s">QRZ（%s）</string>
+
+    <!-- QSL record -->
+    <string name="qsl_record_import_time">インポート時刻：%s</string>
+
+    <!-- HTML -->
+    <string name="html_track_operation_information">監視動作情報</string>
+    <string name="html_track_callsign_hash_table">監視コールサインハッシュテーブル</string>
+    <string name="html_trace_parsed_messages">監視解析済みメッセージ</string>
+    <string name="html_trace_callsign_and_grid_correspondence_table">監視コールサインとグリッドの対応表</string>
+    <string name="html_query_communication_message">QSO照会</string>
+    <string name="html_query_configuration_information">設定情報照会</string>
+    <string name="html_query_all_table">すべてのデータテーブル照会</string>
+    <string name="html_manage_tracking_callsign">追跡コールサイン管理</string>
+    <string name="html_manage_communication_callsigns">QSOコールサイン管理</string>
+    <string name="html_show_communication_callsigns">QSOコールサイン表示</string>
+    <string name="html_export_log">ログエクスポート</string>
+    <string name="html_import_log">ログインポート</string>
+    <string name="html_to_the_third_party">ログエクスポート（バックアップおよび確認用サードパーティプラットフォームへのログアップロード用）</string>
+    <string name="html_from_jtdx_lotw">ログエクスポート（バックアップ、確認用サードパーティプラットフォームへのログアップロード、JTDXログの同期およびLoTW同期確認用。同期にはJTDX、LoTW、Log32、N1mmのADIデータを使用することをお勧めします）</string>
+    <string name="html_return">戻る</string>
+
+    <string name="html_import_count">ADIファイルに %d 件のレコードがあり、%d 件のレコードをインポートしました。%d 件のログの形式が正しくありません。</string>
+    <string name="html_import_failed">インポートに失敗しました！%s</string>
+    <string name="html_illegal_command">不正なコマンド、アップロードに失敗しました！</string>
+    <string name="html_callsign">コールサイン</string>
+    <string name="html_operation">動作</string>
+    <string name="html_delete">削除</string>
+    <string name="html_qsl_start_time">QSO開始時刻</string>
+    <string name="html_qsl_start_day">QSO開始日</string>
+    <string name="html_qsl_end_time">QSO終了時刻</string>
+    <string name="html_qsl_end_date">QSO終了日</string>
+    <string name="html_qsl_mode">モード</string>
+    <string name="html_qsl_grid">グリッド</string>
+    <string name="html_qsl_band">バンド</string>
+    <string name="html_qsl_freq">周波数</string>
+    <string name="html_qsl_manual_confirmation">手動確認済み</string>
+    <string name="html_qsl_lotw_confirmation">LoTW確認済み</string>
+    <string name="html_qsl_data_source">データソース</string>
+    <string name="html_qsl_import_data_from_external">外部から</string>
+    <string name="html_qsl_native_data">ネイティブ</string>
+    <string name="html_variable">変数</string>
+    <string name="html_value">値</string>
+    <string name="html_my_callsign">コールサイン</string>
+    <string name="html_my_grid">グリッド</string>
+    <string name="html_decodes_in_this_cycle">このサイクルのデコード数</string>
+    <string name="html_total_number_of_decodes">総デコード数</string>
+    <string name="html_in_recording_state">録音状態</string>
+    <string name="html_recording">録音中</string>
+    <string name="html_no_recording">録音なし</string>
+    <string name="html_time_consuming_for_this_decoding">このデコードの時間</string>
+    <string name="html_milliseconds">%d ミリ秒</string>
+    <string name="html_average_delay_time_of_this_cycle">この期間の平均遅延</string>
+    <string name="html_seconds">%.3f 秒</string>
+    <string name="html_sound_frequency">信号の音声周波数</string>
+    <string name="html_transmission_delay_time">送信遅延</string>
+    <string name="html_launch_supervision">TXウォッチドッグ</string>
+    <string name="html_automatic_program_run_time">自動プログラム実行時間</string>
+    <string name="html_no_reply_limit">返信なし制限</string>
+    <string name="html_no_reply_count">返信なしカウンタ</string>
+    <string name="html_mark_message">ウォーターフォールチャートにメッセージをマーク</string>
+    <string name="html_marking_message">メッセージをマーク中</string>
+    <string name="html_do_not_mark_message">メッセージのマークを解除</string>
+    <string name="html_operation_mode">動作モード</string>
+    <string name="html_civ_address">CIVアドレス</string>
+    <string name="html_baud_rate">ボーレート</string>
+    <string name="html_connect_mode">接続モード</string>
+    <string name="html_available_serial_ports">利用可能なシリアルポート</string>
+    <string name="html_serial_port_in_use">使用中のシリアルポート</string>
+    <string name="html_instruction_set">命令セット</string>
+    <string name="html_target_callsign">ターゲットコールサイン</string>
+    <string name="html_sequential">シーケンシャル</string>
+
+    <string name="html_carrier_frequency_band">バンド</string>
+    <string name="html_radio_frequency">リグ周波数</string>
+    <string name="html_successful_callsign">%s でQSO成功したコールサイン</string>
+    <string name="html_tracking_callsign">コールサイン追跡</string>
+    <string name="html_tracking_qso_information">QSO情報追跡</string>
+
+    <string name="html_hash_value">ハッシュ</string>
+    <string name="html_please_select">選択してください</string>
+    <string name="html_adi_format">ADI形式のログファイル</string>
+    <string name="html_file_in_other_format">および他の形式のファイルは正常に解析およびインポートできない場合があります。</string>
+    <string name="html_time">時刻</string>
+    <string name="html_total">合計</string>
+    <string name="html_all_logs">すべてのログ</string>
+    <string name="html_download">ダウンロード</string>
+    <string name="html_today_log">今日のログ</string>
+    <string name="html_download_all">すべてダウンロード</string>
+    <string name="html_download_unconfirmed">未確認をダウンロード</string>
+    <string name="callsign_error">コールサインが正しくありません！</string>
+    <string name="adjust_call_target">コールターゲットを調整：%s</string>
+    <string name="use_wspr2_error">現在使用中の周波数 %s はwspr-2で使用されている周波数です。FT8信号の送信は禁止されています！</string>
+    <string name="none">なし</string>
+    <string name="connect_bluetooth_spp">Bluetoothシリアルポート %s に接続中 …</string>
+    <string name="bluetooth_is_connected">Bluetoothデバイス %s が接続されました。</string>
+    <string name="bluetooth_is_diconnected">Bluetoothデバイス %s が切断されました。</string>
+    <string name="sound_source_switched">音声ソースが切り替えられました。</string>
+    <string name="bluetooth_turn_off">Bluetoothがオフになりました。</string>
+    <string name="bluetooth_turn_on">Bluetoothがオンになりました。</string>
+    <string name="can_not_location">位置を特定できません。位置特定権限があるか確認してください。</string>
+    <string name="statistical">統計</string>
+    <string name="count_up">上</string>
+    <string name="count_down">下</string>
+    <string name="band_statistics">バンド統計</string>
+    <string name="count_total">合計：%d</string>
+    <string name="confirmation_statistics">ログ確認統計</string>
+    <string name="count_confirmed">確認済み</string>
+    <string name="count_unconfirmed">未確認</string>
+    <string name="count_total_logs">合計：%d</string>
+    <string name="count_confirmed_log">確認済み：%d</string>
+    <string name="count_lotw_confirmed">LoTW確認済み：%d</string>
+    <string name="count_manually_confirmed">手動確認済み：%d</string>
+    <string name="count_confirmed_proportion">確認済み割合：%.1f%%</string>
+    <string name="count_tota_callsigns">コールサイン合計：%d</string>
+    <string name="count_zone">ゾーン %s</string>
+    <string name="itu_completion_statistics">ITU完了統計</string>
+    <string name="count_incomplete">未完了</string>
+    <string name="count_completed">完了</string>
+    <string name="count_total_itu">ITU合計：%d\n完了 %d（%.1f%%）</string>
+    <string name="count_itu_completed_scale">ITU統計</string>
+    <string name="count_cqzone_completed">CQゾーン統計</string>
+    <string name="count_total_cqzone">CQゾーン合計：%d \n 完了：%d（%.1f%%）</string>
+    <string name="count_cqzone_proportion">CQゾーン統計</string>
+    <string name="dxcc_completion_statistics">DXCC統計</string>
+    <string name="count_total_dxcc">DXCC合計：%d \n完了：%d（%.1f%%）</string>
+    <string name="count_dxcc_proportion">DXCC統計</string>
+    <string name="callsign_info">コールサイン：%s\n場所：%s\nCQゾーン：%d\nITUゾーン：%d\n大陸：%s\n経度と緯度：%.2f,%.2f\nタイムゾーン：%.0f\nDxccプレフィックス：%s</string>
+    <string name="maximum_distance">最大距離\n\n%s</string>
+    <string name="minimum_distance">最短距離\n\n%s</string>
+    <string name="count_distance_info">最大距離：%.0f km（%s）\n最短距離：%.0f km（%s）</string>
+    <string name="distance_statistics">距離統計</string>
+    <string name="dxcc_image">dxcc</string>
+    <string name="cqzone">cqゾーン</string>
+    <string name="itu_image">ituゾーン</string>
+    <string name="recorder_cannot_record">録音できません。権限を確認してください。%s</string>
+    <string name="recorder_stop_record_error">録音停止エラー！%s</string>
+    <string name="delete_confirmation">削除確認</string>
+    <string name="are_you_sure_delete">本当に削除しますか？</string>
+    <string name="ok_confirmed">OK</string>
+    <string name="network_connect">ネットワーク</string>
+    <string name="pl_select_flex_radio">利用可能なFlex Radioを選択してください</string>
+    <string name="select_flex_device">FlexRadioデバイスを選択：%s</string>
+    <string name="select_xiegu_device">XieguRadioデバイスを選択：%s</string>
+    <string name="only_flex_supported">現在、FlexRadioまたはIComシリーズのみサポートされています！</string>
+    <string name="flex_connect_failed">FlexRadio %s の接続に失敗しました！</string>
+    <string name="xiegu_connect_failed">XieguRadio %s の接続に失敗しました！</string>
+    <string name="init_flex_operation">%s は動作を初期化しています。</string>
+    <string name="html_max_message_cache">キャッシュされたメッセージの最大数</string>
+    <string name="instruction_failed">命令 %s の実行に失敗しました。メッセージ：%s</string>
+    <string name="instruction_success">命令 %s が正常に実行されました。</string>
+    <string name="flex_ip_addr">IP</string>
+    <string name="pl_input_flex_ip">IPアドレスを入力してください</string>
+    <string name="connect_flex">FlexRadioに接続</string>
+    <string name="connect_flex_ip">FlexRadio %s に接続中 …</string>
+    <string name="get_new_version">最新バージョンを取得</string>
+    <string name="login_icom_help">IComにログイン</string>
+    <string name="pl_input_icom_port">制御ポート（UDP）</string>
+    <string name="icom_port">ポート</string>
+    <string name="icom_user_name">ユーザー</string>
+    <string name="pl_icom_user">ユーザー名を入力してください</string>
+    <string name="icom_password">パスワード</string>
+    <string name="pl_icom_password">パスワードを入力してください</string>
+    <string name="icom_login_button">ログイン</string>
+    <string name="show_password">パスワードを表示</string>
+    <string name="connect_icom_ip">IComリグ %s に接続中 …</string>
+    <string name="connect_xiegu_ip">XIEGUリグ %s に接続中 …</string>
+    <string name="network_exception">%s：ネットワーク送信例外：%s</string>
+    <string name="login_succeed">ログイン成功！</string>
+    <string name="loging_failed">ログインに失敗しました。ユーザー名またはパスワードが無効です。</string>
+    <string name="data_stream">データストリーム</string>
+    <string name="control_stream">制御ストリーム</string>
+    <string name="civ_stream">CI-Vストリーム</string>
+    <string name="audio_stream">音声ストリーム</string>
+    <string name="alc_high_alert">警告！ALCが高すぎます。</string>
+
+    <string name="swr_high_alert">警告！SWRが高すぎます。</string>
+    <string name="volume_percent">信号出力強度 %.0f %%</string>
+    <string name="signal_strength">信号出力強度</string>
+    <string name="html_distance">距離</string>
+    <string name="html_callsign_qth">コールサインのQTH</string>
+    <string name="html_update_time">更新時刻</string>
+    <string name="grid_tracker_new_grid">新しいグリッドが見つかりました：%s</string>
+    <string name="tracker_open_messages">メッセージを開く</string>
+    <string name="tracker_close_messages">メッセージを閉じる</string>
+    <string name="tracker_decoded_new">%d 件のメッセージをデコードしました。</string>
+    <string name="tracker_call_this">このコールサインを呼ぶ</string>
+    <string name="tracker_show_info_mode">ヒントモード</string>
+    <string name="tracker_tips_all">すべて</string>
+    <string name="tracker_tips_new">新規</string>
+    <string name="tracker_tips_none">なし</string>
+    <string name="tracker_show_cq_tips">CQのヒントを表示</string>
+    <string name="tracker_hide_cq_tips">CQのヒントを非表示</string>
+    <string name="tracker_show_qsx_tips">QSXのヒントを表示</string>
+    <string name="tracker_hide_qsx_tips">QSXのヒントを非表示</string>
+    <string name="track_sample_text_qsl">QSL</string>
+    <string name="tracker_sample_qso_text">QSO</string>
+    <string name="tracker_sample_qsx_text">QSX</string>
+    <string name="tracker_cq_text">CQ</string>
+    <string name="tracker_qso_text">QSO</string>
+    <string name="tracker_new_zone_found">新しいゾーンが見つかりました：%s</string>
+    <string name="transmit_freeText">フリーテキストを入力してください</string>
+    <string name="trans_free_text_mode">フリーテキストモード</string>
+    <string name="trans_standard_messge_mode">標準メッセージモード</string>
+    <string name="launch_supervision_ignore">無視</string>
+    <string name="be_excluded_callsigns">除外されたコールサインプレフィックス</string>
+    <string name="pl_callsing_prefix">コールサインプレフィックスを入力してください</string>
+    <string name="cache_clear">クリア</string>
+    <string name="cache_clear_title">キャッシュをクリア</string>
+    <string name="follow_callsign_data">フォローされたコールサイン</string>
+    <string name="cancel_clear_cache">キャンセル</string>
+    <string name="log_statistics_cache">キャッシュされたログ数</string>
+    <string name="logs_cache">デコード済みメッセージ</string>
+    <string name="band_total">バンド \t 合計</string>
+    <string name="modifier_editor">CQ修飾子</string>
+    <string name="pl_input_modifier">修飾子を入力してください</string>
+    <string name="flex_start_atu">ATUを開始</string>
+    <string name="flex_max_tx_power">最大送信電力を %d W に</string>
+    <string name="flex_tune_power">ATU調整電力 %d W</string>
+    <string name="html_flex_max_rf_power">最大送信電力</string>
+    <string name="html_atu_tune_power">ATU調整電力</string>
+    <string name="flex_atu_tune_off">TUNE OFF</string>
+    <string name="flex_atu_tune_on">TUNE ON</string>
+    <string name="flex_logo_text">FlexRadio</string>
+    <string name="map_location_image">地図で位置を特定</string>
+    <string name="log_menu_location">位置</string>
+    <string name="tracker_query_qso_info">QSOデータを照会中…</string>
+    <string name="html_callsign_grid_total">合計：%d</string>
+    <string name="html_message_page_count">ページ数：%d</string>
+    <string name="html_message_page_size">ページサイズ：</string>
+    <string name="html_message_query">検索</string>
+    <string name="config_save_swl">デコード済みを保存</string>
+    <string name="config_donot_save_swl">デコード済み保存しない</string>
+    <string name="config_save_swl_qso">SWL用QSOを保存</string>
+    <string name="config_donot_save_swl_qso">SWL用QSO保存しない</string>
+    <string name="html_query_swl_message">デコード済みメッセージを照会（SWL）</string>
+    <string name="log_statistics_decode_msg">デコード済みメッセージ総数</string>
+    <string name="config_Syn_time">時刻同期</string>
+    <string name="utc_time_sync_delay_slow">同期完了。ローカル時計は %d ミリ秒遅れています</string>
+    <string name="utc_time_sync_delay_faster">同期完了。ローカル時計は %d ミリ秒進んでいます</string>
+    <string name="config_clock_is_accurate">ローカル時計は正確です！</string>
+    <string name="html_start_date_swl_message">開始日</string>
+    <string name="html_end_date_swl_message">終了日</string>
+    <string name="html_query_qso_swl">SWLのQSOを照会</string>
+    <string name="html_export_csv">CSVファイルにエクスポート</string>
+    <string name="html_export_text">TEXTファイルにエクスポート</string>
+    <string name="html_export_adi">ADIFファイルにエクスポート</string>
+    <string name="log_statistics_swl_qso">デコード済みQSO総数</string>
+    <string name="config_clear_swl_qso">デコード済みQSO</string>
+    <string name="audioOutput">音声出力</string>
+    <string name="audio16_bit">16-bit int</string>
+    <string name="audio32_bit">32-bit float</string>
+    <string name="html_audio_bits">音声 - ビット深度</string>
+    <string name="audio_rate_12k">12kHz</string>
+    <string name="audio_rate_24k">24kHz</string>
+    <string name="audio_rate_48k">48kHz</string>
+    <string name="audio_rate">サンプリングレート</string>
+    <string name="html_audio_rate">音声 - サンプリングレート</string>
+    <string name="audio_bit_depth">ビット深度</string>
+    <string name="callsign_help">callsign_ja.txt</string>
+    <string name="maidenhead_help">maidenhead_ja.txt</string>
+    <string name="frequency_help">frequency_ja.txt</string>
+    <string name="transDelay_help">transDelay_ja.txt</string>
+    <string name="timeoffset_help">timeoffset_ja.txt</string>
+    <string name="pttdelay_help">pttdelay_ja.txt</string>
+    <string name="operationBand_help">operationBand_ja.txt</string>
+    <string name="controlMode_help">controlMode_ja.txt</string>
+    <string name="civ_help">civ_help_ja.txt</string>
+    <string name="rig_model_help">rig_model_help_ja.txt</string>
+    <string name="launch_supervision_help">launch_supervision_ja.txt</string>
+    <string name="no_response_help">no_response_help_ja.txt</string>
+    <string name="auto_follow_help">auto_follow_help_ja.txt</string>
+    <string name="connectMode_help">connectMode_ja.txt</string>
+    <string name="excludeCallsign_help">excludeCallsign_ja.txt</string>
+    <string name="swlMode_help">swlMode_ja.txt</string>
+    <string name="audio_output_help">audio_output_help_ja.txt</string>
+    <string name="deep_mode_help">decode_help_ja.txt</string>
+    <string name="clear_cache_data_help">clear_cache_data_ja.txt</string>
+    <string name="html_query_logs">ログを照会</string>
+    <string name="html_qso_all">すべて</string>
+    <string name="html_qso_source">データソース</string>
+    <string name="html_qso_unconfirmed">未確認</string>
+    <string name="html_qso_confirmed">確認済み</string>
+    <string name="html_qso_raw_log">ローカルログ</string>
+    <string name="html_qso_external_logs">外部ログ</string>
+    <string name="html_qso_external">外部</string>
+    <string name="html_qso_raw">ローカルログ</string>
+    <string name="html_protocol">プロトコル</string>
+    <string name="html_comment">コメント</string>
+    <string name="decode_mode_text">デコードモード</string>
+    <string name="fast_mode">高速デコード</string>
+    <string name="deep_mode">ディープデコード</string>
+    <string name="export_null">同じLAN上の他のデバイスのWebブラウザからWebUIを介してエクスポート \n有効なWi-Fiに接続してください</string>
+    <string name="null_task_html">タスクが存在しません！</string>
+    <string name="log_importing_html">インポート中…</string>
+    <string name="log_import_finished_html">完了！</string>
+    <string name="import_read_error_count_html">エラー行数：%d</string>
+    <string name="import_new_count_html">追加QSL：%d</string>
+    <string name="import_update_count_html">更新QSL：%d</string>
+    <string name="import_invalid_count_html">無効QSL：%d</string>
+    <string name="import_progress_html">"進行状況："</string>
+    <string name="import_readed_html">検証済みQSL：%d</string>
+    <string name="import_canceled_html">キャンセルされました！</string>
+    <string name="import_cancel_button">停止</string>
+    <string name="qsl_query_log_menu">ログ（%s）</string>
+    <string name="message_list_simple_mode">簡易リストモード</string>
+    <string name="message_list_standard_mode">標準リストモード</string>
+    <string name="config_msg_mode">メッセージモード</string>
+    <string name="config_msg_std_mode">標準</string>
+    <string name="config_msg_simple_mode">簡易</string>
+    <string name="message_mode_help">messageMode_ja.txt</string>
+    <string name="pl_select_xiegu_radio">利用可能なXIEGUリグを選択してください</string>
+    <string name="x6100_packet_lost">パケット損失：%d</string>
+    <string name="xiegu_name_label">XIEGU</string>
+    <string name="xiegu_ping_value">Ping：%d ミリ秒</string>
+    <string name="xiegu_start_atu">ATUを開始</string>
+    <string name="xiegu_atu_on">ATUオン</string>
+    <string name="xiegu_atu_off">ATUオフ</string>
+    <string name="xiegu_band_str">バンド：%s</string>
+    <string name="alc_low_alert">警告！ALCが低すぎます。</string>
+    <string name="xiegu_meter_info">S.Meter：%.1f dBm\nSWR：%s\nALC：%.1f\n電圧：%.1fV\nTX電力：%.1f W\n最大TX電力：%.1f\nTXボリューム：%d%%</string>
+    <string name="serial_connect_no_access">シリアルポートに接続できません。USBデバイスへのアクセス権があるか確認してください！</string>
+    <string name="serial_connect_failed">シリアルポートを開けませんでした！</string>
+    <string name="serial_no_driver">シリアルポートに接続できません。シリアルポートが見つかりません！</string>
+    <string name="serial_data_bits">データビット</string>
+    <string name="serial_parity">パリティビット</string>
+    <string name="serial_parity_none">なし</string>
+    <string name="serial_parity_odd">奇数</string>
+    <string name="serial_parity_even">偶数</string>
+    <string name="serial_parity_mark">マーク</string>
+    <string name="serial_parity_space">スペース</string>
+    <string name="serial_stop_bits">ストップビット</string>
+    <string name="serial_default">デフォルト</string>
+    <string name="serial_setting_help">serial_help_ja.txt</string>
+    <string name="tcp_connect_closed">ネットワーク接続が切断されました。</string>
+    <string name="share_logs">ログを共有</string>
+    <string name="config_clear_share_data">キャッシュファイルを削除</string>
+    <string name="preparing_log_data">ログデータを準備中…</string>
+    <string name="total_logs">合計 %d 件のログがあります。</string>
+    <string name="get_log_no">%d 件のログがダウンロードされました。</string>
+    <string name="write_file_error">ファイル書き込み中にエラーが発生しました：%s</string>
+    <string name="import_share_failed">ログデータのインポートに失敗しました！%s</string>
+    <string name="preparing_import_logs">ログのインポートを準備中…</string>
+    <string name="share_logs_been_read">%d 件のログが読み込まれました。</string>
+    <string name="share_import_log_data">ログデータをインポート中…</string>
+    <string name="cloudlog_settings">Cloudlog設定</string>
+    <string name="config_enable_cloudlog">Cloudlog同期を有効にする</string>
+    <string name="cloudlog_addr">サーバーアドレス</string>
+    <string name="cloudlog_api_key">Apikey</string>
+    <string name="test_cloudlog_config">テスト</string>
+    <string name="cloudlog_station_id">ステーションID</string>
+    <string name="cloudlog_help">cloudlog_ja.txt</string>
+    <string name="pass">成功！</string>
+    <string name="fail">失敗！</string>
+    <string name="testing">テスト中…</string>
+    <string name="test">テスト</string>
+    <string name="qrz_settings">QRZ.com設定</string>
+    <string name="qrz_api_key">API KEY</string>
+    <string name="config_enable_qrz">QRZ同期を有効にする</string>
+    <string name="qrz_help">qrz_ja.txt</string>
+    <string name="alram_switch">アラームスイッチ</string>
+    <string name="swr_switch_on" translatable="false">SWR On</string>
+    <string name="swr_switch_off" translatable="false">SWR Off</string>
+    <string name="alc_switch_on" translatable="false">ALC On</string>
+    <string name="alc_switch_off" translatable="false">ALC Off</string>
+
+    <string name="import_log_downloads">ログをインポート</string>
+    <string name="export_log_downloads">ログをエクスポート</string>
+    <string name="web_port">Webポート</string>
+    <string name="pl_web_port">7050</string>
+    <string name="faq_web_port">Webインターフェース用HTTPサーバーポート。デフォルトは7050です。ポートが使用中の場合は変更してください。範囲：1024-65535。</string>
+    <string name="bearing">方位</string>
+    <string name="send_tune_on_freq_change">周波数変更時にTUNEを送信</string>
+    <string name="tune_command_label">TUNEコマンド 1C 01 02</string>
+    <string name="switch_on">オン</string>
+    <string name="switch_off">オフ</string>
+    <!-- Settings: Clear Call Hist on Freq Change -->
+    <string name="config_clear_call_hist_on_freq_change">周波数変更時にコール履歴を消去</string>
+    <string name="faq_clear_call_hist_on_freq_change">有効にすると、無線の周波数変更と TUNE コマンドの後にコール履歴バッファを自動的に消去します。新しい周波数で古いコールサインを呼び出してしまうのを防ぎます。</string>
+
+    <string name="accept_dx_calls">DX呼び出しを受け入れる（Fox/Hound）</string>
+    <string name="accept_dx_calls_summary">76ビットのマルチストリーム復号と応答キューを有効にします</string>
+
+    <string name="multiple_answers_title">複数の応答</string>
+    <string name="multiple_ans_ignore">無視</string>
+    <string name="multiple_ans_dx">DX</string>
+    <string name="multiple_ans_remember">記憶する</string>
+
+    <!-- Navigation menu titles -->
+    <string name="nav_menu_title_scan">スキャン</string>
+</resources>

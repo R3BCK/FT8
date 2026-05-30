@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <!-- Header Controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:gravity="center_vertical"
+        android:background="@color/purple_500">
+
+        <ImageView
+            android:id="@+id/btnClearTable"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/clear_calling_list_image_48"
+            android:contentDescription="Clear"
+            android:padding="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Cycles:"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etDwellCycles"
+            android:layout_width="48dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="4dp"
+            android:inputType="number"
+            android:text="4"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@drawable/log_callsign_editor_style"
+            android:textColor="@color/bar_text_view_color"
+            android:textColorHint="@color/bar_text_view_color" />
+
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnScanStartStop"
+            android:layout_width="72dp"
+            android:layout_height="32dp"
+            android:text="Start"
+            android:textSize="9sp"
+            android:backgroundTint="@color/button_start_color"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <!-- Info Panel -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:background="@color/editor_start_color"
+        android:gravity="center">
+
+        <TextView android:id="@+id/tvConnStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Disconnected" android:textSize="9sp" android:textStyle="bold" android:textColor="@color/text_view_error_color" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_marginEnd="4dp" android:text="|" android:textSize="9sp" android:textColor="@color/text_view_color" />
+        <TextView android:id="@+id/tvRigType" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="No Rig" android:textSize="9sp" android:textStyle="bold" android:textColor="@color/text_view_color" />
+        <TextView android:id="@+id/tvUtcTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="--:--:--" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_view_color" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="4dp" android:text="Delay:" android:textSize="10sp" android:textColor="@color/text_view_color" />
+        <TextView android:id="@+id/tvUtcDelay" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+0" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_view_color" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="4dp" android:text="RF:" android:textSize="10sp" android:textColor="@color/text_view_color" />
+        <TextView android:id="@+id/tvRfFreq" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.000 MHz" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/button_start_color" />
+    </LinearLayout>
+
+    <!-- Table Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:background="@color/editor_start_color"
+        android:gravity="center_vertical">
+
+        <LinearLayout android:layout_width="28dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hide" android:textSize="7sp" android:textColor="@color/text_view_color" />
+            <CheckBox android:id="@+id/cbHeaderHide" android:layout_width="20dp" android:layout_height="20dp" android:checked="true" android:padding="0dp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="28dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select" android:textSize="7sp" android:textColor="@color/text_view_color" />
+            <CheckBox android:id="@+id/cbHeaderSelect" android:layout_width="20dp" android:layout_height="20dp" android:checked="true" android:padding="0dp" />
+        </LinearLayout>
+
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="3" android:layout_marginStart="-15dp" android:text="Freq" android:textStyle="bold" android:gravity="center" android:textColor="@color/text_view_color" android:textSize="11sp" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="-10dp" android:text="Total" android:textStyle="bold" android:gravity="center" android:textColor="@color/text_view_color" android:textSize="11sp" />
+        <ImageView android:layout_width="0dp" android:layout_height="16dp" android:layout_weight="1" android:src="@drawable/dxcc" android:scaleType="centerInside" android:contentDescription="D" />
+        <ImageView android:layout_width="0dp" android:layout_height="16dp" android:layout_weight="1" android:src="@drawable/cqzone" android:scaleType="centerInside" android:contentDescription="C" />
+        <ImageView android:layout_width="0dp" android:layout_height="16dp" android:layout_weight="1" android:src="@drawable/itu" android:scaleType="centerInside" android:contentDescription="I" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="New" android:textStyle="bold" android:gravity="center" android:textColor="@color/text_view_color" android:textSize="11sp" />
+        <Button android:id="@+id/btnHeaderGo" android:visibility="invisible" android:layout_width="72dp" android:layout_height="32dp" android:text="Go" android:textSize="10sp" android:backgroundTint="@color/button_start_color" android:textColor="@color/white" />
+    </LinearLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:background="@android:color/white">
+        <LinearLayout android:id="@+id/containerScanContent" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    </ScrollView>
+
+    <!-- Totals -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:background="@color/editor_start_color"
+        android:gravity="center_vertical">
+        <View android:layout_width="28dp" android:layout_height="1dp" />
+        <View android:layout_width="28dp" android:layout_height="1dp" />
+        <TextView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="3" android:layout_marginStart="-15dp" android:text="TOTAL" android:textStyle="bold" android:gravity="center" android:textColor="@color/text_view_color" android:textSize="11sp" />
+        <TextView android:id="@+id/tvTotalAll" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="0" android:textStyle="bold" android:gravity="center" android:textColor="@color/text_view_color" android:textSize="11sp" />
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+        <TextView android:id="@+id/tvTotalNew" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:text="0" android:textStyle="bold" android:gravity="center" android:textColor="@color/button_start_color" android:textSize="11sp" />
+        <View android:layout_width="72dp" android:layout_height="1dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.bg7yoz.ft8cn",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 94,
+      "versionName": "0.94",
+      "outputFile": "FT8CN-R3BCK_v0.94_release_20260528_universal.apk"
+    }
+  ],
+  "elementType": "File"
+}

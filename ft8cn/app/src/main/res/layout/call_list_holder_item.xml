@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/callListHolderConstraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="1dp"
+    android:layout_marginTop="1dp"
+    android:layout_marginRight="1dp"
+    android:layout_marginBottom="2dp"
+    android:paddingBottom="2dp"
+    android:background="@drawable/calling_list_cell_style"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    tools:ignore="TouchTargetSizeCheck">
+
+    <!-- Sequence -->
+    <TextView
+        android:id="@+id/callingListSequenceTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callListMessageTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/callListMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textSize="12sp"
+        android:includeFontPadding="false"
+        tools:ignore="TextContrastCheck"
+        tools:text="0" />
+
+    <!-- dB -->
+    <TextView
+        android:id="@+id/callingListIdBTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callListMessageTextView"
+        app:layout_constraintEnd_toEndOf="@+id/guideline1"
+        app:layout_constraintTop_toTopOf="@+id/callListMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:textSize="12sp"
+        android:includeFontPadding="false"
+        tools:text="-12" />
+
+    <!-- === Guideline 1: между dB и dt === -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="28dp" />
+
+    <!-- dt -->
+    <TextView
+        android:id="@+id/callListDtTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callListMessageTextView"
+        app:layout_constraintStart_toStartOf="@+id/guideline1"
+        app:layout_constraintTop_toTopOf="@+id/callListMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="2dp"
+        android:textSize="12sp"
+        android:includeFontPadding="false"
+        tools:text="-1.2" />
+
+    <!-- Freq -->
+    <TextView
+        android:id="@+id/callingListFreqTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callListMessageTextView"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/callListMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:textSize="12sp"
+        android:includeFontPadding="false"
+        tools:text="1234" />
+
+    <!-- === Guideline 2: между Freq и Message === -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="75dp" />
+
+    <!-- Message -->
+    <TextView
+        android:id="@+id/callListMessageTextView"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/callToItemTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="13sp"
+        android:includeFontPadding="false"
+        tools:text="CQ BG7YOY BG7YOZ" />
+
+    <!-- === Guideline 3: между Message и Distance === -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="90dp" />
+
+    <!-- Distance -->
+    <TextView
+        android:id="@+id/callingListDistTextView"
+        app:layout_constraintEnd_toStartOf="@+id/bandItemTextView"
+        app:layout_constraintTop_toTopOf="@+id/callListMessageTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callListMessageTextView"
+        android:layout_width="47dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:gravity="end"
+        android:textSize="11sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        tools:ignore="SmallSp"
+        tools:text="12345 km" />
+
+    <!-- Band -->
+    <TextView
+        android:id="@+id/bandItemTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/callListMessageTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callListMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        tools:ignore="SmallSp"
+        tools:text="14.074 MHz" />
+
+    <!-- Weak signal indicator -->
+    <ImageView
+        android:id="@+id/isWeakSignalImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/callingListSequenceTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        app:srcCompat="@drawable/is_weak_signal_24"
+        tools:ignore="ContentDescription,ImageContrastCheck" />
+
+    <!-- UTC -->
+    <TextView
+        android:id="@+id/callingUtcTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/callToItemTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callToItemTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
+        tools:ignore="SmallSp"
+        tools:text="123456" />
+
+    <!-- Command Info -->
+    <TextView
+        android:id="@+id/callingListCommandIInfoTextView"
+        app:layout_constraintStart_toEndOf="@+id/callingUtcTextView"
+        app:layout_constraintTop_toTopOf="@+id/callingUtcTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callingUtcTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textSize="6sp"
+        android:includeFontPadding="false"
+        tools:ignore="SmallSp"
+        tools:text="4.0:non-standard" />
+
+    <!-- TO Icons -->
+    <ImageView
+        android:id="@+id/dxccToImageView"
+        app:layout_constraintStart_toEndOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/callingListCommandIInfoTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callingListCommandIInfoTextView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:contentDescription="dxcc"
+        app:srcCompat="@drawable/dxcc" />
+
+    <ImageView
+        android:id="@+id/ituToImageView"
+        app:layout_constraintStart_toEndOf="@+id/dxccToImageView"
+        app:layout_constraintTop_toTopOf="@+id/dxccToImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/dxccToImageView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:contentDescription="itu"
+        app:srcCompat="@drawable/itu" />
+
+    <ImageView
+        android:id="@+id/cqToImageView"
+        app:layout_constraintStart_toEndOf="@+id/ituToImageView"
+        app:layout_constraintTop_toTopOf="@+id/ituToImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/ituToImageView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:contentDescription="cqzone"
+        app:srcCompat="@drawable/cqzone" />
+
+    <!-- === Call To: выровнен по guideline2 (start-start) === -->
+    <TextView
+        android:id="@+id/callToItemTextView"
+        app:layout_constraintStart_toEndOf="@+id/cqToImageView"
+        app:layout_constraintTop_toBottomOf="@+id/callListMessageTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAlignment="textStart"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
+        android:paddingStart="2dp"
+        tools:ignore="RtlCompat,SmallSp"
+        tools:text="TOOOOO" />
+
+    <!-- === Call From: выровнен по guideline3 (end-end) === -->
+    <TextView
+        android:id="@+id/callingListCallsignFromTextView"
+        app:layout_constraintEnd_toEndOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/callToItemTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callToItemTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAlignment="textStart"
+        android:textSize="10sp"
+        android:textStyle="normal"
+        android:includeFontPadding="false"
+        tools:ignore="RtlCompat,SmallSp"
+        tools:text="FROMMMMM" />
+
+    <!-- FROM Icons -->
+    <ImageView
+        android:id="@+id/cqFromImageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/callToItemTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callToItemTextView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="cqzone"
+        app:srcCompat="@drawable/cqzone" />
+
+    <ImageView
+        android:id="@+id/ituFromImageView"
+        app:layout_constraintEnd_toStartOf="@+id/cqFromImageView"
+        app:layout_constraintTop_toTopOf="@+id/cqFromImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/cqFromImageView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="2dp"
+        android:contentDescription="itu"
+        app:srcCompat="@drawable/itu" />
+
+    <ImageView
+        android:id="@+id/dxccFromImageView"
+        app:layout_constraintEnd_toStartOf="@+id/ituFromImageView"
+        app:layout_constraintTop_toTopOf="@+id/ituFromImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/ituFromImageView"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="2dp"
+        android:contentDescription="dxcc"
+        app:srcCompat="@drawable/dxcc" />
+
+    <!-- Bearing -->
+    <TextView
+        android:id="@+id/callingListAzimuthTextView"
+        app:layout_constraintEnd_toEndOf="@+id/callingListDistTextView"
+        app:layout_constraintTop_toTopOf="@+id/callToItemTextView"
+        app:layout_constraintBottom_toBottomOf="@+id/callToItemTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="--"
+        android:textColor="@color/text_view_color"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
+        tools:text="271°" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

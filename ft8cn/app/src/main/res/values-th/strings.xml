@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FT8CN</string>
+    <string name="nav_menu_title_call_list">เนื้อหา</string>
+    <string name="nav_menu_title_decode_list">ถอดรหัส</string>
+    <string name="nav_menu_title_my_calling">เรียก</string>
+    <string name="nav_menu_title_history">บันทึก QSO</string>
+    <string name="nav_menu_title_config">การตั้งค่า</string>
+    <string name="map_name" translatable="false">nightUSGS4Layer.sqlite</string>
+
+    <string name="run_decode">เริ่มถอดรหัส</string>
+    <string name="db">dB</string>
+    <string name="dt">Δt</string>
+    <string name="locate">ตำแหน่ง</string>
+    <string name="message">ข้อความ</string>
+    <string name="freq">ความถี่</string>
+    <string name="decode">ถอดรหัส</string>
+    <string name="delete">ลบ</string>
+    <string name="sequence">ลำดับ</string>
+    <string name="dist">ระยะทาง</string>
+    <string name="location">ที่ตั้ง</string>
+    <string name="mycall">สัญญาณเรียกขาน</string>
+    <string name="pl_mycall">โปรดป้อนสัญญาณเรียกขาน</string>
+    <string name="headGrid">กริดสแควร์</string>
+    <string name="pl_grid">โปรดป้อน Maidenhead grid</string>
+    <string name="decoding">กำลังถอดรหัส…</string>
+    <string name="send">TX</string>
+    <string name="check">ตรวจสอบ</string>
+    <string name="sendFreq">ความถี่ TX</string>
+    <string name="sendDefaultFreq">ความถี่เสียง</string>
+    <string name="pl_sendFreq">ช่วงความถี่เสียง 0~2900</string>
+    <string name="transmitting">กำลังส่ง …</string>
+    <string name="synFrequency">ล็อก TX=RX</string>
+    <string name="spectrum">สเปกตรัม</string>
+    <string name="pl_trans_delay">เวลาหน่วง TX (มิลลิวินาที)</string>
+    <string name="tran_delay">หน่วง TX</string>
+
+    <string name="timeOffset">ปรับเวลาเอง</string>
+    <string name="help">ช่วยเหลือ</string>
+    <string name="scroll_down">▾</string>
+    <string name="about_me">เกี่ยวกับ FT8CN</string>
+
+    <string name="connectMode">การควบคุม</string>
+    <string name="VOX">VOX</string>
+    <string name="CAT">CAT</string>
+    <string name="operationBand">ความถี่</string>
+    <string name="civ_address">CI-V</string>
+    <string name="pl_civ_address">ที่อยู่ CI-V ของเครื่องวิทยุ</string>
+    <string name="serial_port">พอร์ตอนุกรม</string>
+    <string name="bau_rate">อัตราบอด</string>
+    <string name="pl_select_serial_port">โปรดเลือกพอร์ตอนุกรม</string>
+    <string name="close">ปิด</string>
+    <string name="rig_name">เครื่องวิทยุ</string>
+    <string name="debug">ดีบัก</string>
+    <string name="logo_image">FT8CN</string>
+    <string name="RTS">RTS</string>
+    <string name="FAQ">FAQ</string>
+    <string name="launch_supervision">TX watchdog</string>
+    <string name="no_response_count">ไม่มีการตอบกลับ</string>
+    <string name="break_launch">หยุดแล้ว</string>
+    <string name="follow_cq">ติดตาม CQ อัตโนมัติ</string>
+    <string name="auto_call_follow">ติดตามการเรียกอัตโนมัติ</string>
+    <string name="DTR">DTR</string>
+    <string name="launch">TX</string>
+    <string name="export">ส่งออก</string>
+    <string name="view_style">โหมดมุมมอง</string>
+    <string name="ptt_delay">หน่วง PTT</string>
+    <string name="filter">ตัวกรอง</string>
+    <string name="pl_filter">โปรดเลือกตัวกรอง</string>
+    <string name="filter_all">แสดงทั้งหมด</string>
+    <string name="filter_is_qsl">แสดงที่ยืนยันแล้ว</string>
+    <string name="filter_none_qsl">แสดงที่ยังไม่ยืนยัน</string>
+    <string name="cable_connect">USB</string>
+    <string name="bluetooth_connect">Bluetooth</string>
+    <string name="cable_mode">ประเภทการเชื่อมต่อ</string>
+    <string name="pl_select_bluetooth">โปรดเลือกอุปกรณ์ Bluetooth ที่ใช้งานได้</string>
+    <string name="bluetooth_set">การตั้งค่า Bluetooth</string>
+    <string name="spp_device">อุปกรณ์ Bluetooth SPP</string>
+    <string name="headset_device">ชุดหูฟัง Bluetooth</string>
+    <string name="disconnect_rig">การเชื่อมต่อเครื่องวิทยุขาดหาย</string>
+    <string name="connected_rig">เชื่อมต่อเครื่องวิทยุสำเร็จ</string>
+    <string name="current_frequency">ความถี่ปัจจุบัน :%s</string>
+    <string name="radio_communication_error">การสื่อสารกับเครื่องวิทยุผิดพลาด:%s</string>
+    <string name="does_not_support_recording">อุปกรณ์ Bluetooth ไม่รองรับการบันทึก</string>
+    <string name="bluetooth_headset_mode">เข้าสู่โหมดชุดหูฟัง Bluetooth</string>
+    <string name="bluetooth_Headset_mode_cancelled">ออกจากโหมดชุดหูฟัง Bluetooth</string>
+
+    <string name="version_info">FT8CN เวอร์ชัน %s\nBG7YOZ\n%s</string>
+
+    <string name="exit">ออก</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="exit_confirmation">คุณแน่ใจหรือไม่ว่าต้องการออก?</string>
+
+    <!-- FT8Message -->
+    <string name="std_msg">ข้อความมาตรฐาน</string>
+    <string name="none_std_msg">สัญญาณเรียกขานไม่มาตรฐาน</string>
+    <string name="free_text">ข้อความอิสระ</string>
+    <string name="dXpedition">DXpedition</string>
+    <string name="field_day">Field Day</string>
+    <string name="telemetry">เทเลเมทรี</string>
+    <string name="rtty_ru_msg">RTTY RU</string>
+
+    <!-- Config bar -->
+    <string name="offset_time_sec">%.1f วินาที</string>
+
+    <!-- Spectrum -->
+    <string name="decoding_takes_milliseconds">ถอดรหัสแล้ว : %d มิลลิวินาที</string>
+    <string name="sound_frequency_is_set_to">ความถี่เสียงถูกตั้งเป็น %d Hz</string>
+    <string name="de_noise">ลดสัญญาณรบกวน</string>
+    <string name="raw_spectrum_data">ต้นฉบับ</string>
+    <string name="markMessage">แสดงข้อความ</string>
+    <string name="unMarkMessage">ซ่อนข้อความ</string>
+
+    <!-- Bluetooth device dialog -->
+    <string name="select_bluetooth_device">เลือกอุปกรณ์ Bluetooth : %s</string>
+
+    <!-- PTT delay milliseconds -->
+    <string name="milliseconds">%d มิลลิวินาที</string>
+    <!-- No reply count -->
+    <string name="ignore">ไม่สนใจ</string>
+    <string name="times">%d ครั้ง</string>
+
+    <!-- Calling bar -->
+    <string name="sound_frequency_is">ความถี่ : %.0f Hz</string>
+    <string name="target_callsign">เป้าหมาย : %s</string>
+    <string name="transmission_sequence">ลำดับ : %d</string>
+    <string name="message_count">ข้อความ(%d)</string>
+
+    <!-- Log export bar -->
+    <string name="export_info">โปรดใช้เว็บเบราว์เซอร์ของอุปกรณ์อื่นเพื่อส่งออกจากพื้นหลังภายใต้ LAN เดียวกันกับอุปกรณ์นี้\nป้อน URL ในเบราว์เซอร์:\nhttp://%s:%d</string>
+    <!-- TX watchdog -->
+    <string name="minutes">%d นาที</string>
+
+    <!-- TX watchdog -->
+    <string name="freq_syn">ล็อก TX=RX</string>
+    <string name="freq_asyn">แยก TX/RX</string>
+    <string name="auto_follow_cq">ติดตาม CQ อัตโนมัติ</string>
+    <string name="not_concerned_about_CQ">ไม่ติดตาม CQ</string>
+    <string name="automatic_call_following">ติดตามการเรียกอัตโนมัติ</string>
+    <string name="do_not_call_the_following_callsign">ไม่เรียกสัญญาณเรียกขานที่ติดตามอยู่</string>
+
+    <!-- Decode bar -->
+    <string name="message_count_count">ข้อความ(%d/%d)</string>
+    <string name="average_offset_seconds">ค่าเฉลี่ยการเลื่อนเวลา : %.2f วินาที</string>
+    <string name="my_grid">Grid : %s</string>
+
+    <!-- Decode list -->
+    <string name="tracking_receiver">ติดตามเครื่องรับ %s(%s)</string>
+    <string name="calling_receiver">เรียกเครื่องรับ %s(%s)</string>
+    <string name="reply_to">ตอบกลับ %s(%s)</string>
+    <string name="tracking">ติดตาม %s(%s)</string>
+    <string name="calling">เรียก %s(%s)</string>
+
+    <!-- Grid distance calculation -->
+    <string name="distance">%.0f กม.</string>
+
+    <!-- Log list -->
+    <string name="confirmed">ยืนยันแล้ว</string>
+    <string name="unconfirmed">ยังไม่ยืนยัน</string>
+    <string name="lotw_confirmation">ยืนยันผ่าน LoTW แล้ว</string>
+    <string name="manual_confirmation">ยืนยันด้วยตนเองแล้ว</string>
+    <string name="log_start_time">เวลาเริ่มต้น : %s</string>
+    <string name="log_end_time">เวลาสิ้นสุด:%s</string>
+    <string name="log_last_time">QSO ล่าสุด:%s</string>
+    <string name="log_grid">Grid : %s</string>
+    <string name="log_mode">โหมด : %s</string>
+    <string name="log_cancel_confirmation">ยกเลิกการยืนยัน (%s)</string>
+    <string name="log_manual_confirmation">ยืนยันด้วยตนเอง (%s)</string>
+
+    <!-- QSL log list -->
+    <string name="qsl_grid">Grid:%s</string>
+    <string name="qsl_start_time">เวลาเริ่มต้น : %s</string>
+    <string name="qsl_end_time">เวลาสิ้นสุด : %s</string>
+    <string name="qsl_rst_rcvd">RST ที่ได้รับ : %s</string>
+    <string name="html_rst_rcvd">RST ที่ได้รับ</string>
+    <string name="qsl_rst_sent">RST ที่ส่ง : %s</string>
+    <string name="html_rst_sent">RST ที่ส่ง</string>
+    <string name="qsl_band">ย่านความถี่ : %s</string>
+    <string name="qsl_freq">ความถี่ : %s</string>
+    <string name="qsl_mode">โหมด : %s</string>
+    <string name="qsl_lotw_confirmation">ยืนยันผ่าน LoTW แล้ว</string>
+    <string name="qsl_manual_confirmation">ยืนยันด้วยตนเองแล้ว</string>
+    <string name="qsl_unconfirmed">ยังไม่ยืนยัน</string>
+    <string name="qsl_cancel_confirmation">ยกเลิกการยืนยัน (%s)</string>
+    <string name="qsl_manual_confirmation_s">ยืนยันด้วยตนเอง (%s)</string>
+    <string name="qsl_qrz_confirmation_s">QRZ (%s)</string>
+
+    <!-- QSL record -->
+    <string name="qsl_record_import_time">เวลา import:%s</string>
+
+    <!-- HTML -->
+    <string name="html_track_operation_information">ตรวจสอบข้อมูลการทำงาน</string>
+    <string name="html_track_callsign_hash_table">ตรวจสอบตารางแฮชสัญญาณเรียกขาน</string>
+    <string name="html_trace_parsed_messages">ตรวจสอบข้อความที่ถอดแล้ว</string>
+    <string name="html_trace_callsign_and_grid_correspondence_table">ตรวจสอบความสอดคล้องระหว่างสัญญาณเรียกขานกับกริด</string>
+    <string name="html_query_communication_message">ค้นหา QSO</string>
+    <string name="html_query_configuration_information">ค้นหาข้อมูลการตั้งค่า</string>
+    <string name="html_query_all_table">ค้นหาตารางข้อมูลทั้งหมด</string>
+    <string name="html_manage_tracking_callsign">จัดการสัญญาณเรียกขานที่ติดตาม</string>
+    <string name="html_manage_communication_callsigns">จัดการสัญญาณเรียกขาน QSO</string>
+    <string name="html_show_communication_callsigns">แสดงสัญญาณเรียกขาน QSO</string>
+    <string name="html_export_log">ส่งออกบันทึก</string>
+    <string name="html_import_log">นำเข้าบันทึก</string>
+    <string name="html_to_the_third_party">ส่งออกบันทึก (สำหรับสำรองข้อมูลและอัปโหลดไปยังแพลตฟอร์มภายนอกเพื่อยืนยัน)</string>
+    <string name="html_from_jtdx_lotw">ส่งออกบันทึก (ใช้สำหรับสำรองข้อมูล อัปโหลดบันทึกไปยังแพลตฟอร์มภายนอกเพื่อยืนยัน ซิงค์บันทึก JTDX และซิงค์ LoTW เพื่อยืนยัน แนะนำให้ใช้ข้อมูล ADI จาก JTDX, LoTW, Log32 และ N1mm สำหรับการซิงค์)</string>
+    <string name="html_return">กลับ</string>
+
+    <string name="html_import_count">ในไฟล์ ADI มี %d ระเบียน และนำเข้าได้ %d ระเบียน รูปแบบของบันทึก %d รายการไม่ถูกต้อง</string>
+    <string name="html_import_failed">นำเข้าล้มเหลว! %s</string>
+    <string name="html_illegal_command">คำสั่งไม่ถูกต้อง อัปโหลดล้มเหลว!</string>
+    <string name="html_callsign">สัญญาณเรียกขาน</string>
+    <string name="html_operation">การทำงาน</string>
+    <string name="html_delete">ลบ</string>
+    <string name="html_qsl_start_time">เวลาเริ่ม QSO</string>
+    <string name="html_qsl_start_day">วันที่เริ่ม QSO</string>
+    <string name="html_qsl_end_time">เวลาสิ้นสุด QSO</string>
+    <string name="html_qsl_end_date">วันที่สิ้นสุด QSO</string>
+    <string name="html_qsl_mode">โหมด</string>
+    <string name="html_qsl_grid">Grid</string>
+    <string name="html_qsl_band">ย่านความถี่</string>
+    <string name="html_qsl_freq">ความถี่</string>
+    <string name="html_qsl_manual_confirmation">ยืนยันด้วยตนเองแล้ว</string>
+    <string name="html_qsl_lotw_confirmation">ยืนยันผ่าน LoTW แล้ว</string>
+    <string name="html_qsl_data_source">แหล่งข้อมูล</string>
+    <string name="html_qsl_import_data_from_external">จากภายนอก</string>
+    <string name="html_qsl_native_data">ภายในแอป</string>
+    <string name="html_variable">ตัวแปร</string>
+    <string name="html_value">ค่า</string>
+    <string name="html_my_callsign">สัญญาณเรียกขาน</string>
+    <string name="html_my_grid">Grid</string>
+    <string name="html_decodes_in_this_cycle">จำนวนที่ถอดได้ในรอบนี้</string>
+    <string name="html_total_number_of_decodes">จำนวนที่ถอดได้ทั้งหมด</string>
+    <string name="html_in_recording_state">สถานะการบันทึก</string>
+    <string name="html_recording">กำลังบันทึก</string>
+    <string name="html_no_recording">ไม่บันทึก</string>
+    <string name="html_time_consuming_for_this_decoding">เวลาที่ใช้ในการถอดรหัสนี้</string>
+    <string name="html_milliseconds">%d มิลลิวินาที</string>
+    <string name="html_average_delay_time_of_this_cycle">ค่าเฉลี่ยความหน่วงของรอบนี้</string>
+    <string name="html_seconds">%.3f วินาที</string>
+    <string name="html_sound_frequency">ความถี่เสียงของสัญญาณ</string>
+    <string name="html_transmission_delay_time">TX Delay</string>
+    <string name="html_launch_supervision">TX watchdog</string>
+    <string name="html_automatic_program_run_time">เวลาทำงานของโปรแกรมอัตโนมัติ</string>
+    <string name="html_no_reply_limit">ขีดจำกัดไม่มีการตอบกลับ</string>
+    <string name="html_no_reply_count">ตัวนับไม่มีการตอบกลับ</string>
+    <string name="html_mark_message">ทำเครื่องหมายข้อความบน waterfall</string>
+    <string name="html_marking_message">กำลังทำเครื่องหมายข้อความ</string>
+    <string name="html_do_not_mark_message">ยกเลิกการทำเครื่องหมายข้อความ</string>
+    <string name="html_operation_mode">โหมดการทำงาน</string>
+    <string name="html_civ_address">ที่อยู่ CI-V</string>
+    <string name="html_baud_rate">อัตราบอด</string>
+    <string name="html_connect_mode">โหมดเชื่อมต่อ</string>
+    <string name="html_available_serial_ports">พอร์ตอนุกรมที่ใช้ได้</string>
+    <string name="html_serial_port_in_use">พอร์ตอนุกรมที่กำลังใช้งาน</string>
+    <string name="html_instruction_set">ชุดคำสั่ง</string>
+    <string name="html_target_callsign">สัญญาณเรียกขานเป้าหมาย</string>
+    <string name="html_sequential">ลำดับ</string>
+
+    <string name="html_carrier_frequency_band">ย่านความถี่</string>
+    <string name="html_radio_frequency">ความถี่ของเครื่องวิทยุ</string>
+    <string name="html_successful_callsign">สัญญาณเรียกขานที่ QSO สำเร็จใน %s</string>
+    <string name="html_tracking_callsign">สัญญาณเรียกขานที่ติดตาม</string>
+    <string name="html_tracking_qso_information">ข้อมูล QSO ที่ติดตาม</string>
+
+    <string name="html_hash_value">แฮช</string>
+    <string name="html_please_select">โปรดเลือก</string>
+    <string name="html_adi_format">ไฟล์บันทึกในรูปแบบ ADI</string>
+    <string name="html_file_in_other_format">และไฟล์รูปแบบอื่นอาจไม่ถูกแปลและนำเข้าอย่างถูกต้อง</string>
+    <string name="html_time">เวลา</string>
+    <string name="html_total">ทั้งหมด</string>
+    <string name="html_all_logs">บันทึกทั้งหมด</string>
+    <string name="html_download">ดาวน์โหลด</string>
+    <string name="html_today_log">บันทึกวันนี้</string>
+    <string name="html_download_all">ดาวน์โหลดทั้งหมด</string>
+    <string name="html_download_unconfirmed">ดาวน์โหลดที่ยังไม่ยืนยัน</string>
+    <string name="callsign_error">สัญญาณเรียกขานไม่ถูกต้อง!</string>
+    <string name="adjust_call_target">ปรับเป้าหมายการเรียก : %s</string>
+    <string name="use_wspr2_error">ความถี่ที่ใช้อยู่ %s เป็นความถี่ของ WSPR-2 ห้ามส่งสัญญาณ FT8 บนความถี่นี้!</string>
+    <string name="none">ไม่มี</string>
+    <string name="connect_bluetooth_spp">กำลังเชื่อมต่อพอร์ตอนุกรม Bluetooth %s …</string>
+    <string name="bluetooth_is_connected">อุปกรณ์ Bluetooth %s เชื่อมต่อแล้ว</string>
+    <string name="bluetooth_is_diconnected">อุปกรณ์ Bluetooth %s ถูกตัดการเชื่อมต่อ</string>
+    <string name="sound_source_switched">แหล่งเสียงถูกเปลี่ยนแล้ว</string>
+    <string name="bluetooth_turn_off">Bluetooth ปิดอยู่</string>
+    <string name="bluetooth_turn_on">Bluetooth เปิดอยู่</string>
+    <string name="can_not_location">ไม่สามารถระบุตำแหน่งได้ โปรดยืนยันว่าคุณอนุญาตการระบุตำแหน่งหรือไม่</string>
+    <string name="statistical">สถิติ</string>
+    <string name="count_up">ขึ้น</string>
+    <string name="count_down">ลง</string>
+    <string name="band_statistics">สถิติย่านความถี่</string>
+    <string name="count_total">ทั้งหมด :%d</string>
+    <string name="confirmation_statistics">สถิติการยืนยันบันทึก</string>
+    <string name="count_confirmed">ยืนยันแล้ว</string>
+    <string name="count_unconfirmed">ยังไม่ยืนยัน</string>
+    <string name="count_total_logs">ทั้งหมด : %d</string>
+    <string name="count_confirmed_log">ยืนยันแล้ว : %d</string>
+    <string name="count_lotw_confirmed">ยืนยันผ่าน LoTW : %d</string>
+    <string name="count_manually_confirmed">ยืนยันด้วยตนเอง : %d</string>
+    <string name="count_confirmed_proportion">สัดส่วนที่ยืนยันแล้ว : %.1f%%</string>
+    <string name="count_tota_callsigns">จำนวนสัญญาณเรียกขานทั้งหมด : %d</string>
+    <string name="count_zone">โซน %s</string>
+    <string name="itu_completion_statistics">สถิติความสมบูรณ์ ITU</string>
+    <string name="count_incomplete">ไม่สมบูรณ์</string>
+    <string name="count_completed">สมบูรณ์</string>
+    <string name="count_total_itu">ITU ทั้งหมด : %d\nสมบูรณ์ %d(%.1f%%)</string>
+    <string name="count_itu_completed_scale">สถิติ ITU</string>
+    <string name="count_cqzone_completed">สถิติ CQ Zone</string>
+    <string name="count_total_cqzone">CQ Zone ทั้งหมด : %d \n สมบูรณ์ : %d(%.1f%%)</string>
+    <string name="count_cqzone_proportion">สถิติ CQ Zone</string>
+    <string name="dxcc_completion_statistics">สถิติ DXCC</string>
+    <string name="count_total_dxcc">DXCC ทั้งหมด : %d \nสมบูรณ์ : %d(%.1f%%)</string>
+    <string name="count_dxcc_proportion">สถิติ DXCC</string>
+    <string name="callsign_info">สัญญาณเรียกขาน:%s\nที่ตั้ง:%s\nCQ zone:%d\nITU zone:%d\nทวีป:%s\nลองจิจูดและละติจูด:%.2f,%.2f\nเขตเวลา:%.0f\nคำนำหน้า DXCC:%s</string>
+    <string name="maximum_distance">ระยะทางสูงสุด\n\n%s</string>
+    <string name="minimum_distance">ระยะทางใกล้ที่สุด\n\n%s</string>
+    <string name="count_distance_info">ระยะทางสูงสุด:%.0f กม. (%s)\nระยะทางใกล้ที่สุด:%.0f กม. (%s)</string>
+    <string name="distance_statistics">สถิติระยะทาง</string>
+    <string name="dxcc_image">dxcc</string>
+    <string name="cqzone">cq zone</string>
+    <string name="itu_image">itu zone</string>
+    <string name="recorder_cannot_record">ไม่สามารถบันทึกได้ โปรดตรวจสอบสิทธิ์การใช้งาน %s</string>
+    <string name="recorder_stop_record_error">หยุดบันทึกผิดพลาด! %s</string>
+    <string name="delete_confirmation">ยืนยันการลบ</string>
+    <string name="are_you_sure_delete">คุณแน่ใจหรือไม่ว่าต้องการลบ?</string>
+    <string name="ok_confirmed">ตกลง</string>
+    <string name="network_connect">เครือข่าย</string>
+    <string name="pl_select_flex_radio">โปรดเลือก FlexRadio ที่ใช้งานได้</string>
+    <string name="select_flex_device">เลือกอุปกรณ์ FlexRadio : %s</string>
+    <string name="select_xiegu_device">เลือกอุปกรณ์ XieguRadio : %s</string>
+    <string name="only_flex_supported">ขณะนี้รองรับเฉพาะ FlexRadio หรือ ICom series เท่านั้น!</string>
+    <string name="flex_connect_failed">เชื่อมต่อ FlexRadio %s ไม่สำเร็จ!</string>
+    <string name="xiegu_connect_failed">เชื่อมต่อ XieguRadio %s ไม่สำเร็จ!</string>
+    <string name="init_flex_operation">%s กำลังเริ่มการทำงาน</string>
+    <string name="html_max_message_cache">จำนวนข้อความที่แคชได้สูงสุด</string>
+    <string name="instruction_failed">คำสั่ง %s ทำงานไม่สำเร็จ ข้อความ : %s</string>
+    <string name="instruction_success">คำสั่ง %s ทำงานสำเร็จ</string>
+    <string name="flex_ip_addr">IP</string>
+    <string name="pl_input_flex_ip">โปรดป้อนที่อยู่ IP</string>
+    <string name="connect_flex">เชื่อมต่อ FlexRadio</string>
+    <string name="connect_flex_ip">กำลังเชื่อมต่อ FlexRadio %s …</string>
+    <string name="get_new_version">รับเวอร์ชันล่าสุด</string>
+    <string name="login_icom_help">เข้าสู่ระบบ ICom</string>
+    <string name="pl_input_icom_port">พอร์ตควบคุม(UDP)</string>
+    <string name="icom_port">พอร์ต</string>
+    <string name="icom_user_name">ผู้ใช้</string>
+    <string name="pl_icom_user">โปรดป้อนชื่อผู้ใช้</string>
+    <string name="icom_password">รหัสผ่าน</string>
+    <string name="pl_icom_password">โปรดป้อนรหัสผ่าน</string>
+    <string name="icom_login_button">เข้าสู่ระบบ</string>
+    <string name="show_password">รหัสผ่านมองเห็นได้</string>
+    <string name="connect_icom_ip">กำลังเชื่อมต่อ ICom Radio %s …</string>
+    <string name="connect_xiegu_ip">กำลังเชื่อมต่อ XIEGU Radio %s …</string>
+    <string name="network_exception">%s : ข้อยกเว้นการส่งข้อมูลเครือข่าย : %s</string>
+    <string name="login_succeed">เข้าสู่ระบบสำเร็จ!</string>
+    <string name="loging_failed">เข้าสู่ระบบไม่สำเร็จ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+    <string name="data_stream">สตรีมข้อมูล</string>
+    <string name="control_stream">สตรีมควบคุม</string>
+    <string name="civ_stream">สตรีม CI-V</string>
+    <string name="audio_stream">สตรีมเสียง</string>
+    <string name="alc_high_alert">คำเตือน! ALC สูงเกินไป</string>
+
+    <string name="swr_high_alert">คำเตือน! SWR สูงเกินไป</string>
+    <string name="volume_percent">ความแรงสัญญาณเอาต์พุต %.0f %%</string>
+    <string name="signal_strength">ความแรงสัญญาณเอาต์พุต</string>
+    <string name="html_distance">ระยะทาง</string>
+    <string name="html_callsign_qth">QTH ของสัญญาณเรียกขาน</string>
+    <string name="html_update_time">เวลาปรับปรุง</string>
+    <string name="grid_tracker_new_grid">พบกริดใหม่ : %s</string>
+    <string name="tracker_open_messages">เปิดข้อความ</string>
+    <string name="tracker_close_messages">ปิดข้อความ</string>
+    <string name="tracker_decoded_new">ถอดได้ %d ข้อความ</string>
+    <string name="tracker_call_this">เรียกสัญญาณเรียกขานนี้</string>
+    <string name="tracker_show_info_mode">โหมดคำแนะนำ</string>
+    <string name="tracker_tips_all">ทั้งหมด</string>
+    <string name="tracker_tips_new">ใหม่</string>
+    <string name="tracker_tips_none">ไม่มี</string>
+    <string name="tracker_show_cq_tips">แสดงคำแนะนำ CQ</string>
+    <string name="tracker_hide_cq_tips">ซ่อนคำแนะนำ CQ</string>
+    <string name="tracker_show_qsx_tips">แสดงคำแนะนำ QSX</string>
+    <string name="tracker_hide_qsx_tips">ซ่อนคำแนะนำ QSX</string>
+    <string name="track_sample_text_qsl">QSL</string>
+    <string name="tracker_sample_qso_text">QSO</string>
+    <string name="tracker_sample_qsx_text">QSX</string>
+    <string name="tracker_cq_text">CQ</string>
+    <string name="tracker_qso_text">QSO</string>
+    <string name="tracker_new_zone_found">พบโซนใหม่ : %s</string>
+    <string name="transmit_freeText">โปรดป้อนข้อความอิสระ</string>
+    <string name="trans_free_text_mode">โหมดข้อความอิสระ</string>
+    <string name="trans_standard_messge_mode">โหมดข้อความมาตรฐาน</string>
+    <string name="launch_supervision_ignore">ไม่สนใจ</string>
+    <string name="be_excluded_callsigns">คำนำหน้าสัญญาณเรียกขานที่ยกเว้น</string>
+    <string name="pl_callsing_prefix">โปรดป้อนคำนำหน้าสัญญาณเรียกขาน</string>
+    <string name="cache_clear">ล้าง</string>
+    <string name="cache_clear_title">ล้างแคช</string>
+    <string name="follow_callsign_data">สัญญาณเรียกขานที่ติดตาม</string>
+    <string name="cancel_clear_cache">ยกเลิก</string>
+    <string name="log_statistics_cache">จำนวนบันทึกที่แคช</string>
+    <string name="logs_cache">ข้อความที่ถอดรหัสแล้ว</string>
+    <string name="band_total">ย่าน \t รวม</string>
+    <string name="modifier_editor">ตัวปรับ CQ</string>
+    <string name="pl_input_modifier">โปรดป้อนตัวปรับ</string>
+    <string name="flex_start_atu">เริ่ม ATU</string>
+    <string name="flex_max_tx_power">กำลังส่ง TX สูงสุดถึง %d W</string>
+    <string name="flex_tune_power">กำลัง Tune ATU %d W</string>
+    <string name="html_flex_max_rf_power">กำลังส่ง TX สูงสุด</string>
+    <string name="html_atu_tune_power">กำลัง Tune ATU</string>
+    <string name="flex_atu_tune_off">TUNE ปิด</string>
+    <string name="flex_atu_tune_on">TUNE เปิด</string>
+    <string name="flex_logo_text">FlexRadio</string>
+    <string name="map_location_image">ระบุตำแหน่งบนแผนที่</string>
+    <string name="log_menu_location">ที่ตั้ง</string>
+    <string name="tracker_query_qso_info">กำลังค้นหาข้อมูล QSO…</string>
+    <string name="html_callsign_grid_total">รวม : %d</string>
+    <string name="html_message_page_count">จำนวนหน้า : %d</string>
+    <string name="html_message_page_size">ขนาดหน้า :</string>
+    <string name="html_message_query">ค้นหา</string>
+    <string name="config_save_swl">บันทึกที่ถอดรหัสแล้ว</string>
+    <string name="config_donot_save_swl">ไม่บันทึกที่ถอดรหัสแล้ว</string>
+    <string name="config_save_swl_qso">บันทึก QSO สำหรับ SWL</string>
+    <string name="config_donot_save_swl_qso">ไม่บันทึก QSO สำหรับ SWL</string>
+    <string name="html_query_swl_message">ค้นหาข้อความที่ถอดรหัสแล้ว (SWL)</string>
+    <string name="log_statistics_decode_msg">จำนวนข้อความที่ถอดรหัสทั้งหมด</string>
+    <string name="config_Syn_time">ซิงค์เวลา</string>
+    <string name="utc_time_sync_delay_slow">ซิงค์แล้ว นาฬิกาเครื่องช้ากว่า %d มิลลิวินาที</string>
+    <string name="utc_time_sync_delay_faster">ซิงค์แล้ว นาฬิกาเครื่องเร็วกว่า %d มิลลิวินาที</string>
+    <string name="config_clock_is_accurate">นาฬิกาเครื่องแม่นยำแล้ว!</string>
+    <string name="html_start_date_swl_message">วันที่เริ่มต้น</string>
+    <string name="html_end_date_swl_message">วันที่สิ้นสุด</string>
+    <string name="html_query_qso_swl">ค้นหา QSO ของ SWL</string>
+    <string name="html_export_csv">ส่งออกเป็น CSV</string>
+    <string name="html_export_text">ส่งออกเป็น TEXT</string>
+    <string name="html_export_adi">ส่งออกเป็น ADIF</string>
+    <string name="log_statistics_swl_qso">จำนวน QSO ที่ถอดรหัสทั้งหมด</string>
+    <string name="config_clear_swl_qso">QSO ที่ถอดรหัสแล้ว</string>
+    <string name="audioOutput">เอาต์พุตเสียง</string>
+    <string name="audio16_bit">16-bit int</string>
+    <string name="audio32_bit">32-bit float</string>
+    <string name="html_audio_bits">เสียง - ความลึกบิต</string>
+    <string name="audio_rate_12k">12 kHz</string>
+    <string name="audio_rate_24k">24 kHz</string>
+    <string name="audio_rate_48k">48 kHz</string>
+    <string name="audio_rate">อัตราสุ่มตัวอย่าง</string>
+    <string name="html_audio_rate">เสียง - อัตราสุ่มตัวอย่าง</string>
+    <string name="audio_bit_depth">ความลึกบิต</string>
+    <string name="callsign_help">callsign_th.txt</string>
+    <string name="maidenhead_help">maidenhead_th.txt</string>
+    <string name="frequency_help">frequency_th.txt</string>
+    <string name="transDelay_help">transDelay_th.txt</string>
+    <string name="timeoffset_help">timeoffset_th.txt</string>
+    <string name="pttdelay_help">pttdelay_th.txt</string>
+    <string name="operationBand_help">operationBand_th.txt</string>
+    <string name="controlMode_help">controlMode_th.txt</string>
+    <string name="civ_help">civ_help_th.txt</string>
+    <string name="rig_model_help">rig_model_help_th.txt</string>
+    <string name="launch_supervision_help">launch_supervision_th.txt</string>
+    <string name="no_response_help">no_response_help_th.txt</string>
+    <string name="auto_follow_help">auto_follow_help_th.txt</string>
+    <string name="connectMode_help">connectMode_th.txt</string>
+    <string name="excludeCallsign_help">excludeCallsign_th.txt</string>
+    <string name="swlMode_help">swlMode_th.txt</string>
+    <string name="audio_output_help">audio_output_help_th.txt</string>
+    <string name="deep_mode_help">decode_help_th.txt</string>
+    <string name="clear_cache_data_help">clear_cache_data_th.txt</string>
+    <string name="html_query_logs">ค้นหาบันทึก</string>
+    <string name="html_qso_all">ทั้งหมด</string>
+    <string name="html_qso_source">แหล่งข้อมูล</string>
+    <string name="html_qso_unconfirmed">ยังไม่ยืนยัน</string>
+    <string name="html_qso_confirmed">ยืนยันแล้ว</string>
+    <string name="html_qso_raw_log">บันทึกภายในเครื่อง</string>
+    <string name="html_qso_external_logs">บันทึกภายนอก</string>
+    <string name="html_qso_external">ภายนอก</string>
+    <string name="html_qso_raw">บันทึกภายในเครื่อง</string>
+    <string name="html_protocol">โปรโตคอล</string>
+    <string name="html_comment">ความคิดเห็น</string>
+    <string name="decode_mode_text">โหมดถอดรหัส</string>
+    <string name="fast_mode">ถอดรหัสเร็ว</string>
+    <string name="deep_mode">ถอดรหัสลึก</string>
+    <string name="export_null">ส่งออกผ่าน WebUI ด้วยเว็บเบราว์เซอร์ของอุปกรณ์อื่นใน LAN เดียวกัน \n โปรดเชื่อมต่อ Wi‑Fi ที่ใช้งานได้</string>
+    <string name="null_task_html">ไม่มีงานนี้!</string>
+    <string name="log_importing_html">กำลังนำเข้า...</string>
+    <string name="log_import_finished_html">เสร็จแล้ว!</string>
+    <string name="import_read_error_count_html">บรรทัดที่ผิดพลาด: %d</string>
+    <string name="import_new_count_html">เพิ่ม QSL: %d</string>
+    <string name="import_update_count_html">อัปเดต QSL: %d</string>
+    <string name="import_invalid_count_html">QSL ที่ไม่ถูกต้อง: %d</string>
+    <string name="import_progress_html">"ความคืบหน้า: "</string>
+    <string name="import_readed_html">QSL ที่ตรวจสอบแล้ว: %d</string>
+    <string name="import_canceled_html">ยกเลิกแล้ว!</string>
+    <string name="import_cancel_button">หยุด</string>
+    <string name="qsl_query_log_menu">บันทึก (%s)</string>
+    <string name="message_list_simple_mode">โหมดรายการแบบง่าย</string>
+    <string name="message_list_standard_mode">โหมดรายการมาตรฐาน</string>
+    <string name="config_msg_mode">โหมดข้อความ</string>
+    <string name="config_msg_std_mode">มาตรฐาน</string>
+    <string name="config_msg_simple_mode">แบบง่าย</string>
+    <string name="message_mode_help">messageMode_th.txt</string>
+    <string name="pl_select_xiegu_radio">โปรดเลือก XIEGU Radio ที่ใช้งานได้</string>
+    <string name="x6100_packet_lost">แพ็กเก็ตหาย: %d</string>
+    <string name="xiegu_name_label">XIEGU</string>
+    <string name="xiegu_ping_value">Ping: %d ms</string>
+    <string name="xiegu_start_atu">เริ่ม ATU</string>
+    <string name="xiegu_atu_on">ATU เปิด</string>
+    <string name="xiegu_atu_off">ATU ปิด</string>
+    <string name="xiegu_band_str">ย่าน : %s</string>
+    <string name="alc_low_alert">คำเตือน! ALC ต่ำเกินไป</string>
+    <string name="xiegu_meter_info">S.Meter: %.1f dBm\nSWR: %s\nALC: %.1f\nVolt: %.1fV\nTX power: %.1f W\nMax tx power: %.1f\nTX volume:%d%%</string>
+    <string name="serial_connect_no_access">ไม่สามารถเชื่อมต่อพอร์ตอนุกรมได้ โปรดยืนยันว่าคุณมีสิทธิ์เข้าถึงอุปกรณ์ USB!</string>
+    <string name="serial_connect_failed">เปิดพอร์ตอนุกรมไม่สำเร็จ!</string>
+    <string name="serial_no_driver">ไม่สามารถเชื่อมต่อพอร์ตอนุกรม ไม่พบพอร์ตอนุกรม!</string>
+    <string name="serial_data_bits">บิตข้อมูล</string>
+    <string name="serial_parity">บิต parity</string>
+    <string name="serial_parity_none">ไม่มี</string>
+    <string name="serial_parity_odd">คี่</string>
+    <string name="serial_parity_even">คู่</string>
+    <string name="serial_parity_mark">Mark</string>
+    <string name="serial_parity_space">Space</string>
+    <string name="serial_stop_bits">บิตหยุด</string>
+    <string name="serial_default">ค่าเริ่มต้น</string>
+    <string name="serial_setting_help">serial_help_th.txt</string>
+    <string name="tcp_connect_closed">การเชื่อมต่อเครือข่ายถูกตัดแล้ว</string>
+    <string name="share_logs">แชร์บันทึก</string>
+    <string name="config_clear_share_data">ลบไฟล์แคช</string>
+    <string name="preparing_log_data">กำลังเตรียมข้อมูลบันทึก…</string>
+    <string name="total_logs">มีบันทึกทั้งหมด %d รายการ</string>
+    <string name="get_log_no">ดาวน์โหลดบันทึกแล้ว %d รายการ</string>
+    <string name="write_file_error">เกิดข้อผิดพลาดขณะเขียนไฟล์: %s</string>
+    <string name="import_share_failed">นำเข้าข้อมูลบันทึกล้มเหลว! %s</string>
+    <string name="preparing_import_logs">กำลังเตรียมนำเข้าบันทึก…</string>
+    <string name="share_logs_been_read">อ่านบันทึกแล้ว %d รายการ</string>
+    <string name="share_import_log_data">กำลังนำเข้าข้อมูลบันทึก…</string>
+    <string name="cloudlog_settings">การตั้งค่า Cloudlog</string>
+    <string name="config_enable_cloudlog">เปิดการซิงค์ Cloudlog</string>
+    <string name="cloudlog_addr">ที่อยู่เซิร์ฟเวอร์</string>
+    <string name="cloudlog_api_key">API Key</string>
+    <string name="test_cloudlog_config">ทดสอบ</string>
+    <string name="cloudlog_station_id">ID สถานี</string>
+    <string name="cloudlog_help">cloudlog_th.txt</string>
+    <string name="pass">ผ่าน!</string>
+    <string name="fail">ไม่ผ่าน!</string>
+    <string name="testing">กำลังทดสอบ…</string>
+    <string name="test">ทดสอบ</string>
+    <string name="qrz_settings">การตั้งค่า QRZ.com</string>
+    <string name="qrz_api_key">API KEY</string>
+    <string name="config_enable_qrz">เปิดการซิงค์ QRZ</string>
+    <string name="qrz_help">qrz_th.txt</string>
+    <string name="alram_switch">สวิตช์เตือน</string>
+    <string name="swr_switch_on" translatable="false">SWR On</string>
+    <string name="swr_switch_off" translatable="false">SWR Off</string>
+    <string name="alc_switch_on" translatable="false">ALC On</string>
+    <string name="alc_switch_off" translatable="false">ALC Off</string>
+
+    <string name="import_log_downloads">นำเข้าบันทึก</string>
+    <string name="export_log_downloads">ส่งออกบันทึก</string>
+    <string name="web_port">พอร์ตเว็บ</string>
+    <string name="pl_web_port">7050</string>
+    <string name="faq_web_port">พอร์ต HTTP ของเว็บอินเทอร์เฟซ ค่าเริ่มต้นคือ 7050 เปลี่ยนหากพอร์ตถูกใช้งาน ช่วงที่รองรับ: 1024-65535</string>
+    <string name="bearing">ทิศทาง</string>
+    <string name="send_tune_on_freq_change">ส่ง TUNE เมื่อเปลี่ยนความถี่</string>
+    <string name="tune_command_label">คำสั่ง TUNE 1C 01 02</string>
+    <string name="switch_on">เปิด</string>
+    <string name="switch_off">ปิด</string>
+    <!-- Settings: Clear Call Hist on Freq Change -->
+    <string name="config_clear_call_hist_on_freq_change">ล้างประวัติการเรียกเมื่อเปลี่ยนความถี่</string>
+    <string name="faq_clear_call_hist_on_freq_change">เมื่อเปิดใช้งาน จะล้างบัฟเฟอร์ประวัติการเรียกโดยอัตโนมัติหลังเปลี่ยนความถี่วิทยุและคำสั่ง TUNE เพื่อป้องกันการเรียกสัญญาณเรียกขานเก่าบนความถี่ใหม่</string>
+
+    <string name="accept_dx_calls">ยอมรับการเรียก DX (Fox/Hound)</string>
+    <string name="accept_dx_calls_summary">เปิดใช้การถอดรหัส multistream 76 บิตและคิวการตอบกลับ</string>
+
+    <string name="multiple_answers_title">การตอบหลายรายการ</string>
+    <string name="multiple_ans_ignore">ไม่สนใจ</string>
+    <string name="multiple_ans_dx">DX</string>
+    <string name="multiple_ans_remember">จำไว้</string>
+
+    <!-- Navigation menu titles -->
+    <string name="nav_menu_title_scan">สแกน</string>
+
+</resources>

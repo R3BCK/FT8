@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FT8CN</string>
+    <string name="nav_menu_title_call_list">內容</string>
+    <string name="nav_menu_title_decode_list">解碼</string>
+    <string name="nav_menu_title_my_calling">呼叫</string>
+    <string name="nav_menu_title_history">通聯記錄</string>
+    <string name="nav_menu_title_config">設定</string>
+    <string name="map_name" translatable="false">nightUSGS4Layer.sqlite</string>
+
+    <string name="run_decode">開始解碼</string>
+    <string name="db">dB</string>
+    <string name="dt">Δt</string>
+    <string name="locate">位置</string>
+    <string name="message">訊息</string>
+    <string name="freq">頻率</string>
+    <string name="decode">解碼</string>
+    <string name="delete">刪除</string>
+    <string name="sequence">序</string>
+    <string name="dist">距離</string>
+    <string name="location">位置</string>
+    <string name="mycall">呼號</string>
+    <string name="pl_mycall">請輸入呼號</string>
+    <string name="headGrid">梅登黑德網格</string>
+    <string name="pl_grid">請輸入梅登黑德網格</string>
+    <string name="decoding">解碼中…</string>
+    <string name="send">發射</string>
+    <string name="check">檢查</string>
+    <string name="sendFreq">發射頻率</string>
+    <string name="sendDefaultFreq">音頻頻率</string>
+    <string name="pl_sendFreq">音頻頻率範圍 0~2900</string>
+    <string name="transmitting">發射中…</string>
+    <string name="synFrequency">鎖定 發射=接收</string>
+    <string name="spectrum">頻譜</string>
+    <string name="pl_trans_delay">發射延遲時間 (毫秒)</string>
+    <string name="tran_delay">發射延遲</string>
+
+    <string name="timeOffset">手動時間偏移</string>
+    <string name="help">說明</string>
+    <string name="scroll_down">▾</string>
+    <string name="about_me">關於 FT8CN</string>
+
+    <string name="connectMode">控制</string>
+    <string name="VOX">VOX</string>
+    <string name="CAT">CAT</string>
+    <string name="operationBand">頻率</string>
+    <string name="civ_address">CI-V</string>
+    <string name="pl_civ_address">設備的 CI-V 地址</string>
+    <string name="serial_port">序列埠</string>
+    <string name="bau_rate">波特率</string>
+    <string name="pl_select_serial_port">請選擇序列埠</string>
+    <string name="close">關閉</string>
+    <string name="rig_name">設備</string>
+    <string name="debug">除錯</string>
+    <string name="logo_image">FT8CN</string>
+    <string name="RTS">RTS</string>
+    <string name="FAQ">常見問題</string>
+    <string name="launch_supervision">發射監視</string>
+    <string name="no_response_count">無回應</string>
+    <string name="break_launch">已停止</string>
+    <string name="follow_cq">自動追蹤 CQ</string>
+    <string name="auto_call_follow">自動呼叫追蹤</string>
+    <string name="DTR">DTR</string>
+    <string name="launch">發射</string>
+    <string name="export">匯出</string>
+    <string name="view_style">檢視模式</string>
+    <string name="ptt_delay">PTT 延遲</string>
+    <string name="filter">篩選</string>
+    <string name="pl_filter">請選擇篩選條件</string>
+    <string name="filter_all">顯示全部</string>
+    <string name="filter_is_qsl">顯示已確認</string>
+    <string name="filter_none_qsl">顯示未確認</string>
+    <string name="cable_connect">USB</string>
+    <string name="bluetooth_connect">藍牙</string>
+    <string name="cable_mode">連接類型</string>
+    <string name="pl_select_bluetooth">請選擇可用的藍牙裝置</string>
+    <string name="bluetooth_set">藍牙設定</string>
+    <string name="spp_device">藍牙 SPP 裝置</string>
+    <string name="headset_device">藍牙耳機</string>
+    <string name="disconnect_rig">設備連接已中斷</string>
+    <string name="connected_rig">設備連接成功</string>
+    <string name="current_frequency">目前頻率：%s</string>
+    <string name="radio_communication_error">與設備通訊錯誤：%s</string>
+    <string name="does_not_support_recording">藍牙裝置不支援錄音</string>
+    <string name="bluetooth_headset_mode">進入藍牙耳機模式</string>
+    <string name="bluetooth_Headset_mode_cancelled">退出藍牙耳機模式</string>
+
+    <string name="version_info">FT8CN 版本 %s\nBG7YOZ\n%s</string>
+
+    <string name="exit">退出</string>
+    <string name="cancel">取消</string>
+    <string name="exit_confirmation">確定要退出嗎？</string>
+
+    <!-- FT8Message -->
+    <string name="std_msg">標準訊息</string>
+    <string name="none_std_msg">非標準呼叫</string>
+    <string name="free_text">自由文字</string>
+    <string name="dXpedition">DX 遠征</string>
+    <string name="field_day">野外通訊日</string>
+    <string name="telemetry">遙測</string>
+    <string name="rtty_ru_msg">RTTY RU</string>
+
+    <!-- Config bar -->
+    <string name="offset_time_sec">%.1f 秒</string>
+
+    <!-- Spectrum -->
+    <string name="decoding_takes_milliseconds">解碼耗時：%d 毫秒</string>
+    <string name="sound_frequency_is_set_to">音頻頻率設定為 %d Hz</string>
+    <string name="de_noise">降噪</string>
+    <string name="raw_spectrum_data">原始</string>
+    <string name="markMessage">顯示訊息</string>
+    <string name="unMarkMessage">隱藏訊息</string>
+
+    <!-- Bluetooth device dialog -->
+    <string name="select_bluetooth_device">選擇藍牙裝置：%s</string>
+
+    <!-- PTT delay milliseconds -->
+    <string name="milliseconds">%d 毫秒</string>
+    <!-- No reply count -->
+    <string name="ignore">忽略</string>
+    <string name="times">%d 次呼叫</string>
+
+    <!-- Calling bar -->
+    <string name="sound_frequency_is">頻率：%.0f Hz</string>
+    <string name="target_callsign">目標：%s</string>
+    <string name="transmission_sequence">順序：%d</string>
+    <string name="message_count">訊息(%d)</string>
+
+    <!-- Log export bar -->
+    <string name="export_info">請使用同一區域網路下其他裝置的網頁瀏覽器，從背景匯出。\n在瀏覽器中輸入網址：\nhttp://%s:%d</string>
+    <!-- TX watchdog -->
+    <string name="minutes">%d 分鐘</string>
+
+    <!-- TX watchdog -->
+    <string name="freq_syn">鎖定 發射=接收</string>
+    <string name="freq_asyn">發射/接收分離</string>
+    <string name="auto_follow_cq">自動追蹤 CQ</string>
+    <string name="not_concerned_about_CQ">不追蹤 CQ</string>
+    <string name="automatic_call_following">已自動追蹤呼叫</string>
+    <string name="do_not_call_the_following_callsign">未追蹤呼叫</string>
+
+    <!-- Decode bar -->
+    <string name="message_count_count">訊息(%d/%d)</string>
+    <string name="average_offset_seconds">平均偏移：%.2f 秒</string>
+    <string name="my_grid">網格：%s</string>
+
+    <!-- Decode list -->
+    <string name="tracking_receiver">追蹤接收 %s(%s)</string>
+    <string name="calling_receiver">呼叫接收 %s(%s)</string>
+    <string name="reply_to">回覆 %s(%s)</string>
+    <string name="tracking">追蹤 %s(%s)</string>
+    <string name="calling">呼叫 %s(%s)</string>
+
+    <!-- Grid distance calculation -->
+    <string name="distance">%.0f 公里</string>
+
+    <!-- Log list -->
+    <string name="confirmed">已確認</string>
+    <string name="unconfirmed">未確認</string>
+    <string name="lotw_confirmation">LoTW 已確認</string>
+    <string name="manual_confirmation">手動確認</string>
+    <string name="log_start_time">開始時間：%s</string>
+    <string name="log_end_time">結束時間：%s</string>
+    <string name="log_last_time">最後通聯：%s</string>
+    <string name="log_grid">網格：%s</string>
+    <string name="log_mode">模式：%s</string>
+    <string name="log_cancel_confirmation">取消確認 (%s)</string>
+    <string name="log_manual_confirmation">手動確認 (%s)</string>
+
+    <!-- QSL log list -->
+    <string name="qsl_grid">網格：%s</string>
+    <string name="qsl_start_time">開始時間：%s</string>
+    <string name="qsl_end_time">結束時間：%s</string>
+    <string name="qsl_rst_rcvd">接收 RST：%s</string>
+    <string name="html_rst_rcvd">接收 RST</string>
+    <string name="qsl_rst_sent">發送 RST：%s</string>
+    <string name="html_rst_sent">發送 RST</string>
+    <string name="qsl_band">頻段：%s</string>
+    <string name="qsl_freq">頻率：%s</string>
+    <string name="qsl_mode">模式：%s</string>
+    <string name="qsl_lotw_confirmation">LoTW 已確認</string>
+    <string name="qsl_manual_confirmation">手動確認</string>
+    <string name="qsl_unconfirmed">未確認</string>
+    <string name="qsl_cancel_confirmation">取消確認 (%s)</string>
+    <string name="qsl_manual_confirmation_s">手動確認 (%s)</string>
+    <string name="qsl_qrz_confirmation_s">QRZ (%s)</string>
+
+    <!-- QSL record -->
+    <string name="qsl_record_import_time">匯入時間：%s</string>
+
+    <!-- HTML -->
+    <string name="html_track_operation_information">監控操作資訊</string>
+    <string name="html_track_callsign_hash_table">監控呼號雜湊表</string>
+    <string name="html_trace_parsed_messages">監控已解析訊息</string>
+    <string name="html_trace_callsign_and_grid_correspondence_table">監控呼號與網格對應表</string>
+    <string name="html_query_communication_message">查詢通聯</string>
+    <string name="html_query_configuration_information">查詢設定資訊</string>
+    <string name="html_query_all_table">查詢所有資料表</string>
+    <string name="html_manage_tracking_callsign">管理追蹤的呼號</string>
+    <string name="html_manage_communication_callsigns">管理通聯呼號</string>
+    <string name="html_show_communication_callsigns">顯示通聯呼號</string>
+    <string name="html_export_log">匯出記錄</string>
+    <string name="html_import_log">匯入記錄</string>
+    <string name="html_to_the_third_party">匯出記錄（用於備份及上傳記錄至第三方平台確認）</string>
+    <string name="html_from_jtdx_lotw">匯出記錄（用於備份、上傳記錄至第三方平台確認、同步 JTDX 記錄及同步 LoTW 確認。建議使用 JTDX、LoTW、Log32 和 N1mm 的 ADI 資料進行同步）</string>
+    <string name="html_return">返回</string>
+
+    <string name="html_import_count">ADI 檔案中有 %d 筆記錄，已匯入 %d 筆記錄。%d 筆記錄格式不正確。</string>
+    <string name="html_import_failed">匯入失敗！%s</string>
+    <string name="html_illegal_command">無效指令，上傳失敗！</string>
+    <string name="html_callsign">呼號</string>
+    <string name="html_operation">操作</string>
+    <string name="html_delete">刪除</string>
+    <string name="html_qsl_start_time">通聯開始時間</string>
+    <string name="html_qsl_start_day">通聯開始日期</string>
+    <string name="html_qsl_end_time">通聯結束時間</string>
+    <string name="html_qsl_end_date">通聯結束日期</string>
+    <string name="html_qsl_mode">模式</string>
+    <string name="html_qsl_grid">網格</string>
+    <string name="html_qsl_band">頻段</string>
+    <string name="html_qsl_freq">頻率</string>
+    <string name="html_qsl_manual_confirmation">手動確認</string>
+    <string name="html_qsl_lotw_confirmation">LoTW 已確認</string>
+    <string name="html_qsl_data_source">資料來源</string>
+    <string name="html_qsl_import_data_from_external">來自外部</string>
+    <string name="html_qsl_native_data">本機</string>
+    <string name="html_variable">變數</string>
+    <string name="html_value">數值</string>
+    <string name="html_my_callsign">呼號</string>
+    <string name="html_my_grid">網格</string>
+    <string name="html_decodes_in_this_cycle">本週期解碼數量</string>
+    <string name="html_total_number_of_decodes">總解碼數量</string>
+    <string name="html_in_recording_state">錄音狀態</string>
+    <string name="html_recording">錄音中</string>
+    <string name="html_no_recording">未錄音</string>
+    <string name="html_time_consuming_for_this_decoding">本次解碼耗時</string>
+    <string name="html_milliseconds">%d 毫秒</string>
+    <string name="html_average_delay_time_of_this_cycle">本週期平均延遲</string>
+    <string name="html_seconds">%.3f 秒</string>
+    <string name="html_sound_frequency">訊號音頻頻率</string>
+    <string name="html_transmission_delay_time">發射延遲</string>
+    <string name="html_launch_supervision">發射監視</string>
+    <string name="html_automatic_program_run_time">自動程式執行時間</string>
+    <string name="html_no_reply_limit">無回應限制</string>
+    <string name="html_no_reply_count">無回應計數</string>
+    <string name="html_mark_message">在水瀑布圖上標記訊息</string>
+    <string name="html_marking_message">標記訊息</string>
+    <string name="html_do_not_mark_message">取消標記訊息</string>
+    <string name="html_operation_mode">操作模式</string>
+    <string name="html_civ_address">CIV 地址</string>
+    <string name="html_baud_rate">波特率</string>
+    <string name="html_connect_mode">連接模式</string>
+    <string name="html_available_serial_ports">可用序列埠</string>
+    <string name="html_serial_port_in_use">使用中序列埠</string>
+    <string name="html_instruction_set">指令集</string>
+    <string name="html_target_callsign">目標呼號</string>
+    <string name="html_sequential">順序</string>
+
+    <string name="html_carrier_frequency_band">頻段</string>
+    <string name="html_radio_frequency">設備頻率</string>
+    <string name="html_successful_callsign">%s 中通聯成功的呼號</string>
+    <string name="html_tracking_callsign">追蹤呼號</string>
+    <string name="html_tracking_qso_information">追蹤通聯資訊</string>
+
+    <string name="html_hash_value">雜湊值</string>
+    <string name="html_please_select">請選擇</string>
+    <string name="html_adi_format">ADI 格式的記錄檔案</string>
+    <string name="html_file_in_other_format">及其他格式的檔案可能無法正常解析和匯入。</string>
+    <string name="html_time">時間</string>
+    <string name="html_total">總計</string>
+    <string name="html_all_logs">所有記錄</string>
+    <string name="html_download">下載</string>
+    <string name="html_today_log">今日記錄</string>
+    <string name="html_download_all">下載全部</string>
+    <string name="html_download_unconfirmed">下載未確認</string>
+    <string name="callsign_error">呼號不正確！</string>
+    <string name="adjust_call_target">調整呼叫目標：%s</string>
+    <string name="use_wspr2_error">目前使用的頻率 %s 是 WSPR-2 使用的頻率，禁止發射 FT8 訊號！</string>
+    <string name="none">無</string>
+    <string name="connect_bluetooth_spp">正在連接藍牙序列埠 %s…</string>
+    <string name="bluetooth_is_connected">藍牙裝置 %s 已連接</string>
+    <string name="bluetooth_is_diconnected">藍牙裝置 %s 已斷開</string>
+    <string name="sound_source_switched">音訊來源已切換</string>
+    <string name="bluetooth_turn_off">藍牙已關閉</string>
+    <string name="bluetooth_turn_on">藍牙已開啟</string>
+    <string name="can_not_location">無法定位，請確認是否已授予定位權限</string>
+    <string name="statistical">統計</string>
+    <string name="count_up">遞增</string>
+    <string name="count_down">遞減</string>
+    <string name="band_statistics">頻段統計</string>
+    <string name="count_total">總計：%d</string>
+    <string name="confirmation_statistics">記錄確認統計</string>
+    <string name="count_confirmed">已確認</string>
+    <string name="count_unconfirmed">未確認</string>
+    <string name="count_total_logs">總計：%d</string>
+    <string name="count_confirmed_log">已確認：%d</string>
+    <string name="count_lotw_confirmed">LoTW 已確認：%d</string>
+    <string name="count_manually_confirmed">手動確認：%d</string>
+    <string name="count_confirmed_proportion">確認比例：%.1f%%</string>
+    <string name="count_tota_callsigns">呼號總數：%d</string>
+    <string name="count_zone">區域 %s</string>
+    <string name="itu_completion_statistics">ITU 完成統計</string>
+    <string name="count_incomplete">未完成</string>
+    <string name="count_completed">已完成</string>
+    <string name="count_total_itu">ITU 總數：%d\n已完成 %d(%.1f%%)</string>
+    <string name="count_itu_completed_scale">ITU 統計</string>
+    <string name="count_cqzone_completed">CQ 區域統計</string>
+    <string name="count_total_cqzone">CQ 區域總數：%d \n 已完成：%d(%.1f%%)</string>
+    <string name="count_cqzone_proportion">CQ 區域統計</string>
+    <string name="dxcc_completion_statistics">DXCC 統計</string>
+    <string name="count_total_dxcc">DXCC 總數：%d \n已完成：%d(%.1f%%)</string>
+    <string name="count_dxcc_proportion">DXCC 統計</string>
+    <string name="callsign_info">呼號：%s\n位置：%s\nCQ 區域：%d\nITU 區域：%d\n洲別：%s\n經緯度：%.2f,%.2f\n時區：%.0f\nDXCC 前綴：%s</string>
+    <string name="maximum_distance">最遠距離\n\n%s</string>
+    <string name="minimum_distance">最近距離\n\n%s</string>
+    <string name="count_distance_info">最遠距離：%.0f 公里 (%s)\n最近距離：%.0f 公里 (%s)</string>
+    <string name="distance_statistics">距離統計</string>
+    <string name="dxcc_image">dxcc</string>
+    <string name="cqzone">cq 區域</string>
+    <string name="itu_image">itu 區域</string>
+    <string name="recorder_cannot_record">無法錄音，請檢查權限。%s</string>
+    <string name="recorder_stop_record_error">停止錄音錯誤！%s</string>
+    <string name="delete_confirmation">刪除確認</string>
+    <string name="are_you_sure_delete">確定要刪除嗎？</string>
+    <string name="ok_confirmed">確定</string>
+    <string name="network_connect">網路</string>
+    <string name="pl_select_flex_radio">請選擇可用的 Flex Radio</string>
+    <string name="select_flex_device">選擇 FlexRadio 裝置：%s</string>
+    <string name="select_xiegu_device">選擇 XieguRadio 裝置：%s</string>
+    <string name="only_flex_supported">目前僅支援 FlexRadio 或 ICom 系列！</string>
+    <string name="flex_connect_failed">FlexRadio %s 連接失敗！</string>
+    <string name="xiegu_connect_failed">XieguRadio %s 連接失敗！</string>
+    <string name="init_flex_operation">%s 正在初始化操作</string>
+    <string name="html_max_message_cache">快取訊息最大數量</string>
+    <string name="instruction_failed">指令 %s 執行失敗。訊息：%s</string>
+    <string name="instruction_success">指令 %s 執行成功</string>
+    <string name="flex_ip_addr">IP</string>
+    <string name="pl_input_flex_ip">請輸入 IP 地址</string>
+    <string name="connect_flex">連接 FlexRadio</string>
+    <string name="connect_flex_ip">正在連接 FlexRadio %s…</string>
+    <string name="get_new_version">取得最新版本</string>
+    <string name="login_icom_help">登入 ICom</string>
+    <string name="pl_input_icom_port">控制埠(UDP)</string>
+    <string name="icom_port">埠</string>
+    <string name="icom_user_name">使用者</string>
+    <string name="pl_icom_user">請輸入使用者名稱</string>
+    <string name="icom_password">密碼</string>
+    <string name="pl_icom_password">請輸入密碼</string>
+    <string name="icom_login_button">登入</string>
+    <string name="show_password">顯示密碼</string>
+    <string name="connect_icom_ip">正在連接 ICom 無線電 %s…</string>
+    <string name="connect_xiegu_ip">正在連接 XIEGU 無線電 %s…</string>
+    <string name="network_exception">%s：網路傳輸異常：%s</string>
+    <string name="login_succeed">登入成功！</string>
+    <string name="loging_failed">登入失敗，使用者名稱或密碼無效</string>
+    <string name="data_stream">資料串流</string>
+    <string name="control_stream">控制串流</string>
+    <string name="civ_stream">CI-V 串流</string>
+    <string name="audio_stream">音訊串流</string>
+    <string name="alc_high_alert">警告！ALC 過高</string>
+
+    <string name="swr_high_alert">警告！SWR 過高</string>
+    <string name="volume_percent">訊號輸出強度 %.0f %%</string>
+    <string name="signal_strength">訊號輸出強度</string>
+    <string name="html_distance">距離</string>
+    <string name="html_callsign_qth">呼號的 QTH</string>
+    <string name="html_update_time">更新時間</string>
+    <string name="grid_tracker_new_grid">發現新網格：%s</string>
+    <string name="tracker_open_messages">開啟訊息</string>
+    <string name="tracker_close_messages">關閉訊息</string>
+    <string name="tracker_decoded_new">已解碼 %d 則訊息</string>
+    <string name="tracker_call_this">呼叫此呼號</string>
+    <string name="tracker_show_info_mode">提示模式</string>
+    <string name="tracker_tips_all">全部</string>
+    <string name="tracker_tips_new">新</string>
+    <string name="tracker_tips_none">無</string>
+    <string name="tracker_show_cq_tips">顯示 CQ 提示</string>
+    <string name="tracker_hide_cq_tips">隱藏 CQ 提示</string>
+    <string name="tracker_show_qsx_tips">顯示 QSX 提示</string>
+    <string name="tracker_hide_qsx_tips">隱藏 QSX 提示</string>
+    <string name="track_sample_text_qsl">QSL</string>
+    <string name="tracker_sample_qso_text">QSO</string>
+    <string name="tracker_sample_qsx_text">QSX</string>
+    <string name="tracker_cq_text">CQ</string>
+    <string name="tracker_qso_text">QSO</string>
+    <string name="tracker_new_zone_found">發現新區域：%s</string>
+    <string name="transmit_freeText">請輸入自由文字</string>
+    <string name="trans_free_text_mode">自由文字模式</string>
+    <string name="trans_standard_messge_mode">標準訊息模式</string>
+    <string name="launch_supervision_ignore">忽略</string>
+    <string name="be_excluded_callsigns">排除的呼號前綴</string>
+    <string name="pl_callsing_prefix">請輸入呼號前綴</string>
+    <string name="cache_clear">清除</string>
+    <string name="cache_clear_title">清除快取</string>
+    <string name="follow_callsign_data">已追蹤的呼號</string>
+    <string name="cancel_clear_cache">取消</string>
+    <string name="log_statistics_cache">快取的記錄數量</string>
+    <string name="logs_cache">已解碼訊息</string>
+    <string name="band_total">頻段 \t 總計</string>
+    <string name="modifier_editor">CQ 修飾詞</string>
+    <string name="pl_input_modifier">請輸入修飾詞</string>
+    <string name="flex_start_atu">啟動 ATU</string>
+    <string name="flex_max_tx_power">最大發射功率至 %d W</string>
+    <string name="flex_tune_power">ATU 調諧功率 %d W</string>
+    <string name="html_flex_max_rf_power">最大發射功率</string>
+    <string name="html_atu_tune_power">ATU 調諧功率</string>
+    <string name="flex_atu_tune_off">調諧關閉</string>
+    <string name="flex_atu_tune_on">調諧開啟</string>
+    <string name="flex_logo_text">FlexRadio</string>
+    <string name="map_location_image">在地圖上定位</string>
+    <string name="log_menu_location">位置</string>
+    <string name="tracker_query_qso_info">查詢通聯資料中…</string>
+    <string name="html_callsign_grid_total">總計：%d</string>
+    <string name="html_message_page_count">頁數：%d</string>
+    <string name="html_message_page_size">每頁數量：</string>
+    <string name="html_message_query">搜尋</string>
+    <string name="config_save_swl">儲存已解碼</string>
+    <string name="config_donot_save_swl">不儲存已解碼</string>
+    <string name="config_save_swl_qso">為 SWL 儲存 QSO</string>
+    <string name="config_donot_save_swl_qso">不為 SWL 儲存 QSO</string>
+    <string name="html_query_swl_message">查詢已解碼訊息(SWL)</string>
+    <string name="log_statistics_decode_msg">已解碼訊息總數</string>
+    <string name="config_Syn_time">同步時間</string>
+    <string name="utc_time_sync_delay_slow">已同步。本機時鐘落後 %d 毫秒</string>
+    <string name="utc_time_sync_delay_faster">已同步。本機時鐘超前 %d 毫秒</string>
+    <string name="config_clock_is_accurate">本機時鐘準確！</string>
+    <string name="html_start_date_swl_message">開始日期</string>
+    <string name="html_end_date_swl_message">結束日期</string>
+    <string name="html_query_qso_swl">查詢 SWL 的通聯</string>
+    <string name="html_export_csv">匯出為 CSV 檔案</string>
+    <string name="html_export_text">匯出為 TEXT 檔案</string>
+    <string name="html_export_adi">匯出為 ADIF 檔案</string>
+    <string name="log_statistics_swl_qso">已解碼 QSO 總數</string>
+    <string name="config_clear_swl_qso">已解碼 QSO</string>
+    <string name="audioOutput">音訊輸出</string>
+    <string name="audio16_bit">16 位元整數</string>
+    <string name="audio32_bit">32 位元浮點數</string>
+    <string name="html_audio_bits">音訊 - 位元深度</string>
+    <string name="audio_rate_12k">12kHz</string>
+    <string name="audio_rate_24k">24kHz</string>
+    <string name="audio_rate_48k">48kHz</string>
+    <string name="audio_rate">取樣率</string>
+    <string name="html_audio_rate">音訊 - 取樣率</string>
+    <string name="audio_bit_depth">位元深度</string>
+    <string name="callsign_help">callsign_zh_TW.txt</string>
+    <string name="maidenhead_help">maidenhead_zh_TW.txt</string>
+    <string name="frequency_help">frequency_zh_TW.txt</string>
+    <string name="transDelay_help">transDelay_zh_TW.txt</string>
+    <string name="timeoffset_help">timeoffset_zh_TW.txt</string>
+    <string name="pttdelay_help">pttdelay_zh_TW.txt</string>
+    <string name="operationBand_help">operationBand_zh_TW.txt</string>
+    <string name="controlMode_help">controlMode_zh_TW.txt</string>
+    <string name="civ_help">civ_help_zh_TW.txt</string>
+    <string name="rig_model_help">rig_model_help_zh_TW.txt</string>
+    <string name="launch_supervision_help">launch_supervision_zh_TW.txt</string>
+    <string name="no_response_help">no_response_help_zh_TW.txt</string>
+    <string name="auto_follow_help">auto_follow_help_zh_TW.txt</string>
+    <string name="connectMode_help">connectMode_zh_TW.txt</string>
+    <string name="excludeCallsign_help">excludeCallsign_zh_TW.txt</string>
+    <string name="swlMode_help">swlMode_zh_TW.txt</string>
+    <string name="audio_output_help">audio_output_help_zh_TW.txt</string>
+    <string name="deep_mode_help">decode_help_zh_TW.txt</string>
+    <string name="clear_cache_data_help">clear_cache_data_zh_TW.txt</string>
+    <string name="html_query_logs">查詢記錄</string>
+    <string name="html_qso_all">全部</string>
+    <string name="html_qso_source">資料來源</string>
+    <string name="html_qso_unconfirmed">未確認</string>
+    <string name="html_qso_confirmed">已確認</string>
+    <string name="html_qso_raw_log">本機記錄</string>
+    <string name="html_qso_external_logs">外部記錄</string>
+    <string name="html_qso_external">外部</string>
+    <string name="html_qso_raw">本機記錄</string>
+    <string name="html_protocol">協定</string>
+    <string name="html_comment">備註</string>
+    <string name="decode_mode_text">解碼模式</string>
+    <string name="fast_mode">快速解碼</string>
+    <string name="deep_mode">深度解碼</string>
+    <string name="export_null">透過同一區域網路下其他裝置的網頁瀏覽器從 WebUI 匯出 \n 請連接有效的 Wi-Fi</string>
+    <string name="null_task_html">任務不存在！</string>
+    <string name="log_importing_html">匯入中…</string>
+    <string name="log_import_finished_html">完成！</string>
+    <string name="import_read_error_count_html">錯誤行數：%d</string>
+    <string name="import_new_count_html">新增 QSL：%d</string>
+    <string name="import_update_count_html">更新 QSL：%d</string>
+    <string name="import_invalid_count_html">無效 QSL：%d</string>
+    <string name="import_progress_html">"進度："</string>
+    <string name="import_readed_html">已驗證 QSL：%d</string>
+    <string name="import_canceled_html">已取消！</string>
+    <string name="import_cancel_button">停止</string>
+    <string name="qsl_query_log_menu">記錄 (%s)</string>
+    <string name="message_list_simple_mode">簡易列表模式</string>
+    <string name="message_list_standard_mode">標準列表模式</string>
+    <string name="config_msg_mode">訊息模式</string>
+    <string name="config_msg_std_mode">標準</string>
+    <string name="config_msg_simple_mode">簡易</string>
+    <string name="message_mode_help">messageMode_zh_TW.txt</string>
+    <string name="pl_select_xiegu_radio">請選擇可用的 XIEGU 無線電</string>
+    <string name="x6100_packet_lost">封包遺失：%d</string>
+    <string name="xiegu_name_label">XIEGU</string>
+    <string name="xiegu_ping_value">Ping：%d 毫秒</string>
+    <string name="xiegu_start_atu">啟動 ATU</string>
+    <string name="xiegu_atu_on">ATU 開啟</string>
+    <string name="xiegu_atu_off">ATU 關閉</string>
+    <string name="xiegu_band_str">頻段：%s</string>
+    <string name="alc_low_alert">警告！ALC 過低</string>
+    <string name="xiegu_meter_info">S.Meter：%.1f dBm\nSWR：%s\nALC：%.1f\n電壓：%.1fV\n發射功率：%.1f W\n最大發射功率：%.1f\n發射音量：%d%%</string>
+    <string name="serial_connect_no_access">無法連接序列埠，請確認是否具有存取 USB 裝置的權限！</string>
+    <string name="serial_connect_failed">序列埠開啟失敗！</string>
+    <string name="serial_no_driver">無法連接序列埠，未找到序列埠！</string>
+    <string name="serial_data_bits">資料位元</string>
+    <string name="serial_parity">同位檢查位元</string>
+    <string name="serial_parity_none">無</string>
+    <string name="serial_parity_odd">奇</string>
+    <string name="serial_parity_even">偶</string>
+    <string name="serial_parity_mark">Mark</string>
+    <string name="serial_parity_space">Space</string>
+    <string name="serial_stop_bits">停止位元</string>
+    <string name="serial_default">預設</string>
+    <string name="serial_setting_help">serial_help_zh_TW.txt</string>
+    <string name="tcp_connect_closed">網路連接已斷開</string>
+    <string name="share_logs">分享記錄</string>
+    <string name="config_clear_share_data">刪除快取檔案</string>
+    <string name="preparing_log_data">準備記錄資料中…</string>
+    <string name="total_logs">共有 %d 筆記錄</string>
+    <string name="get_log_no">已下載 %d 筆記錄</string>
+    <string name="write_file_error">寫入檔案時發生錯誤：%s</string>
+    <string name="import_share_failed">匯入記錄資料失敗！%s</string>
+    <string name="preparing_import_logs">準備匯入記錄中…</string>
+    <string name="share_logs_been_read">已讀取 %d 筆記錄</string>
+    <string name="share_import_log_data">匯入記錄資料中…</string>
+    <string name="cloudlog_settings">Cloudlog 設定</string>
+    <string name="config_enable_cloudlog">啟用 Cloudlog 同步</string>
+    <string name="cloudlog_addr">伺服器地址</string>
+    <string name="cloudlog_api_key">Apikey</string>
+    <string name="test_cloudlog_config">測試</string>
+    <string name="cloudlog_station_id">電台 ID</string>
+    <string name="cloudlog_help">cloudlog_zh_TW.txt</string>
+    <string name="pass">通過！</string>
+    <string name="fail">失敗！</string>
+    <string name="testing">測試中…</string>
+    <string name="test">測試</string>
+    <string name="qrz_settings">QRZ.com 設定</string>
+    <string name="qrz_api_key">API KEY</string>
+    <string name="config_enable_qrz">啟用 QRZ 同步</string>
+    <string name="qrz_help">qrz_zh_TW.txt</string>
+    <string name="alram_switch">警報開關</string>
+    <string name="swr_switch_on" translatable="false">SWR On</string>
+    <string name="swr_switch_off" translatable="false">SWR Off</string>
+    <string name="alc_switch_on" translatable="false">ALC On</string>
+    <string name="alc_switch_off" translatable="false">ALC Off</string>
+
+    <string name="import_log_downloads">匯入記錄</string>
+    <string name="export_log_downloads">匯出記錄</string>
+    <string name="web_port">Web 埠</string>
+    <string name="pl_web_port">7050</string>
+    <string name="faq_web_port">網頁介面的 HTTP 伺服器埠。預設為 7050。如果埠被佔用請更改。範圍：1024-65535。</string>
+    <string name="bearing">方位</string>
+    <string name="send_tune_on_freq_change">頻率變更時發送 TUNE</string>
+    <string name="tune_command_label">TUNE 指令 1C 01 02</string>
+    <string name="switch_on">開啟</string>
+    <string name="switch_off">關閉</string>
+    <!-- Settings: Clear Call Hist on Freq Change -->
+    <string name="config_clear_call_hist_on_freq_change">更改頻率時清除呼叫歷史</string>
+    <string name="faq_clear_call_hist_on_freq_change">啟用後，會在電台頻率更改及執行 TUNE 指令後自動清除呼叫歷史緩衝區。可避免在新頻率上呼叫舊呼號。</string>
+
+    <string name="accept_dx_calls">接受 DX 呼叫（Fox/Hound）</string>
+    <string name="accept_dx_calls_summary">啟用 76 位元多串流解碼與回應佇列</string>
+
+    <string name="multiple_answers_title">多重回應</string>
+    <string name="multiple_ans_ignore">忽略</string>
+    <string name="multiple_ans_dx">DX</string>
+    <string name="multiple_ans_remember">記住</string>
+
+    <!-- Navigation menu titles -->
+    <string name="nav_menu_title_scan">掃描</string>
+</resources>

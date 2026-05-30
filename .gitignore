@@ -1,0 +1,27 @@
+
+ft8CN/app/.gitignore 2
+ft8CN/.gitignore 2
+.FT8CN软件设计初衷及使用说明0.88版.pdf.icloud
+ft8CN/app/src/main/assets/.nightUSGS4Layer.sqlite.icloud
+push_to_github.bat
+./push_to_github.bat
+# Build files
+/build/
+/app/build/
+*.apk
+*.aab
+
+# Local config
+local.properties
+.gradle/
+.idea/
+*.iml
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Sensitive data (если есть)
+*.jks
+*.keystore
+secrets.json

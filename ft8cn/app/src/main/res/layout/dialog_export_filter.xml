@@ -1,0 +1,159 @@
+<!-- File: ft8cn/app/src/main/res/layout/dialog_export_filter.xml -->
+<!-- [MODIFIED] Quick date buttons aligned to left edge (gravity="start") -->
+<!-- Created: 2026-05-14, Modified: 2026-05-14 per user request -->
+<!-- Comments in Russian, ASCII only -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Start Date filter -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="From (YYYY-MM-DD)"
+        android:textStyle="bold"
+        android:paddingBottom="4dp" />
+
+    <!-- Full-width input field -->
+    <EditText
+        android:id="@+id/etStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="2024-01-01"
+        android:inputType="date"
+        android:maxLines="1" />
+
+    <!-- Quick date buttons row (below input, left-aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/btnToday"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TODAY"
+            android:textSize="11sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
+
+        <Button
+            android:id="@+id/btnYesterday"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="YESTERDAY"
+            android:textSize="11sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="4dp" />
+
+        <Button
+            android:id="@+id/btnDayBefore"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DAY BEFORE"
+            android:textSize="11sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="4dp" />
+
+    </LinearLayout>
+
+    <!-- End Date filter -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To (YYYY-MM-DD)"
+        android:textStyle="bold"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
+    <EditText
+        android:id="@+id/etEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Leave empty for latest record"
+        android:inputType="date"
+        android:maxLines="1" />
+
+    <!-- Band filter -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Band"
+        android:textStyle="bold"
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp" />
+    <Spinner
+        android:id="@+id/spBand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Callsign prefix filter (optional) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Callsign Prefix (optional)"
+        android:textStyle="bold"
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp" />
+    <EditText
+        android:id="@+id/etCallsignPrefix"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="R3, UA1, etc."
+        android:inputType="textCapCharacters"
+        android:maxLines="1" />
+
+    <!-- Button bar: EXPORT ALL (left), Cancel+Export (right) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20dp"
+        android:gravity="center_vertical">
+
+        <!-- EXPORT ALL button - left aligned -->
+        <Button
+            android:id="@+id/btnExportAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EXPORT ALL"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_gravity="start" />
+
+        <!-- Spacer to push Cancel/Export to the right -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Cancel and Export buttons - right aligned -->
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_marginEnd="8dp" />
+        <Button
+            android:id="@+id/btnExport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Export"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

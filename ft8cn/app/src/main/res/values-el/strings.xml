@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FT8CN</string>
+    <string name="nav_menu_title_call_list">Περιεχόμενο</string>
+    <string name="nav_menu_title_decode_list">Αποκωδικοποίηση</string>
+    <string name="nav_menu_title_my_calling">Κλήση</string>
+    <string name="nav_menu_title_history">Καταγραφές QSO</string>
+    <string name="nav_menu_title_config">Ρυθμίσεις</string>
+    <string name="map_name" translatable="false">nightUSGS4Layer.sqlite</string>
+
+    <string name="run_decode">Έναρξη αποκωδικοποίησης</string>
+    <string name="db">dB</string>
+    <string name="dt">Δt</string>
+    <string name="locate">Θέση</string>
+    <string name="message">Μήνυμα</string>
+    <string name="freq">Συχνότητα</string>
+    <string name="decode">Αποκωδικοποίηση</string>
+    <string name="delete">Διαγραφή</string>
+    <string name="sequence">Σειρά</string>
+    <string name="dist">Απόσταση</string>
+    <string name="location">Τοποθεσία</string>
+    <string name="mycall">Διακριτικό</string>
+    <string name="pl_mycall">Παρακαλώ εισάγετε διακριτικό</string>
+    <string name="headGrid">Πλέγμα Maidenhead</string>
+    <string name="pl_grid">Παρακαλώ εισάγετε πλέγμα Maidenhead</string>
+    <string name="decoding">Αποκωδικοποίηση…</string>
+    <string name="send">Εκπομπή</string>
+    <string name="check">Έλεγχος</string>
+    <string name="sendFreq">Συχνότητα εκπομπής</string>
+    <string name="sendDefaultFreq">Συχνότητα ήχου</string>
+    <string name="pl_sendFreq">Εύρος συχνότητας ήχου 0~2900</string>
+    <string name="transmitting">Εκπομπή …</string>
+    <string name="synFrequency">Κλείδωμα Εκπομπή=Λήψη</string>
+    <string name="spectrum">Φάσμα</string>
+    <string name="pl_trans_delay">Χρόνος καθυστέρησης εκπομπής (χλστδ)</string>
+    <string name="tran_delay">Καθυστέρηση εκπομπής</string>
+
+    <string name="timeOffset">Χειροκίνητη χρονική μετατόπιση</string>
+    <string name="help">Βοήθεια</string>
+    <string name="scroll_down">▾</string>
+    <string name="about_me">Σχετικά με το FT8CN</string>
+
+    <string name="connectMode">Έλεγχος</string>
+    <string name="VOX">VOX</string>
+    <string name="CAT">CAT</string>
+    <string name="operationBand">Συχνότητα</string>
+    <string name="civ_address">CI-V</string>
+    <string name="pl_civ_address">Διεύθυνση CI-V του ραδιοφώνου</string>
+    <string name="serial_port">Σειριακή θύρα</string>
+    <string name="bau_rate">Ρυθμός baud</string>
+    <string name="pl_select_serial_port">Παρακαλώ επιλέξτε σειριακή θύρα</string>
+    <string name="close">Κλείσιμο</string>
+    <string name="rig_name">Ραδιόφωνο</string>
+    <string name="debug">Αποσφαλμάτωση</string>
+    <string name="logo_image">FT8CN</string>
+    <string name="RTS">RTS</string>
+    <string name="FAQ">Συχνές Ερωτήσεις</string>
+    <string name="launch_supervision">Watchdog εκπομπής</string>
+    <string name="no_response_count">Χωρίς απάντηση</string>
+    <string name="break_launch">Διακόπηκε</string>
+    <string name="follow_cq">Αυτόματη παρακολούθηση CQ</string>
+    <string name="auto_call_follow">Αυτόματη κλήση παρακολούθησης</string>
+    <string name="DTR">DTR</string>
+    <string name="launch">Εκπομπή</string>
+    <string name="export">Εξαγωγή</string>
+    <string name="view_style">Λειτουργία προβολής</string>
+    <string name="ptt_delay">Καθυστέρηση PTT</string>
+    <string name="filter">Φίλτρο</string>
+    <string name="pl_filter">Παρακαλώ επιλέξτε φίλτρο</string>
+    <string name="filter_all">Εμφάνιση όλων</string>
+    <string name="filter_is_qsl">Εμφάνιση επιβεβαιωμένων</string>
+    <string name="filter_none_qsl">Εμφάνιση μη επιβεβαιωμένων</string>
+    <string name="cable_connect">USB</string>
+    <string name="bluetooth_connect">Bluetooth</string>
+    <string name="cable_mode">Τύπος σύνδεσης</string>
+    <string name="pl_select_bluetooth">Παρακαλώ επιλέξτε διαθέσιμη συσκευή Bluetooth</string>
+    <string name="bluetooth_set">Ρυθμίσεις Bluetooth</string>
+    <string name="spp_device">Συσκευή Bluetooth SPP</string>
+    <string name="headset_device">Ακουστικό Bluetooth</string>
+    <string name="disconnect_rig">Η σύνδεση με το ραδιόφωνο διακόπηκε</string>
+    <string name="connected_rig">Η σύνδεση με το ραδιόφωνο επιτεύχθηκε.</string>
+    <string name="current_frequency">Τρέχουσα συχνότητα: %s</string>
+    <string name="radio_communication_error">Σφάλμα επικοινωνίας με το ραδιόφωνο: %s</string>
+    <string name="does_not_support_recording">Η συσκευή Bluetooth δεν υποστηρίζει εγγραφή</string>
+    <string name="bluetooth_headset_mode">Είσοδος σε λειτουργία ακουστικού Bluetooth</string>
+    <string name="bluetooth_Headset_mode_cancelled">Έξοδος από λειτουργία ακουστικού Bluetooth</string>
+
+    <string name="version_info">FT8CN Έκδοση %s\nBG7YOZ\n%s</string>
+
+    <string name="exit">Έξοδος</string>
+    <string name="cancel">Ακύρωση</string>
+    <string name="exit_confirmation">Είστε βέβαιοι ότι θέλετε να εξέλθετε;</string>
+
+    <!-- FT8Message -->
+    <string name="std_msg">Τυπικό μήνυμα</string>
+    <string name="none_std_msg">Μη τυπική κλήση</string>
+    <string name="free_text">Ελεύθερο κείμενο</string>
+    <string name="dXpedition">DXpedition</string>
+    <string name="field_day">Field Day</string>
+    <string name="telemetry">Τηλεμετρία</string>
+    <string name="rtty_ru_msg">RTTY RU</string>
+
+    <!-- Config bar -->
+    <string name="offset_time_sec">%.1f Δευτ</string>
+
+    <!-- Spectrum -->
+    <string name="decoding_takes_milliseconds">Αποκωδικοποιήθηκε: %d χλστδ</string>
+    <string name="sound_frequency_is_set_to">Η συχνότητα ήχου είναι %d Hz</string>
+    <string name="de_noise">Απαλοιφή θορύβου</string>
+    <string name="raw_spectrum_data">Πρωτότυπο</string>
+    <string name="markMessage">Εμφάνιση μηνυμάτων</string>
+    <string name="unMarkMessage">Απόκρυψη μηνυμάτων</string>
+
+    <!-- Bluetooth device dialog -->
+    <string name="select_bluetooth_device">Επιλογή συσκευής Bluetooth: %s</string>
+
+    <!-- PTT delay milliseconds -->
+    <string name="milliseconds">%d χλστδ</string>
+    <!-- No reply count -->
+    <string name="ignore">Αγνόηση</string>
+    <string name="times">%d κλήσεις</string>
+
+    <!-- Calling bar -->
+    <string name="sound_frequency_is">Συχνότητα: %.0f Hz</string>
+    <string name="target_callsign">Στόχος: %s</string>
+    <string name="transmission_sequence">Ακολουθία: %d</string>
+    <string name="message_count">Μηνύματα(%d)</string>
+
+    <!-- Log export bar -->
+    <string name="export_info">Παρακαλώ χρησιμοποιήστε τον περιηγητή ιστού άλλης συσκευής για εξαγωγή από το παρασκήνιο υπό το ίδιο LAN με αυτή τη συσκευή.\nΕισάγετε τη διεύθυνση URL στον περιηγητή:\nhttp://%s:%d</string>
+    <!-- TX watchdog -->
+    <string name="minutes">%d Λεπτά</string>
+
+    <!-- TX watchdog -->
+    <string name="freq_syn">Κλείδωμα Εκπομπή=Λήψη</string>
+    <string name="freq_asyn">Διαχωρισμός Εκπομπής/Λήψης</string>
+    <string name="auto_follow_cq">Αυτόματη παρακολούθηση CQ</string>
+    <string name="not_concerned_about_CQ">Χωρίς παρακολούθηση CQ</string>
+    <string name="automatic_call_following">Αυτόματη κλήση παρακολούθησης</string>
+    <string name="do_not_call_the_following_callsign">Χωρίς κλήση παρακολούθησης</string>
+
+    <!-- Decode bar -->
+    <string name="message_count_count">Μηνύματα(%d/%d)</string>
+    <string name="average_offset_seconds">Μέση μετατόπιση: %.2f Δευτ</string>
+    <string name="my_grid">Πλέγμα: %s</string>
+
+    <!-- Decode list -->
+    <string name="tracking_receiver">Παρακολούθηση δέκτη %s(%s)</string>
+    <string name="calling_receiver">Κλήση δέκτη %s(%s)</string>
+    <string name="reply_to">Απάντηση %s(%s)</string>
+    <string name="tracking">Παρακολούθηση %s(%s)</string>
+    <string name="calling">Κλήση %s(%s)</string>
+
+    <!-- Grid distance calculation -->
+    <string name="distance">%.0f χλμ</string>
+
+    <!-- Log list -->
+    <string name="confirmed">Επιβεβαιωμένο</string>
+    <string name="unconfirmed">Μη επιβεβαιωμένο</string>
+    <string name="lotw_confirmation">Επιβεβαιωμένο από LoTW</string>
+    <string name="manual_confirmation">Χειροκίνητα επιβεβαιωμένο</string>
+    <string name="log_start_time">Ώρα έναρξης: %s</string>
+    <string name="log_end_time">Ώρα λήξης: %s</string>
+    <string name="log_last_time">Τελευταίο QSO: %s</string>
+    <string name="log_grid">Πλέγμα: %s</string>
+    <string name="log_mode">Τρόπος: %s</string>
+    <string name="log_cancel_confirmation">Ακύρωση επιβεβαίωσης (%s)</string>
+    <string name="log_manual_confirmation">Χειροκίνητη επιβεβαίωση (%s)</string>
+
+    <!-- QSL log list -->
+    <string name="qsl_grid">Πλέγμα: %s</string>
+    <string name="qsl_start_time">Ώρα έναρξης: %s</string>
+    <string name="qsl_end_time">Ώρα λήξης: %s</string>
+    <string name="qsl_rst_rcvd">RST ληφθέν: %s</string>
+    <string name="html_rst_rcvd">RST ληφθέν</string>
+    <string name="qsl_rst_sent">RST απεσταλμένο: %s</string>
+    <string name="html_rst_sent">RST απεσταλμένο</string>
+    <string name="qsl_band">Ζώνη: %s</string>
+    <string name="qsl_freq">Συχνότητα: %s</string>
+    <string name="qsl_mode">Τρόπος: %s</string>
+    <string name="qsl_lotw_confirmation">Επιβεβαιωμένο από LoTW</string>
+    <string name="qsl_manual_confirmation">Χειροκίνητα επιβεβαιωμένο</string>
+    <string name="qsl_unconfirmed">Μη επιβεβαιωμένο</string>
+    <string name="qsl_cancel_confirmation">Ακύρωση επιβεβαίωσης (%s)</string>
+    <string name="qsl_manual_confirmation_s">Χειροκίνητη επιβεβαίωση (%s)</string>
+    <string name="qsl_qrz_confirmation_s">QRZ (%s)</string>
+
+    <!-- QSL record -->
+    <string name="qsl_record_import_time">Ώρα εισαγωγής: %s</string>
+
+    <!-- HTML -->
+    <string name="html_track_operation_information">Παρακολούθηση πληροφοριών λειτουργίας</string>
+    <string name="html_track_callsign_hash_table">Παρακολούθηση πίνακα κατακερματισμού διακριτικών</string>
+    <string name="html_trace_parsed_messages">Παρακολούθηση αναλυμένων μηνυμάτων</string>
+    <string name="html_trace_callsign_and_grid_correspondence_table">Παρακολούθηση αντιστοιχίας διακριτικού και πλέγματος</string>
+    <string name="html_query_communication_message">Ερώτημα QSO</string>
+    <string name="html_query_configuration_information">Ερώτημα πληροφοριών ρύθμισης</string>
+    <string name="html_query_all_table">Ερώτημα όλων των πινάκων δεδομένων</string>
+    <string name="html_manage_tracking_callsign">Διαχείριση παρακολουθούμενων διακριτικών</string>
+    <string name="html_manage_communication_callsigns">Διαχείριση διακριτικών QSO</string>
+    <string name="html_show_communication_callsigns">Εμφάνιση διακριτικών QSO</string>
+    <string name="html_export_log">Εξαγωγή καταγραφής</string>
+    <string name="html_import_log">Εισαγωγή καταγραφής</string>
+    <string name="html_to_the_third_party">Εξαγωγή καταγραφής (για αντίγραφο ασφαλείας και μεταφόρτωση καταγραφών σε πλατφόρμα τρίτου για επιβεβαίωση)</string>
+    <string name="html_from_jtdx_lotw">Εξαγωγή καταγραφών (χρησιμοποιείται για αντίγραφο ασφαλείας, μεταφόρτωση καταγραφών σε πλατφόρμα τρίτου για επιβεβαίωση, συγχρονισμό καταγραφών JTDX και συγχρονισμό LoTW για επιβεβαίωση. Συνιστάται η χρήση δεδομένων ADI από JTDX, LoTW, Log32 και N1mm για συγχρονισμό)</string>
+    <string name="html_return">Επιστροφή</string>
+
+    <string name="html_import_count">Υπάρχουν %d καταγραφές στο αρχείο ADI και %d εισαχθείσες καταγραφές. Η μορφή %d καταγραφών είναι λανθασμένη.</string>
+    <string name="html_import_failed">Η εισαγωγή απέτυχε! %s</string>
+    <string name="html_illegal_command">Μη έγκυρη εντολή, η μεταφόρτωση απέτυχε!</string>
+    <string name="html_callsign">Διακριτικό</string>
+    <string name="html_operation">Λειτουργία</string>
+    <string name="html_delete">Διαγραφή</string>
+    <string name="html_qsl_start_time">Ώρα έναρξης QSO</string>
+    <string name="html_qsl_start_day">Ημερομηνία έναρξης QSO</string>
+    <string name="html_qsl_end_time">Ώρα λήξης QSO</string>
+    <string name="html_qsl_end_date">Ημερομηνία λήξης QSO</string>
+    <string name="html_qsl_mode">Τρόπος</string>
+    <string name="html_qsl_grid">Πλέγμα</string>
+    <string name="html_qsl_band">Ζώνη</string>
+    <string name="html_qsl_freq">Συχνότητα</string>
+    <string name="html_qsl_manual_confirmation">Χειροκίνητα επιβεβαιωμένο</string>
+    <string name="html_qsl_lotw_confirmation">Επιβεβαιωμένο από LoTW</string>
+    <string name="html_qsl_data_source">Πηγή δεδομένων</string>
+    <string name="html_qsl_import_data_from_external">Από εξωτερική πηγή</string>
+    <string name="html_qsl_native_data">Εγγενές</string>
+    <string name="html_variable">Μεταβλητές</string>
+    <string name="html_value">Τιμές</string>
+    <string name="html_my_callsign">Διακριτικό</string>
+    <string name="html_my_grid">Πλέγμα</string>
+    <string name="html_decodes_in_this_cycle">Αριθμός αποκωδικοποιήσεων σε αυτόν τον κύκλο</string>
+    <string name="html_total_number_of_decodes">Συνολικός αριθμός αποκωδικοποιήσεων</string>
+    <string name="html_in_recording_state">Κατάσταση εγγραφής</string>
+    <string name="html_recording">Εγγραφή</string>
+    <string name="html_no_recording">Χωρίς εγγραφή</string>
+    <string name="html_time_consuming_for_this_decoding">Χρόνος για αυτή την αποκωδικοποίηση</string>
+    <string name="html_milliseconds">%d χιλιοστά του δευτερολέπτου</string>
+    <string name="html_average_delay_time_of_this_cycle">Μέση καθυστέρηση αυτής της περιόδου</string>
+    <string name="html_seconds">%.3f δευτερόλεπτα</string>
+    <string name="html_sound_frequency">Συχνότητα ήχου του σήματος</string>
+    <string name="html_transmission_delay_time">Καθυστέρηση εκπομπής</string>
+    <string name="html_launch_supervision">Watchdog εκπομπής</string>
+    <string name="html_automatic_program_run_time">Χρόνος αυτόματης εκτέλεσης προγράμματος</string>
+    <string name="html_no_reply_limit">Όριο χωρίς απάντηση</string>
+    <string name="html_no_reply_count">Μετρητής χωρίς απάντηση</string>
+    <string name="html_mark_message">Σήμανση μηνυμάτων στο διάγραμμα καταρράκτη</string>
+    <string name="html_marking_message">Σήμανση μηνυμάτων</string>
+    <string name="html_do_not_mark_message">Αναίρεση σήμανσης μηνυμάτων</string>
+    <string name="html_operation_mode">Λειτουργία λειτουργίας</string>
+    <string name="html_civ_address">Διεύθυνση CIV</string>
+    <string name="html_baud_rate">Ρυθμός baud</string>
+    <string name="html_connect_mode">Λειτουργία σύνδεσης</string>
+    <string name="html_available_serial_ports">Διαθέσιμες σειριακές θύρες</string>
+    <string name="html_serial_port_in_use">Σειριακή θύρα σε χρήση</string>
+    <string name="html_instruction_set">Σύνολο εντολών</string>
+    <string name="html_target_callsign">Διακριτικό στόχου</string>
+    <string name="html_sequential">Ακολουθιακό</string>
+
+    <string name="html_carrier_frequency_band">Ζώνη</string>
+    <string name="html_radio_frequency">Συχνότητα ραδιοφώνου</string>
+    <string name="html_successful_callsign">Επιτυχημένα διακριτικά QSO στο %s</string>
+    <string name="html_tracking_callsign">Παρακολούθηση διακριτικού</string>
+    <string name="html_tracking_qso_information">Παρακολούθηση πληροφοριών QSO</string>
+
+    <string name="html_hash_value">Κατακερματισμός</string>
+    <string name="html_please_select">Παρακαλώ επιλέξτε</string>
+    <string name="html_adi_format">Αρχείο καταγραφής σε μορφή ADI</string>
+    <string name="html_file_in_other_format">και αρχεία σε άλλες μορφές ενδέχεται να μην αναλυθούν και να εισαχθούν κανονικά.</string>
+    <string name="html_time">Ώρα</string>
+    <string name="html_total">Σύνολο</string>
+    <string name="html_all_logs">Όλες οι καταγραφές</string>
+    <string name="html_download">Λήψη</string>
+    <string name="html_today_log">Καταγραφές σήμερα</string>
+    <string name="html_download_all">Λήψη όλων</string>
+    <string name="html_download_unconfirmed">Λήψη μη επιβεβαιωμένων</string>
+    <string name="callsign_error">Το διακριτικό είναι λανθασμένο!</string>
+    <string name="adjust_call_target">Προσαρμογή στόχου κλήσης: %s</string>
+    <string name="use_wspr2_error">Η τρέχουσα χρησιμοποιούμενη συχνότητα %s είναι η συχνότητα που χρησιμοποιείται από το wspr-2. Απαγορεύεται η εκπομπή σημάτων FT8!</string>
+    <string name="none">Κανένα</string>
+    <string name="connect_bluetooth_spp">Σύνδεση σειριακής θύρας Bluetooth %s …</string>
+    <string name="bluetooth_is_connected">Η συσκευή Bluetooth %s είναι συνδεδεμένη.</string>
+    <string name="bluetooth_is_diconnected">Η συσκευή Bluetooth %s αποσυνδέθηκε.</string>
+    <string name="sound_source_switched">Η πηγή ήχου έχει εναλλαχθεί.</string>
+    <string name="bluetooth_turn_off">Το Bluetooth είναι απενεργοποιημένο.</string>
+    <string name="bluetooth_turn_on">Το Bluetooth είναι ενεργοποιημένο.</string>
+    <string name="can_not_location">Αδυναμία εντοπισμού θέσης. Παρακαλώ επιβεβαιώστε εάν έχετε άδεια εντοπισμού θέσης.</string>
+    <string name="statistical">Στατιστικά</string>
+    <string name="count_up">Πάνω</string>
+    <string name="count_down">Κάτω</string>
+    <string name="band_statistics">Στατιστικά ζώνης</string>
+    <string name="count_total">Σύνολο: %d</string>
+    <string name="confirmation_statistics">Στατιστικά επιβεβαίωσης καταγραφών</string>
+    <string name="count_confirmed">Επιβεβαιωμένο</string>
+    <string name="count_unconfirmed">Μη επιβεβαιωμένο</string>
+    <string name="count_total_logs">Σύνολο: %d</string>
+    <string name="count_confirmed_log">Επιβεβαιωμένο: %d</string>
+    <string name="count_lotw_confirmed">Επιβεβαιωμένο από LoTW: %d</string>
+    <string name="count_manually_confirmed">Χειροκίνητα επιβεβαιωμένο: %d</string>
+    <string name="count_confirmed_proportion">Ποσοστό επιβεβαίωσης: %.1f%%</string>
+    <string name="count_tota_callsigns">Σύνολο διακριτικών: %d</string>
+    <string name="count_zone">Ζώνη %s</string>
+    <string name="itu_completion_statistics">Στατιστικά ολοκλήρωσης ITU</string>
+    <string name="count_incomplete">Μη ολοκληρωμένο</string>
+    <string name="count_completed">Ολοκληρωμένο</string>
+    <string name="count_total_itu">Σύνολο ITU: %d\nΟλοκληρωμένο %d(%.1f%%)</string>
+    <string name="count_itu_completed_scale">Στατιστικά ITU</string>
+    <string name="count_cqzone_completed">Στατιστικά Ζώνης CQ</string>
+    <string name="count_total_cqzone">Σύνολο Ζώνης CQ: %d \n Ολοκληρωμένο: %d(%.1f%%)</string>
+    <string name="count_cqzone_proportion">Στατιστικά Ζώνης CQ</string>
+    <string name="dxcc_completion_statistics">Στατιστικά DXCC</string>
+    <string name="count_total_dxcc">Σύνολο DXCC: %d \nΟλοκληρωμένο: %d(%.1f%%)</string>
+    <string name="count_dxcc_proportion">Στατιστικά DXCC</string>
+    <string name="callsign_info">Διακριτικό: %s\nΤοποθεσία: %s\nΖώνη CQ: %d\nΖώνη ITU: %d\nΉπειρος: %s\nΓεωγραφικό μήκος και πλάτος: %.2f,%.2f\nΖώνη ώρας: %.0f\nΠρόθεμα Dxcc: %s</string>
+    <string name="maximum_distance">Μέγιστη απόσταση\n\n%s</string>
+    <string name="minimum_distance">Ελάχιστη απόσταση\n\n%s</string>
+    <string name="count_distance_info">Μέγιστη απόσταση: %.0f χλμ (%s)\nΕλάχιστη απόσταση: %.0f χλμ (%s)</string>
+    <string name="distance_statistics">Στατιστικά απόστασης</string>
+    <string name="dxcc_image">dxcc</string>
+    <string name="cqzone">ζώνη cq</string>
+    <string name="itu_image">ζώνη itu</string>
+    <string name="recorder_cannot_record">Αδυναμία εγγραφής, παρακαλώ ελέγξτε τα δικαιώματα. %s</string>
+    <string name="recorder_stop_record_error">Σφάλμα διακοπής εγγραφής! %s</string>
+    <string name="delete_confirmation">Επιβεβαίωση διαγραφής</string>
+    <string name="are_you_sure_delete">Είστε βέβαιοι ότι θέλετε να διαγράψετε;</string>
+    <string name="ok_confirmed">Εντάξει</string>
+    <string name="network_connect">Δίκτυο</string>
+    <string name="pl_select_flex_radio">Παρακαλώ επιλέξτε διαθέσιμο Flex Radio</string>
+    <string name="select_flex_device">Επιλογή συσκευής FlexRadio: %s</string>
+    <string name="select_xiegu_device">Επιλογή συσκευής XieguRadio: %s</string>
+    <string name="only_flex_supported">Προς το παρόν υποστηρίζονται μόνο τα FlexRadio ή η σειρά ICom!</string>
+    <string name="flex_connect_failed">Η σύνδεση με το FlexRadio %s απέτυχε!</string>
+    <string name="xiegu_connect_failed">Η σύνδεση με το XieguRadio %s απέτυχε!</string>
+    <string name="init_flex_operation">Το %s αρχικοποιεί τη λειτουργία.</string>
+    <string name="html_max_message_cache">Μέγιστος αριθμός μηνυμάτων στη μνήμη</string>
+    <string name="instruction_failed">Η εντολή %s απέτυχε να εκτελεστεί. Μήνυμα: %s</string>
+    <string name="instruction_success">Η εντολή %s εκτελέστηκε με επιτυχία.</string>
+    <string name="flex_ip_addr">IP</string>
+    <string name="pl_input_flex_ip">Παρακαλώ εισάγετε διεύθυνση IP</string>
+    <string name="connect_flex">Σύνδεση FlexRadio</string>
+    <string name="connect_flex_ip">Σύνδεση με FlexRadio %s …</string>
+    <string name="get_new_version">Λήψη της τελευταίας έκδοσης</string>
+    <string name="login_icom_help">Σύνδεση στο ICom</string>
+    <string name="pl_input_icom_port">Θύρα ελέγχου (UDP)</string>
+    <string name="icom_port">Θύρα</string>
+    <string name="icom_user_name">Χρήστης</string>
+    <string name="pl_icom_user">Παρακαλώ εισάγετε όνομα χρήστη</string>
+    <string name="icom_password">Κωδικός πρόσβασης</string>
+    <string name="pl_icom_password">Παρακαλώ εισάγετε κωδικό πρόσβασης</string>
+    <string name="icom_login_button">Σύνδεση</string>
+    <string name="show_password">Ο κωδικός πρόσβασης είναι ορατός</string>
+    <string name="connect_icom_ip">Σύνδεση με ραδιόφωνο ICom %s …</string>
+    <string name="connect_xiegu_ip">Σύνδεση με ραδιόφωνο XIEGU %s …</string>
+    <string name="network_exception">%s: Εξαίρεση μετάδοσης δικτύου: %s</string>
+    <string name="login_succeed">Η σύνδεση επιτεύχθηκε!</string>
+    <string name="loging_failed">Η σύνδεση απέτυχε, μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης.</string>
+    <string name="data_stream">Ροή δεδομένων</string>
+    <string name="control_stream">Ροή ελέγχου</string>
+    <string name="civ_stream">Ροή CI-V</string>
+    <string name="audio_stream">Ροή ήχου</string>
+    <string name="alc_high_alert">Προειδοποίηση! Το ALC είναι πολύ υψηλό.</string>
+
+    <string name="swr_high_alert">Προειδοποίηση! Το SWR είναι πολύ υψηλό.</string>
+    <string name="volume_percent">Ισχύς εξόδου σήματος %.0f %%</string>
+    <string name="signal_strength">Ισχύς εξόδου σήματος</string>
+    <string name="html_distance">Απόσταση</string>
+    <string name="html_callsign_qth">QTH διακριτικού</string>
+    <string name="html_update_time">Ώρα ενημέρωσης</string>
+    <string name="grid_tracker_new_grid">Βρέθηκε νέο πλέγμα: %s</string>
+    <string name="tracker_open_messages">Άνοιγμα μηνυμάτων</string>
+    <string name="tracker_close_messages">Κλείσιμο μηνυμάτων</string>
+    <string name="tracker_decoded_new">Αποκωδικοποιήθηκαν %d μηνύματα.</string>
+    <string name="tracker_call_this">Κλήση αυτού του διακριτικού</string>
+    <string name="tracker_show_info_mode">Λειτουργία συμβουλών</string>
+    <string name="tracker_tips_all">Όλα</string>
+    <string name="tracker_tips_new">Νέα</string>
+    <string name="tracker_tips_none">Κανένα</string>
+    <string name="tracker_show_cq_tips">Εμφάνιση συμβουλών CQ</string>
+    <string name="tracker_hide_cq_tips">Απόκρυψη συμβουλών CQ</string>
+    <string name="tracker_show_qsx_tips">Εμφάνιση συμβουλών QSX</string>
+    <string name="tracker_hide_qsx_tips">Απόκρυψη συμβουλών QSX</string>
+    <string name="track_sample_text_qsl">QSL</string>
+    <string name="tracker_sample_qso_text">QSO</string>
+    <string name="tracker_sample_qsx_text">QSX</string>
+    <string name="tracker_cq_text">CQ</string>
+    <string name="tracker_qso_text">QSO</string>
+    <string name="tracker_new_zone_found">Βρέθηκε νέα ζώνη: %s</string>
+    <string name="transmit_freeText">Παρακαλώ εισάγετε ελεύθερο κείμενο</string>
+    <string name="trans_free_text_mode">Λειτουργία ελεύθερου κειμένου</string>
+    <string name="trans_standard_messge_mode">Λειτουργία τυπικού μηνύματος</string>
+    <string name="launch_supervision_ignore">Αγνόηση</string>
+    <string name="be_excluded_callsigns">Αποκλεισμένα προθέματα διακριτικών</string>
+    <string name="pl_callsing_prefix">Παρακαλώ εισάγετε τα προθέματα διακριτικών</string>
+    <string name="cache_clear">Καθαρισμός</string>
+    <string name="cache_clear_title">Καθαρισμός μνήμης</string>
+    <string name="follow_callsign_data">Παρακολουθούμενα διακριτικά</string>
+    <string name="cancel_clear_cache">Ακύρωση</string>
+    <string name="log_statistics_cache">Αριθμός καταγραφών στη μνήμη</string>
+    <string name="logs_cache">Αποκωδικοποιημένα μηνύματα</string>
+    <string name="band_total">Ζώνη \t Σύνολο</string>
+    <string name="modifier_editor">Τροποποιητής CQ</string>
+    <string name="pl_input_modifier">Παρακαλώ εισάγετε τροποποιητή</string>
+    <string name="flex_start_atu">Έναρξη ATU</string>
+    <string name="flex_max_tx_power">Μέγιστη ισχύς εκπομπής σε %d W</string>
+    <string name="flex_tune_power">Ισχύς ρύθμισης ATU %d W</string>
+    <string name="html_flex_max_rf_power">Μέγιστη ισχύς εκπομπής</string>
+    <string name="html_atu_tune_power">Ισχύς ρύθμισης ATU</string>
+    <string name="flex_atu_tune_off">ΡΥΘΜΙΣΗ ΑΝΕΝΕΡΓΗ</string>
+    <string name="flex_atu_tune_on">ΡΥΘΜΙΣΗ ΕΝΕΡΓΗ</string>
+    <string name="flex_logo_text">FlexRadio</string>
+    <string name="map_location_image">Εντοπισμός σε χάρτη</string>
+    <string name="log_menu_location">Τοποθεσία</string>
+    <string name="tracker_query_qso_info">Ερώτημα δεδομένων QSO…</string>
+    <string name="html_callsign_grid_total">Σύνολο: %d</string>
+    <string name="html_message_page_count">Αριθμός σελίδων: %d</string>
+    <string name="html_message_page_size">Μέγεθος σελίδας:</string>
+    <string name="html_message_query">Αναζήτηση</string>
+    <string name="config_save_swl">Αποθήκευση αποκωδικοποιημένων</string>
+    <string name="config_donot_save_swl">Να μην αποθηκεύονται αποκωδικοποιημένα</string>
+    <string name="config_save_swl_qso">Αποθήκευση QSO για SWL</string>
+    <string name="config_donot_save_swl_qso">Να μην αποθηκεύονται QSO για SWL</string>
+    <string name="html_query_swl_message">Ερώτημα αποκωδικοποιημένων μηνυμάτων (SWL)</string>
+    <string name="log_statistics_decode_msg">Συνολικός αριθμός αποκωδικοποιημένων μηνυμάτων</string>
+    <string name="config_Syn_time">Συγχρονισμός ώρας</string>
+    <string name="utc_time_sync_delay_slow">Συγχρονίστηκε. Το τοπικό ρολόι καθυστερεί κατά %d χιλιοστά του δευτερολέπτου</string>
+    <string name="utc_time_sync_delay_faster">Συγχρονίστηκε. Το τοπικό ρολόι προηγείται κατά %d χιλιοστά του δευτερολέπτου</string>
+    <string name="config_clock_is_accurate">Το τοπικό ρολόι είναι ακριβές!</string>
+    <string name="html_start_date_swl_message">Ημερομηνία έναρξης</string>
+    <string name="html_end_date_swl_message">Ημερομηνία λήξης</string>
+    <string name="html_query_qso_swl">Ερώτημα των QSO του SWL</string>
+    <string name="html_export_csv">Εξαγωγή σε αρχείο CSV</string>
+    <string name="html_export_text">Εξαγωγή σε αρχείο ΚΕΙΜΕΝΟΥ</string>
+    <string name="html_export_adi">Εξαγωγή σε αρχείο ADIF</string>
+    <string name="log_statistics_swl_qso">Συνολικός αριθμός αποκωδικοποιημένων QSO</string>
+    <string name="config_clear_swl_qso">Αποκωδικοποιημένα QSO</string>
+    <string name="audioOutput">Έξοδος ήχου</string>
+    <string name="audio16_bit">16-bit int</string>
+    <string name="audio32_bit">32-bit float</string>
+    <string name="html_audio_bits">Ήχος - βάθος bit</string>
+    <string name="audio_rate_12k">12kHz</string>
+    <string name="audio_rate_24k">24kHz</string>
+    <string name="audio_rate_48k">48kHz</string>
+    <string name="audio_rate">Ρυθμός δειγματοληψίας</string>
+    <string name="html_audio_rate">Ήχος - ρυθμός δειγματοληψίας</string>
+    <string name="audio_bit_depth">Βάθος bit</string>
+    <string name="callsign_help">callsign_el.txt</string>
+    <string name="maidenhead_help">maidenhead_el.txt</string>
+    <string name="frequency_help">frequency_el.txt</string>
+    <string name="transDelay_help">transDelay_el.txt</string>
+    <string name="timeoffset_help">timeoffset_el.txt</string>
+    <string name="pttdelay_help">pttdelay_el.txt</string>
+    <string name="operationBand_help">operationBand_el.txt</string>
+    <string name="controlMode_help">controlMode_el.txt</string>
+    <string name="civ_help">civ_help_el.txt</string>
+    <string name="rig_model_help">rig_model_help_el.txt</string>
+    <string name="launch_supervision_help">launch_supervision_el.txt</string>
+    <string name="no_response_help">no_response_help_el.txt</string>
+    <string name="auto_follow_help">auto_follow_help_el.txt</string>
+    <string name="connectMode_help">connectMode_el.txt</string>
+    <string name="excludeCallsign_help">excludeCallsign_el.txt</string>
+    <string name="swlMode_help">swlMode_el.txt</string>
+    <string name="audio_output_help">audio_output_help_el.txt</string>
+    <string name="deep_mode_help">decode_help_el.txt</string>
+    <string name="clear_cache_data_help">clear_cache_data_el.txt</string>
+    <string name="html_query_logs">Ερώτημα των καταγραφών</string>
+    <string name="html_qso_all">Όλα</string>
+    <string name="html_qso_source">Πηγές δεδομένων</string>
+    <string name="html_qso_unconfirmed">Μη επιβεβαιωμένο</string>
+    <string name="html_qso_confirmed">Επιβεβαιωμένο</string>
+    <string name="html_qso_raw_log">Τοπικές καταγραφές</string>
+    <string name="html_qso_external_logs">Εξωτερικές καταγραφές</string>
+    <string name="html_qso_external">Εξωτερικό</string>
+    <string name="html_qso_raw">Τοπική καταγραφή</string>
+    <string name="html_protocol">Πρωτόκολλο</string>
+    <string name="html_comment">Σχόλιο</string>
+    <string name="decode_mode_text">Λειτουργία αποκωδικοποίησης</string>
+    <string name="fast_mode">Γρήγορη αποκωδικοποίηση</string>
+    <string name="deep_mode">Βαθιά αποκωδικοποίηση</string>
+    <string name="export_null">Εξαγωγή από WebUI μέσω περιηγητή ιστού σε άλλη συσκευή υπό το ίδιο LAN \n Παρακαλώ συνδεθείτε σε έγκυρο Wi-Fi</string>
+    <string name="null_task_html">Η εργασία δεν υπάρχει!</string>
+    <string name="log_importing_html">Εισαγωγή…</string>
+    <string name="log_import_finished_html">Ολοκληρώθηκε!</string>
+    <string name="import_read_error_count_html">Γραμμές σφάλματος: %d</string>
+    <string name="import_new_count_html">Προστέθηκαν QSL: %d</string>
+    <string name="import_update_count_html">Ενημερώθηκαν QSL: %d</string>
+    <string name="import_invalid_count_html">Μη έγκυρα QSL: %d</string>
+    <string name="import_progress_html">"Πρόοδος: "</string>
+    <string name="import_readed_html">Επικυρωμένο QSL: %d</string>
+    <string name="import_canceled_html">Ακυρώθηκε!</string>
+    <string name="import_cancel_button">Διακοπή</string>
+    <string name="qsl_query_log_menu">Καταγραφή (%s)</string>
+    <string name="message_list_simple_mode">Λειτουργία απλής λίστας</string>
+    <string name="message_list_standard_mode">Λειτουργία τυπικής λίστας</string>
+    <string name="config_msg_mode">Λειτουργία μηνύματος</string>
+    <string name="config_msg_std_mode">Τυπική</string>
+    <string name="config_msg_simple_mode">Απλή</string>
+    <string name="message_mode_help">messageMode_el.txt</string>
+    <string name="pl_select_xiegu_radio">Παρακαλώ επιλέξτε διαθέσιμο ραδιόφωνο XIEGU</string>
+    <string name="x6100_packet_lost">Απώλεια πακέτων: %d</string>
+    <string name="xiegu_name_label">XIEGU</string>
+    <string name="xiegu_ping_value">Ping: %d χλστδ</string>
+    <string name="xiegu_start_atu">Έναρξη ATU</string>
+    <string name="xiegu_atu_on">ATU Ενεργό</string>
+    <string name="xiegu_atu_off">ATU Ανενεργό</string>
+    <string name="xiegu_band_str">Ζώνη: %s</string>
+    <string name="alc_low_alert">Προειδοποίηση! Το ALC είναι πολύ χαμηλό.</string>
+    <string name="xiegu_meter_info">S.Meter: %.1f dBm\nSWR: %s\nALC: %.1f\nΤάση: %.1fV\nΙσχύς εκπομπής: %.1f W\nΜέγιστη ισχύς εκπομπής: %.1f\nΈνταση εκπομπής: %d%%</string>
+    <string name="serial_connect_no_access">Αδυναμία σύνδεσης στη σειριακή θύρα, παρακαλώ επιβεβαιώστε εάν έχετε πρόσβαση στη συσκευή USB!</string>
+    <string name="serial_connect_failed">Η ανοιγή της σειριακής θύρας απέτυχε!</string>
+    <string name="serial_no_driver">Αδυναμία σύνδεσης στη σειριακή θύρα, δεν βρέθηκε σειριακή θύρα!</string>
+    <string name="serial_data_bits">Bit δεδομένων</string>
+    <string name="serial_parity">Bit ισοτιμίας</string>
+    <string name="serial_parity_none">Κανένα</string>
+    <string name="serial_parity_odd">Περιττό</string>
+    <string name="serial_parity_even">Άρτιο</string>
+    <string name="serial_parity_mark">Σήμανση</string>
+    <string name="serial_parity_space">Διάστημα</string>
+    <string name="serial_stop_bits">Bit διακοπής</string>
+    <string name="serial_default">Προεπιλογή</string>
+    <string name="serial_setting_help">serial_help_el.txt</string>
+    <string name="tcp_connect_closed">Η σύνδεση δικτύου έχει αποσυνδεθεί.</string>
+    <string name="share_logs">Κοινή χρήση καταγραφών</string>
+    <string name="config_clear_share_data">Διαγραφή αρχείων μνήμης</string>
+    <string name="preparing_log_data">Προετοιμασία δεδομένων καταγραφής…</string>
+    <string name="total_logs">Υπάρχουν συνολικά %d καταγραφές.</string>
+    <string name="get_log_no">%d καταγραφές έχουν ληφθεί.</string>
+    <string name="write_file_error">Παρουσιάστηκε σφάλμα κατά τη εγγραφή αρχείου: %s</string>
+    <string name="import_share_failed">Η εισαγωγή δεδομένων καταγραφής απέτυχε! %s</string>
+    <string name="preparing_import_logs">Προετοιμασία εισαγωγής καταγραφών…</string>
+    <string name="share_logs_been_read">%d καταγραφές έχουν διαβαστεί.</string>
+    <string name="share_import_log_data">Εισαγωγή δεδομένων καταγραφής…</string>
+    <string name="cloudlog_settings">Ρυθμίσεις Cloudlog</string>
+    <string name="config_enable_cloudlog">Ενεργοποίηση συγχρονισμού Cloudlog</string>
+    <string name="cloudlog_addr">Διεύθυνση διακομιστή</string>
+    <string name="cloudlog_api_key">Apikey</string>
+    <string name="test_cloudlog_config">ΔΟΚΙΜΗ</string>
+    <string name="cloudlog_station_id">ID σταθμού</string>
+    <string name="cloudlog_help">cloudlog_el.txt</string>
+    <string name="pass">Επιτυχία!</string>
+    <string name="fail">Αποτυχία!</string>
+    <string name="testing">Δοκιμή…</string>
+    <string name="test">Δοκιμή</string>
+    <string name="qrz_settings">Ρυθμίσεις QRZ.com</string>
+    <string name="qrz_api_key">API KEY</string>
+    <string name="config_enable_qrz">Ενεργοποίηση συγχρονισμού QRZ</string>
+    <string name="qrz_help">qrz_el.txt</string>
+    <string name="alram_switch">Διακόπτης συναγερμού</string>
+    <string name="swr_switch_on" translatable="false">SWR On</string>
+    <string name="swr_switch_off" translatable="false">SWR Off</string>
+    <string name="alc_switch_on" translatable="false">ALC On</string>
+    <string name="alc_switch_off" translatable="false">ALC Off</string>
+
+    <string name="import_log_downloads">Εισαγωγή αρχείου καταγραφής</string>
+    <string name="export_log_downloads">Εξαγωγή αρχείου καταγραφής</string>
+    <string name="web_port">Θύρα Web</string>
+    <string name="pl_web_port">7050</string>
+    <string name="faq_web_port">Θύρα διακομιστή HTTP για διεπαφή ιστού. Η προεπιλογή είναι 7050. Αλλάξτε εάν η θύρα είναι απασχολημένη. Εύρος: 1024-65535.</string>
+    <string name="bearing">Κατεύθυνση</string>
+    <string name="send_tune_on_freq_change">Αποστολή TUNE κατά την αλλαγή συχνότητας</string>
+    <string name="tune_command_label">Εντολή TUNE 1C 01 02</string>
+    <string name="switch_on">ΕΝΕΡΓΟ</string>
+    <string name="switch_off">ΑΝΕΝΕΡΓΟ</string>
+    <!-- Settings: Clear Call Hist on Freq Change -->
+    <string name="config_clear_call_hist_on_freq_change">Καθαρισμός ιστορικού κλήσεων κατά την αλλαγή συχνότητας</string>
+    <string name="faq_clear_call_hist_on_freq_change">Όταν είναι ενεργό, καθαρίζει αυτόματα το buffer του ιστορικού κλήσεων μετά από αλλαγή συχνότητας του ραδιοφώνου και την εντολή TUNE. Αποτρέπει την κλήση παλιών διακριτικών στη νέα συχνότητα.</string>
+
+    <string name="accept_dx_calls">Αποδοχή κλήσεων DX (Fox/Hound)</string>
+    <string name="accept_dx_calls_summary">Ενεργοποίηση αποκωδικοποίησης 76-bit multistream &amp; ουράς απαντήσεων</string>
+
+    <string name="multiple_answers_title">Πολλαπλές απαντήσεις</string>
+    <string name="multiple_ans_ignore">Αγνόηση</string>
+    <string name="multiple_ans_dx">DX</string>
+    <string name="multiple_ans_remember">Απομνημόνευση</string>
+
+    <!-- Navigation menu titles -->
+    <string name="nav_menu_title_scan">Σάρωση</string>
+</resources>

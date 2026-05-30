@@ -1,0 +1,137 @@
+# CMakeLists.txt для нативной библиотеки FT8CN
+# Этот файл используется только когда USE_PRECOMPILED_SO = false в build.gradle
+
+cmake_minimum_required(VERSION 3.18.1)
+project("ft8cn")
+
+# Стандарты C/C++
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_C_STANDARD 11)
+
+# Флаги для Release сборки
+set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+
+# Флаги для Debug сборки
+set(CMAKE_C_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+
+# Опция для включения GPU-водопада (по умолчанию включено)
+# Чтобы отключить, запустите сборку с: -DENABLE_GPU_WATERFALL=OFF
+option(ENABLE_GPU_WATERFALL "Enable GPU-accelerated waterfall via Vulkan" ON)
+
+# Исходные файлы для нативной библиотеки
+add_library(ft8cn SHARED
+    # JNI обёртки
+    generate_ft8.cpp
+    ft8Listener.cpp
+    ft8Spectrum.cpp
+
+    # Библиотека FFT (KissFFT)
+    fft/kiss_fftr.c
+    fft/kiss_fft.c
+
+    # Ядро библиотеки FT8
+    ft8/decode.c
+    ft8/crc.c
+    ft8/constants.c
+    ft8/ldpc.c
+    ft8/unpack.c
+    ft8/text.c
+    ft8/hash22.c
+    ft8/encode.c
+    ft8/pack.c
+
+    # Мониторинг и декодер
+    monitor_opr.c
+    ft8Decoder.c
+    ft8Encoder.c
+    spectrum_data.c
+
+    # Утилиты
+    common/wave.c
+)
+
+# Директории для заголовочных файлов
+target_include_directories(ft8cn PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/fft
+    ${CMAKE_CURRENT_SOURCE_DIR}/ft8
+    # === Путь к заголовкам Vulkan ===
+    "Z:/3d/SDK/ndk/25.1.8937393/sources/third_party/vulkan/src/include"
+)
+
+# Системные библиотеки для линковки
+find_library(log-lib log)
+target_link_libraries(ft8cn ${log-lib} android m)
+
+# ============================================================================
+# GPU WATERFALL (Vulkan Compute) - опциональная сборка
+# ============================================================================
+if(ENABLE_GPU_WATERFALL)
+    find_library(vulkan-lib vulkan)
+
+    if(vulkan-lib)
+        message(STATUS "GPU Waterfall: Vulkan found, enabling GPU acceleration")
+        target_compile_definitions(ft8cn PRIVATE ENABLE_GPU_WATERFALL)
+        target_link_libraries(ft8cn ${vulkan-lib})
+
+        # Добавляем исходники GPU в целевую библиотеку
+        target_sources(ft8cn PRIVATE
+            gpu/GpuWaterfall.cpp
+            gpu/GpuWaterfallJni.cpp
+        )
+
+        # Добавляем путь к заголовкам GPU
+        target_include_directories(ft8cn PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/gpu
+        )
+
+        # Настройка компиляции GLSL шейдеров в SPIR-V
+        set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shaders)
+        set(SPIRV_DIR ${CMAKE_CURRENT_BINARY_DIR}/shaders)
+        file(MAKE_DIRECTORY ${SPIRV_DIR})
+
+        # Поиск компилятора шейдеров glslc (из Android NDK)
+        find_program(GLSLC glslc
+            PATHS
+                $ENV{ANDROID_NDK_HOME}/shader-tools
+                $ENV{ANDROID_NDK_HOME}/shader-tools/windows-x86_64
+                $ENV{ANDROID_NDK_HOME}/shader-tools/linux-x86_64
+                $ENV{ANDROID_NDK_HOME}/shader-tools/darwin-x86_64
+                "Z:/3d/SDK/ndk/25.1.8937393/shader-tools/windows-x86_64"
+        )
+
+        if(GLSLC)
+            message(STATUS "GPU Waterfall: Found glslc at ${GLSLC}")
+
+            # Компиляция шейдера магнитуды
+            add_custom_command(
+                OUTPUT ${SPIRV_DIR}/waterfall_magnitude.spv
+                COMMAND ${GLSLC} -o ${SPIRV_DIR}/waterfall_magnitude.spv ${SHADER_DIR}/waterfall_magnitude.comp
+                DEPENDS ${SHADER_DIR}/waterfall_magnitude.comp
+                COMMENT "Compiling waterfall_magnitude.comp"
+            )
+
+            # Компиляция шейдера цветовой карты
+            add_custom_command(
+                OUTPUT ${SPIRV_DIR}/waterfall_color.spv
+                COMMAND ${GLSLC} -o ${SPIRV_DIR}/waterfall_color.spv ${SHADER_DIR}/waterfall_color.comp
+                DEPENDS ${SHADER_DIR}/waterfall_color.comp
+                COMMENT "Compiling waterfall_color.comp"
+            )
+
+            # Цель для гарантированной компиляции шейдеров перед сборкой библиотеки
+            add_custom_target(gpu_shaders ALL
+                DEPENDS ${SPIRV_DIR}/waterfall_magnitude.spv ${SPIRV_DIR}/waterfall_color.spv
+            )
+            add_dependencies(ft8cn gpu_shaders)
+        else()
+            message(WARNING "GPU Waterfall: glslc not found. Shaders will not be compiled automatically.")
+        endif()
+    else()
+        message(WARNING "GPU Waterfall: Vulkan library not found. Disabling GPU acceleration.")
+        set(ENABLE_GPU_WATERFALL OFF CACHE BOOL "Disable GPU" FORCE)
+    endif()
+endif()

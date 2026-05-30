@@ -1,0 +1,172 @@
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.Properties
+import java.io.FileInputStream
+
+plugins {
+    id 'com.android.application'
+}
+
+def currentTime = getCurrentTime()
+
+static def getCurrentTime() {
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd")
+    return df.format(Calendar.getInstance(Locale.CHINA).getTime())
+}
+
+// Загрузка свойств ключа подписи из файла
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+// Флаг выбора режима сборки нативных библиотек true=so, false=cpp
+def usePrebuiltSo = project.hasProperty('usePrebuiltSo') ?
+        project.property('usePrebuiltSo').toBoolean() : false
+
+android {
+    compileSdk 33
+    namespace 'com.bg7yoz.ft8cn'
+
+    defaultConfig {
+        applicationId "com.bg7yoz.ft8cn"
+        minSdk 23
+        targetSdk 33
+        versionCode 94
+        versionName '0.94'
+
+        dataBinding {
+            enabled true
+        }
+
+        if (!usePrebuiltSo) {
+            ndk {
+                // abiFilters 'arm64-v8a', 'armeabi-v7a'
+            }
+        }
+
+        signingConfig signingConfigs.debug
+    }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias'] ?: ''
+            keyPassword keystoreProperties['keyPassword'] ?: ''
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword'] ?: ''
+
+            enableV1Signing true
+            enableV2Signing true
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            buildConfigField "String", "apkBuildTime", "\"${currentTime}\""
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "apkBuildTime", "\"${currentTime}\""
+
+            if (keystorePropertiesFile.exists()
+                    && keystoreProperties['keyAlias']
+                    && keystoreProperties['storeFile']) {
+                signingConfig signingConfigs.release
+                println "Release signing enabled: " + keystoreProperties['storeFile']
+            } else {
+                println "Keystore not found, using debug signing for release build"
+                signingConfig signingConfigs.debug
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    if (!usePrebuiltSo) {
+        externalNativeBuild {
+            cmake {
+                path = file("src/main/cpp/CMakeLists.txt")
+                version = "4.1.2"
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            if (usePrebuiltSo) {
+                jniLibs.srcDirs = ['libs']
+                println "Using prebuilt native libraries from libs/"
+            } else {
+                jniLibs.srcDirs = ['src/main/jniLibs']
+                println "Building native libraries from src/main/cpp via CMake"
+            }
+        }
+    }
+}
+
+tasks.register("renameReleaseApk") {
+    dependsOn("assembleRelease")
+    doLast {
+        def srcApk = file("$buildDir/outputs/apk/release/app-release.apk")
+        def dstApk = file("$buildDir/outputs/apk/release/FT8CN-R3BCK.apk")
+
+        if (!srcApk.exists()) {
+            throw new GradleException("Release APK not found: ${srcApk.absolutePath}")
+        }
+
+        if (dstApk.exists()) {
+            dstApk.delete()
+        }
+
+        if (!srcApk.renameTo(dstApk)) {
+            throw new GradleException("Failed to rename APK to ${dstApk.absolutePath}")
+        }
+
+        println "APK renamed to ${dstApk.name}"
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.5.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.navigation:navigation-fragment:2.5.3'
+    implementation 'androidx.navigation:navigation-ui:2.5.3'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    implementation files('src/libs/MPAndroidChartv_3.1.0.jar')
+    implementation files('src/libs/commons-net-3.6.jar')
+    implementation files('src/libs/nanohttpd-2.2.0.jar')
+    implementation files('src/libs/osmdroid-android-6.1.14.aar')
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    // ========================================================================
+    // [CUSTOM] Set custom APK filename with version and date
+    // Output: FT8CN-R3BCK_v1.2.3_release_20240514.apk
+    // ========================================================================
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def appName = "FT8CN-R3BCK"
+            def versionName = variant.versionName ?: "0.94"
+            def buildType = variant.buildType.name
+            def date = new Date().format('yyyyMMdd')
+            def arch = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
+
+            // Final filename format
+            outputFileName = "${appName}_v${versionName}_${buildType}_${date}_${arch}.apk"
+        }
+    }
+// ========================================================================
+}
