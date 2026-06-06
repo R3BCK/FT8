@@ -74,6 +74,7 @@ import com.bg7yoz.ft8cn.database.OperationBand;
 
 //import com.bg7yoz.ft8cn.database.SecureStorage;
 
+import com.bg7yoz.ft8cn.protocol.FT8MessageClassifier;
 import com.bg7yoz.ft8cn.decisions.Criterion;
 import com.bg7yoz.ft8cn.decisions.DecisionContext;
 import com.bg7yoz.ft8cn.decisions.DecisionEngine;
@@ -1419,7 +1420,7 @@ public class MainViewModel extends ViewModel {
      */
     private void getCallsignAndGrid(ArrayList<Ft8Message> messages) {
         for (Ft8Message msg : messages) {
-            if (GeneralVariables.checkFun1(msg.extraInfo)) {
+            if (FT8MessageClassifier.isGrid(msg.extraInfo)) {
                 if (!GeneralVariables.getCallsignHasGrid(msg.getCallsignFrom(), msg.maidenGrid)) {
                     databaseOpr.addCallsignQTH(msg.getCallsignFrom(), msg.maidenGrid);
                 }

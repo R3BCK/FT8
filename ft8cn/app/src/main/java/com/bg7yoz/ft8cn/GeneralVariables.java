@@ -1,3 +1,4 @@
+//GeneralVariables.java
 package com.bg7yoz.ft8cn;
 /**
  * Common variables class.
@@ -18,6 +19,10 @@ import com.bg7yoz.ft8cn.ft8transmit.QslRecordList;
 import com.bg7yoz.ft8cn.html.HtmlContext;
 import com.bg7yoz.ft8cn.rigs.BaseRigOperation;
 import com.bg7yoz.ft8cn.timer.UtcTimer;
+
+// [НОВОЕ] Импорты для единого классификатора FT8-сообщений
+import com.bg7yoz.ft8cn.protocol.FT8MessageClassifier;
+import com.bg7yoz.ft8cn.protocol.ProtocolStep;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -412,109 +417,71 @@ public class GeneralVariables {
     }
 
     /**
-     * Check message order from extraInfo
-     * @param extraInfo Message extension content
-     * @return Message sequence number, or -1 if not found
-     */
-    public static int checkFunOrderByExtraInfo(String extraInfo) {
-        if (checkFun5(extraInfo)) return 5;
-        if (checkFun4(extraInfo)) return 4;
-        if (checkFun3(extraInfo)) return 3;
-        if (checkFun2(extraInfo)) return 2;
-        if (checkFun1(extraInfo)) return 1;
-        return -1;
-    }
-
-    /**
      * Check message sequence number, return -1 if cannot parse
      * @param message Message to check
      * @return Message sequence number
+     *
+     * @deprecated Используйте FT8MessageClassifier.getLegacyCode(message) вместо этого метода.
+     * Этот метод оставлен только для обратной совместимости и будет удалён в будущих версиях.
      */
+    @Deprecated
     public static int checkFunOrder(Ft8Message message) {
-        if (message.checkIsCQ()) return 6;
-        return checkFunOrderByExtraInfo(message.extraInfo);
+        return FT8MessageClassifier.getLegacyCode(message);
     }
-
-
-    // OPTIMIZATION: Replaced regex with direct char checks for 5-10x faster execution
-    // Original regex compilation and matching caused significant CPU overhead in decode loop
-    // These methods are called for every decoded message, so performance is critical
-    // Logic remains identical to original implementation, only execution path is optimized
-
-    // Is this a grid report? Format: LLDD (Letter Letter Digit Digit) or empty
-    public static boolean checkFun1(String extraInfo) {
-        if (extraInfo == null) return false;
-        int len = extraInfo.length();
-        if (len == 0) return true; // Empty string is valid for type 1 in some contexts
-        if (len != 4) return false;
-        // Grid format: LLDD (e.g., "KO85")
-        char c1 = extraInfo.charAt(0);
-        char c2 = extraInfo.charAt(1);
-        char c3 = extraInfo.charAt(2);
-        char c4 = extraInfo.charAt(3);
-        // Must be Letter Letter Digit Digit and not RR73
-        if (c1 >= 'A' && c1 <= 'Z' && c2 >= 'A' && c2 <= 'Z' &&
-                c3 >= '0' && c3 <= '9' && c4 >= '0' && c4 <= '9') {
-            return !extraInfo.equals("RR73");
-        }
-        return false;
-    }
-
-    // Is this a signal report, e.g. -10 or +05?
-    public static boolean checkFun2(String extraInfo) {
-        if (extraInfo == null) return false;
-        int len = extraInfo.length();
-        if (len < 2 || len > 3) return false; // -XX or +XX
-        try {
-            // Fast integer parse without full regex
-            int val = Integer.parseInt(extraInfo.trim());
-            return val != 73; // 73 belongs to type 5, not type 2
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    // Is this a signal report with R prefix, e.g. R-10 or R+05?
-    public static boolean checkFun3(String extraInfo) {
-        if (extraInfo == null) return false;
-        int len = extraInfo.length();
-        if (len < 3 || len > 4) return false; // R-XX or R+XX
-        if (extraInfo.charAt(0) != 'R') return false;
-        if (extraInfo.charAt(1) == 'R') return false; // Must not be RR73
-        try {
-            Integer.parseInt(extraInfo.substring(1).trim());
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    // Is this RRR or RR73 value?
-    public static boolean checkFun4(String extraInfo) {
-        if (extraInfo == null) return false;
-        // RR73 or RRR - exact string match is fastest
-        int len = extraInfo.length();
-        if (len == 4) return "RR73".equals(extraInfo);
-        if (len == 3) return "RRR".equals(extraInfo);
-        return false;
-    }
-
-    // Is this 73 value?
-    public static boolean checkFun5(String extraInfo) {
-        return "73".equals(extraInfo);
-    }
-
 
     /**
-     * Check if this is a signal report, if yes return the value
-     * @param extraInfo Message extension
-     * @return Signal report value, or -100 if not found
+     * @deprecated Используйте FT8MessageClassifier.isGrid(extraInfo)
      */
+    @Deprecated
+    public static boolean checkFun1(String extraInfo) {
+        return FT8MessageClassifier.isGrid(extraInfo);
+    }
+
+    /**
+     * @deprecated Используйте FT8MessageClassifier.isReport(extraInfo)
+     */
+    @Deprecated
+    public static boolean checkFun2(String extraInfo) {
+        return FT8MessageClassifier.isReport(extraInfo);
+    }
+
+    /**
+     * @deprecated Используйте FT8MessageClassifier.isRReport(extraInfo)
+     */
+    @Deprecated
+    public static boolean checkFun3(String extraInfo) {
+        return FT8MessageClassifier.isRReport(extraInfo);
+    }
+
+    /**
+     * @deprecated Используйте FT8MessageClassifier.isRR73(extraInfo)
+     */
+    @Deprecated
+    public static boolean checkFun4(String extraInfo) {
+        return FT8MessageClassifier.isRR73(extraInfo);
+    }
+
+    /**
+     * @deprecated Используйте FT8MessageClassifier.isSeventyThree(extraInfo)
+     */
+    @Deprecated
+    public static boolean checkFun5(String extraInfo) {
+        return FT8MessageClassifier.isSeventyThree(extraInfo);
+    }
+
+    /**
+     * Извлекает числовое значение signal report из extraInfo.
+     * @deprecated Используйте FT8MessageClassifier + Integer.parseInt
+     */
+    @Deprecated
     public static int checkFun2_3(String extraInfo) {
-        if (extraInfo.equals("73")) return -100;
-        if (extraInfo.matches("[R]?[+-]?[0-9]{1,2}")) {
+        if (extraInfo == null) return -100;
+        if (FT8MessageClassifier.isSeventyThree(extraInfo)) return -100;
+
+        if (FT8MessageClassifier.isReport(extraInfo) || FT8MessageClassifier.isRReport(extraInfo)) {
+            String normalized = extraInfo.toUpperCase().replace("R", "").trim();
             try {
-                return Integer.parseInt(extraInfo.replace("R", ""));
+                return Integer.parseInt(normalized);
             } catch (Exception e) {
                 return -100;
             }
@@ -523,24 +490,19 @@ public class GeneralVariables {
     }
 
     /**
-     * Check if this is a grid report, if yes return the value
-     * @param extraInfo Message extension
-     * @return true if grid report
+     * @deprecated Используйте FT8MessageClassifier.isGrid(extraInfo)
      */
+    @Deprecated
     public static boolean checkFun1_6(String extraInfo) {
-        return extraInfo.trim().matches("[A-Z][A-Z][0-9][0-9]")
-                && !extraInfo.trim().equals("RR73");
+        return FT8MessageClassifier.isGrid(extraInfo);
     }
 
     /**
-     * Check if this is end of contact: RRR, RR73, or 73
-     * @param extraInfo Message suffix
-     * @return true if end of contact
+     * @deprecated Используйте FT8MessageClassifier.isRR73(extraInfo) || isSeventyThree(extraInfo)
      */
+    @Deprecated
     public static boolean checkFun4_5(String extraInfo) {
-        return extraInfo.trim().equals("RR73")
-                || extraInfo.trim().equals("RRR")
-                || extraInfo.trim().equals("73");
+        return FT8MessageClassifier.isRR73(extraInfo) || FT8MessageClassifier.isSeventyThree(extraInfo);
     }
 
     /**

@@ -1,3 +1,4 @@
+//FT8TransmitSignal.java
 package com.bg7yoz.ft8cn.ft8transmit;
 /**
  * Class related to transmitting signals. Includes automatic procedures for analyzing QSO process.
@@ -27,6 +28,10 @@ import com.bg7yoz.ft8cn.rigs.BaseRigOperation;
 import com.bg7yoz.ft8cn.timer.OnUtcTimer;
 import com.bg7yoz.ft8cn.timer.UtcTimer;
 import com.bg7yoz.ft8cn.ui.ToastMessage;
+
+// [НОВОЕ] Импорты для единого классификатора FT8-сообщений
+import com.bg7yoz.ft8cn.protocol.FT8MessageClassifier;
+import com.bg7yoz.ft8cn.protocol.ProtocolStep;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -225,16 +230,19 @@ public class FT8TransmitSignal {
         // [/DEBUG]
 
         messageStartTime = 0;
-        if (GeneralVariables.checkFun1(toMaidenheadGrid)) {
+
+        // [ИСПРАВЛЕНО] Используем FT8MessageClassifier напрямую со строкой (без создания Ft8Message)
+        if (FT8MessageClassifier.isGrid(toMaidenheadGrid)) {
             this.toMaidenheadGrid = toMaidenheadGrid;
         } else {
             this.toMaidenheadGrid = "";
         }
+
         mutableToCallsign.postValue(transmitCallsign);
         toCallsign = transmitCallsign;
 
         if (functionOrder == -1) {
-            this.functionOrder = GeneralVariables.checkFunOrderByExtraInfo(toMaidenheadGrid) + 1;
+            this.functionOrder = FT8MessageClassifier.getLegacyCode(toMaidenheadGrid) + 1;
             if (this.functionOrder == 6) this.functionOrder = 1;
         } else {
             this.functionOrder = functionOrder;
@@ -398,20 +406,25 @@ public class FT8TransmitSignal {
         messageEndTime = UtcTimer.getSystemTime();
         toMaidenheadGrid = GeneralVariables.getGridByCallsign(toCallsign.callsign, databaseOpr);
         if (messageStartTime == 0) messageStartTime = UtcTimer.getSystemTime();
+
         for (int i = GeneralVariables.transmitMessages.size() - 1; i >= 0; i--) {
             Ft8Message m = GeneralVariables.transmitMessages.get(i);
-            if ((GeneralVariables.checkFun3(m.extraInfo) || GeneralVariables.checkFun2(m.extraInfo))
+            // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun3/checkFun2
+            if ((FT8MessageClassifier.isRReport(m) || FT8MessageClassifier.isReport(m))
                     && m.callsignFrom.equals(toCallsign.callsign) && GeneralVariables.checkIsMyCallsign(m.callsignTo)) {
                 receiveTargetReport = getReportFromExtraInfo(m.extraInfo); break;
             }
         }
+
         for (int i = GeneralVariables.transmitMessages.size() - 1; i >= 0; i--) {
             Ft8Message m = GeneralVariables.transmitMessages.get(i);
-            if ((GeneralVariables.checkFun3(m.extraInfo) || GeneralVariables.checkFun2(m.extraInfo))
+            // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun3/checkFun2
+            if ((FT8MessageClassifier.isRReport(m) || FT8MessageClassifier.isReport(m))
                     && m.callsignTo.equals(toCallsign.callsign) && GeneralVariables.checkIsMyCallsign(m.callsignFrom)) {
                 sentTargetReport = getReportFromExtraInfo(m.extraInfo); break;
             }
         }
+
         if (onDoTransmitted != null) {
             onTransmitSuccess.doAfterTransmit(new QSLRecord(messageStartTime, messageEndTime,
                     GeneralVariables.myCallsign, GeneralVariables.getMyMaidenhead4Grid(),
@@ -471,13 +484,15 @@ public class FT8TransmitSignal {
         for (Ft8Message m : messages) {
             if (m.getSequence() == sequential || toCallsign == null) continue;
             if (GeneralVariables.checkIsMyCallsign(m.getCallsignTo()) && checkCallsignIsCallTo(m.getCallsignFrom(), toCallsign.callsign)) {
-                if (GeneralVariables.checkFun3(m.extraInfo) || GeneralVariables.checkFun2(m.extraInfo)) {
+                // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun3/checkFun2
+                if (FT8MessageClassifier.isRReport(m) || FT8MessageClassifier.isReport(m)) {
                     receivedReport = getReportFromExtraInfo(m.extraInfo);
                     receiveTargetReport = receivedReport;
                     if (receivedReport == -100) receivedReport = m.report;
                 }
                 sendReport = m.snr;
-                int ord = GeneralVariables.checkFunOrder(m);
+                // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFunOrder
+                int ord = FT8MessageClassifier.getLegacyCode(m);
                 if (ord != -1) return ord;
             }
         }
@@ -542,9 +557,11 @@ public class FT8TransmitSignal {
             if (isExcludeMessage(msg) || toCallsign == null) continue;
             if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())
                     && msg.getCallsignFrom().equals(toCallsign.callsign)
-                    && !GeneralVariables.checkFun5(msg.extraInfo)) {
+                    // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun5
+                    && !FT8MessageClassifier.isSeventyThree(msg)) {
+                // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFunOrder
                 setTransmit(new TransmitCallsign(msg.i3, msg.n3, msg.getCallsignFrom(), msg.freq_hz, msg.getSequence(), msg.snr),
-                        GeneralVariables.checkFunOrder(msg) + 1, msg.extraInfo);
+                        FT8MessageClassifier.getLegacyCode(msg) + 1, msg.extraInfo);
                 return true;
             }
         }
@@ -553,19 +570,23 @@ public class FT8TransmitSignal {
         for (int i = messages.size() - 1; i >= 0; i--) {
             Ft8Message msg = messages.get(i);
             if (isExcludeMessage(msg)) continue;
-            if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo()) && !GeneralVariables.checkFun5(msg.extraInfo)) {
+            // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun5
+            if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo()) && !FT8MessageClassifier.isSeventyThree(msg)) {
                 if (isManualCallMode) {
-                    if (GeneralVariables.checkFun2(msg.extraInfo)
-                            || GeneralVariables.checkFun3(msg.extraInfo)
-                            || GeneralVariables.checkFun4(msg.extraInfo)) {
+                    // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun2/checkFun3/checkFun4
+                    if (FT8MessageClassifier.isReport(msg)
+                            || FT8MessageClassifier.isRReport(msg)
+                            || FT8MessageClassifier.isRR73(msg)) {
+                        // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFunOrder
                         setTransmit(new TransmitCallsign(msg.i3, msg.n3, msg.getCallsignFrom(), msg.freq_hz, msg.getSequence(), msg.snr),
-                                GeneralVariables.checkFunOrder(msg) + 1, msg.extraInfo);
+                                FT8MessageClassifier.getLegacyCode(msg) + 1, msg.extraInfo);
                         return true;
                     }
                     continue;
                 }
+                // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFunOrder
                 setTransmit(new TransmitCallsign(msg.i3, msg.n3, msg.getCallsignFrom(), msg.freq_hz, msg.getSequence(), msg.snr),
-                        GeneralVariables.checkFunOrder(msg) + 1, msg.extraInfo);
+                        FT8MessageClassifier.getLegacyCode(msg) + 1, msg.extraInfo);
                 return true;
             }
         }
@@ -618,11 +639,13 @@ public class FT8TransmitSignal {
                 PendingQSO pq = pendingQSOs.get(i);
                 if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())
                         && msg.getCallsignFrom().equals(pq.callsign)
-                        && !GeneralVariables.checkFun5(msg.extraInfo)) {
+                        // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun5
+                        && !FT8MessageClassifier.isSeventyThree(msg)) {
                     pendingQSOs.remove(i);
                     Log.d(TAG, "Delayed reply from " + pq.callsign + " accepted. Resuming QSO.");
+                    // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFunOrder
                     setTransmit(new TransmitCallsign(msg.i3, msg.n3, pq.callsign, msg.freq_hz, msg.getSequence(), msg.snr),
-                            GeneralVariables.checkFunOrder(msg) + 1, msg.extraInfo);
+                            FT8MessageClassifier.getLegacyCode(msg) + 1, msg.extraInfo);
                     return true;
                 }
             }
@@ -678,7 +701,8 @@ public class FT8TransmitSignal {
         // Collect all replies to my CQ in this slot
         ArrayList<Ft8Message> repliesToMe = new ArrayList<>();
         for (Ft8Message msg : messages) {
-            if (!Boolean.TRUE.equals(localIsMyCall.get(msg)) || GeneralVariables.checkFun5(msg.extraInfo)) continue;
+            // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun5
+            if (!Boolean.TRUE.equals(localIsMyCall.get(msg)) || FT8MessageClassifier.isSeventyThree(msg)) continue;
             repliesToMe.add(msg);
         }
 
@@ -768,32 +792,25 @@ public class FT8TransmitSignal {
         if (toCallsign == null) return;
         if (isTransmitting) return;
 
-        // === [NEW] Check for direct calls to MY callsign (priority over manual calls) ===
-        // Even if we're manually calling someone (functionOrder != 6),
-        // if someone calls US directly, we should respond!
         for (Ft8Message msg : msgList) {
             if (msg.getSequence() != sequential || msg.band != GeneralVariables.band) continue;
             if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())
-                    && !msg.getCallsignFrom().equals(toCallsign.callsign)  // Not the station we're calling
-                    && !GeneralVariables.checkFun5(msg.extraInfo)) {        // Not RR73/73
-                // Someone is calling ME directly! Switch to them immediately
+                    && !msg.getCallsignFrom().equals(toCallsign.callsign)
+                    && !GeneralVariables.checkFun5(msg.extraInfo)) {
                 Log.d(TAG, "Direct call from " + msg.getCallsignFrom() + " detected! Switching from " + toCallsign.callsign);
                 setTransmit(new TransmitCallsign(msg.i3, msg.n3,
                                 msg.getCallsignFrom(), msg.freq_hz,
                                 msg.getSequence(), msg.snr),
                         GeneralVariables.checkFunOrder(msg) + 1, msg.extraInfo);
-                return; // Exit early, don't process other logic
+                return;
             }
         }
-        // === END NEW ===
 
-        // [DX MODE BRANCH]
         if (GeneralVariables.acceptDxCalls) {
             handleDxMultistream(msgList);
             return;
         }
 
-        // [STANDARD MODE] - Original logic unchanged
         ArrayList<Ft8Message> messages = new ArrayList<>(msgList);
         ConcurrentHashMap<Ft8Message, Boolean> localIsMyCall = new ConcurrentHashMap<>();
 
@@ -946,7 +963,6 @@ public class FT8TransmitSignal {
             mutableFunctionOrder.postValue(functionOrder);
         }
 
-        // [STANDARD MODE] Age and clean pending QSOs (used for delayed replies)
         for (int i = pendingQSOs.size() - 1; i >= 0; i--) {
             pendingQSOs.get(i).ageCycles++;
             if (pendingQSOs.get(i).ageCycles > MAX_PENDING_CYCLES) {

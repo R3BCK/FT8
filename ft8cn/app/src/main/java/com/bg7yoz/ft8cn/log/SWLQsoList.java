@@ -1,8 +1,12 @@
+//SWLQsoList.java
 package com.bg7yoz.ft8cn.log;
 
 import com.bg7yoz.ft8cn.Ft8Message;
 import com.bg7yoz.ft8cn.GeneralVariables;
 import com.bg7yoz.ft8cn.timer.UtcTimer;
+
+// [НОВОЕ] Импорт для единого классификатора FT8-сообщений
+import com.bg7yoz.ft8cn.protocol.FT8MessageClassifier;
 
 import java.util.ArrayList;
 
@@ -30,7 +34,7 @@ import java.util.ArrayList;
 public class SWLQsoList {
     private static final String TAG = "SWLQsoList";
     //通联成功的列表，防止重复，两个KEY顺序分别是：station_callsign和call，Boolean=true,已经QSO
-    private final HashTable qsoList =new HashTable();
+    private final HashTable qsoList = new HashTable();
 
     public SWLQsoList() {
     }
@@ -49,7 +53,9 @@ public class SWLQsoList {
             Ft8Message msg = newMessages.get(i);
             if (msg.inMyCall()) continue;//对包含我自己的消息不处理
 
-            if (GeneralVariables.checkFun4_5(msg.extraInfo)//结束标识RRR、RR73、73
+            // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun4_5
+            // Старая логика: checkFun4_5 проверял RR73 || RRR || 73
+            if ((FT8MessageClassifier.isRR73(msg.extraInfo) || FT8MessageClassifier.isSeventyThree(msg.extraInfo))
                     && !qsoList.contains(msg.callsignFrom, msg.callsignTo)) {//没有QSO记录
 
                 QSLRecord qslRecord = new QSLRecord(msg);
@@ -84,7 +90,8 @@ public class SWLQsoList {
             if (GeneralVariables.checkIsMyCallsign(msg.callsignFrom)
                     && msg.callsignTo.equals(record.getToCallsign())
                     && !foundFromReport) {//callsignFrom发出的信号报告
-                int report = GeneralVariables.checkFun2_3(msg.extraInfo);
+                // [ИСПРАВЛЕНО] Используем extractReportValue вместо checkFun2_3
+                int report = extractReportValue(msg.extraInfo);
 
                 if (time_on > msg.utcTime) time_on = msg.utcTime;//取最早的时间
                 if (report != -100) {
@@ -97,7 +104,8 @@ public class SWLQsoList {
                     //&& msg.callsignTo.equals(record.getMyCallsign())
                     && GeneralVariables.checkIsMyCallsign(msg.callsignTo)
                     && !foundToReport) {//callsignTo发出的信号报告
-                int report = GeneralVariables.checkFun2_3(msg.extraInfo);
+                // [ИСПРАВЛЕНО] Используем extractReportValue вместо checkFun2_3
+                int report = extractReportValue(msg.extraInfo);
                 if (time_on > msg.utcTime) time_on = msg.utcTime;//取最早的时间
                 if (report != -100) {
                     record.setReceivedReport(report);
@@ -130,7 +138,8 @@ public class SWLQsoList {
                     && GeneralVariables.checkIsMyCallsign(msg.callsignFrom)
                     && (msg.callsignTo.equals(record.getToCallsign()) || msg.checkIsCQ())) {//callsignFrom的网格报告
 
-                if (GeneralVariables.checkFun1_6(msg.extraInfo)) {
+                // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun1_6
+                if (FT8MessageClassifier.isGrid(msg.extraInfo)) {
                     record.setMyMaidenGrid(msg.extraInfo.trim());
                     foundFromGrid = true;
                 }
@@ -142,7 +151,8 @@ public class SWLQsoList {
                     //&& (msg.callsignTo.equals(record.getMyCallsign())
                     && (GeneralVariables.checkIsMyCallsign(msg.callsignTo)
                     || msg.checkIsCQ())) {//callsignTo发出的信号报告
-                if (GeneralVariables.checkFun1_6(msg.extraInfo)) {
+                // [ИСПРАВЛЕНО] Используем FT8MessageClassifier вместо checkFun1_6
+                if (FT8MessageClassifier.isGrid(msg.extraInfo)) {
                     record.setToMaidenGrid(msg.extraInfo.trim());
                     foundToGrid = true;
                 }
@@ -157,6 +167,28 @@ public class SWLQsoList {
             record.setQso_date(UtcTimer.getYYYYMMDD(time_on));
             record.setTime_on(UtcTimer.getTimeHHMMSS(time_on));
         }
+    }
+
+    /**
+     * [НОВОЕ] Извлекает числовое значение signal report из extraInfo.
+     * Заменяет GeneralVariables.checkFun2_3().
+     *
+     * @param extraInfo Содержимое сообщения (например, "-15", "+05", "R-15", "R+05", "73")
+     * @return Значение репорта (например, -15, 5) или -100 если не является репортом
+     */
+    private int extractReportValue(String extraInfo) {
+        if (extraInfo == null) return -100;
+        if (FT8MessageClassifier.isSeventyThree(extraInfo)) return -100;
+
+        if (FT8MessageClassifier.isReport(extraInfo) || FT8MessageClassifier.isRReport(extraInfo)) {
+            String normalized = extraInfo.toUpperCase().replace("R", "").trim();
+            try {
+                return Integer.parseInt(normalized);
+            } catch (NumberFormatException e) {
+                return -100;
+            }
+        }
+        return -100;
     }
 
     public interface OnFoundSwlQso {

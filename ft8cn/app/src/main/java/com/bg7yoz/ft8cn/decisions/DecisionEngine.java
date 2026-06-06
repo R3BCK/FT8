@@ -7,6 +7,8 @@ import android.util.Log;
 import com.bg7yoz.ft8cn.Ft8Message;
 import com.bg7yoz.ft8cn.GeneralVariables;
 import com.bg7yoz.ft8cn.database.DatabaseOpr;
+import com.bg7yoz.ft8cn.protocol.FT8MessageClassifier;
+import com.bg7yoz.ft8cn.protocol.ProtocolStep;
 import com.bg7yoz.ft8cn.rigs.BaseRigOperation;
 
 import java.util.ArrayList;
@@ -97,10 +99,11 @@ public class DecisionEngine {
             String caller = directCallMsg.getCallsignFrom();
             Log.d(TAG, "[DECISION] Обнаружен прямой вызов от " + caller);
 
-            int msgState = GeneralVariables.checkFunOrder(directCallMsg);
-            if (msgState == -1) msgState = 0;
-            int nextStep = Math.min(msgState + 1, 5);
-            if (nextStep < 1) nextStep = 1;
+            // [НОВОЕ] Используем FT8MessageClassifier вместо checkFunOrder
+            ProtocolStep step = FT8MessageClassifier.classify(directCallMsg);
+            int nextStep = protocolStepToLegacyStep(step);
+
+            Log.d(TAG, "[DECISION] Классификация сообщения: " + step + " -> шаг " + nextStep);
 
             boolean isCurrentTarget = (ctx.currentTarget != null &&
                     ctx.currentTarget.equalsIgnoreCase(caller));
@@ -119,18 +122,15 @@ public class DecisionEngine {
         }
 
         // [КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ] Обрабатываем directCaller используя РЕАЛЬНОЕ содержимое сообщения
-        // dbState может быть устаревшим (например, все еще 6 от CQ) из-за ошибки parseMessageState
         if (ctx.directCaller != null) {
             Ft8Message msg = findMessageByCallsign(messages, ctx.directCaller.callsign);
             if (msg != null) {
-                // [ИСПРАВЛЕНИЕ] Используем msgState из реального сообщения, НЕ dbState из кэша
-                int msgState = GeneralVariables.checkFunOrder(msg);
-                if (msgState == -1) msgState = 0;
-
-                int nextStep = Math.max(1, Math.min(msgState + 1, 5));
+                // [НОВОЕ] Используем FT8MessageClassifier
+                ProtocolStep step = FT8MessageClassifier.classify(msg);
+                int nextStep = protocolStepToLegacyStep(step);
 
                 Log.d(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign +
-                        " msgState=" + msgState + " (dbState=" + ctx.directCaller.ft8StateRelative +
+                        " step=" + step + " (dbState=" + ctx.directCaller.ft8StateRelative +
                         ") -> шаг=" + nextStep);
 
                 return createTransmitAction(ctx.directCaller.callsign, nextStep,
@@ -153,6 +153,22 @@ public class DecisionEngine {
             default:
                 Log.d(TAG, "[DECISION] subState=" + ctx.subState + " не реализовано -> WAIT");
                 return StationAction.wait("Состояние " + ctx.subState + " не полностью реализовано");
+        }
+    }
+
+    /**
+     * Конвертация ProtocolStep в legacy-номер шага (1-5).
+     * Временный метод для обратной совместимости.
+     */
+    private int protocolStepToLegacyStep(ProtocolStep step) {
+        switch (step) {
+            case CQ:            return 1; // CQ -> Grid
+            case GRID:          return 2; // Grid -> Report
+            case REPORT:        return 3; // Report -> R-Report
+            case R_REPORT:      return 4; // R-Report -> RR73
+            case RR73:          return 5; // RR73 -> 73
+            case SEVENTY_THREE: return 5; // 73 -> QSO complete
+            default:            return 1; // Unknown -> Grid (default)
         }
     }
 
@@ -323,7 +339,8 @@ public class DecisionEngine {
                         if (msg.getCallsignFrom().equalsIgnoreCase(ctx.currentTarget) &&
                                 GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())) {
 
-                            int nextStep = determineNextStep(msg, 1);
+                            // [НОВОЕ] Полностью переписан determineNextStep
+                            int nextStep = determineNextStepNew(msg);
 
                             Log.d(TAG, "[DECISION] IN_DIALOGUE: Ответ от " + ctx.currentTarget +
                                     " (msg=" + msg.getMessageText() + ") -> шаг " + nextStep);
@@ -343,37 +360,45 @@ public class DecisionEngine {
         return StationAction.wait("Ожидание ответа в диалоге");
     }
 
-    private int determineNextStep(Ft8Message msg, int currentStep) {
-        String msgText = msg.getMessageText().toUpperCase().trim();
+    /**
+     * [НОВОЕ] Переписанный метод определения следующего шага.
+     * Использует FT8MessageClassifier вместо regex-ов.
+     */
+    private int determineNextStepNew(Ft8Message msg) {
+        ProtocolStep step = FT8MessageClassifier.classify(msg);
 
-        if (msgText.matches(".*\\bR[-+]\\d{2,3}\\b.*")) {
-            Log.d(TAG, "[STEP] Получен R-репорт -> отправка RR73 (шаг 4)");
-            return 4;
+        Log.d(TAG, "[STEP] Классификация: " + step + " (extra='" + msg.extraInfo + "')");
+
+        switch (step) {
+            case CQ:
+                Log.d(TAG, "[STEP] Получен CQ -> отправка Grid (шаг 1)");
+                return 1;
+
+            case GRID:
+                Log.d(TAG, "[STEP] Получен Grid -> отправка Report (шаг 2)");
+                return 2;
+
+            case REPORT:
+                Log.d(TAG, "[STEP] Получен Signal Report -> отправка R-Report (шаг 3)");
+                return 3;
+
+            case R_REPORT:
+                Log.d(TAG, "[STEP] Получен R-Report -> отправка RR73 (шаг 4)");
+                return 4;
+
+            case RR73:
+                Log.d(TAG, "[STEP] Получен RR73 -> отправка 73 (шаг 5)");
+                return 5;
+
+            case SEVENTY_THREE:
+                Log.d(TAG, "[STEP] Получен 73 -> QSO завершено (шаг 5)");
+                return 5;
+
+            case UNKNOWN:
+            default:
+                Log.d(TAG, "[STEP] Неизвестный тип сообщения -> прогрессия по умолчанию");
+                return 1; // Начать с Grid
         }
-
-        if (msgText.matches(".*\\b[-+]\\d{2,3}\\b.*")) {
-            Log.d(TAG, "[STEP] Получен сигнал-репорт -> отправка R-репорта (шаг 3)");
-            return 3;
-        }
-
-        if (msgText.contains("RR73")) {
-            Log.d(TAG, "[STEP] Получен RR73 -> отправка 73 (шаг 5)");
-            return 5;
-        }
-
-        if (msgText.matches(".*\\b73\\b.*") && !msgText.contains("RR73")) {
-            Log.d(TAG, "[STEP] Получен 73 -> QSO завершено (шаг 5)");
-            return 5;
-        }
-
-        if (msgText.matches(".*\\b[A-R]{2}[0-9]{2}.*")) {
-            Log.d(TAG, "[STEP] Получен grid -> отправка репорта (шаг 2)");
-            return 2;
-        }
-
-        int nextStep = Math.min(currentStep + 1, 5);
-        Log.d(TAG, "[STEP] Прогрессия по умолчанию: шаг " + currentStep + " -> " + nextStep);
-        return nextStep;
     }
 
     private StationAction evaluateSoftFinish(DecisionContext ctx, List<Ft8Message> messages) {
@@ -382,18 +407,17 @@ public class DecisionEngine {
                 String from = msg.getCallsignFrom();
                 if (!ctx.recentTargets.contains(from)) continue;
 
-                String msgText = msg.getMessageText().toUpperCase().trim();
+                // [НОВОЕ] Используем FT8MessageClassifier
+                ProtocolStep step = FT8MessageClassifier.classify(msg);
 
-                if (msgText.contains("RR73") || msgText.matches(".*\\b73\\b.*")) {
+                if (step == ProtocolStep.RR73 || step == ProtocolStep.SEVENTY_THREE) {
                     Log.d(TAG, "[DECISION] SOFT_FINISH: " + from +
                             " отправил RR73/73 — QSO завершено, игнорируем (без возобновления)");
                     continue;
                 }
 
                 if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo()) && !msg.checkIsCQ()) {
-                    int msgState = GeneralVariables.checkFunOrder(msg);
-                    if (msgState == -1) msgState = 0;
-                    int nextStep = Math.max(1, Math.min(msgState + 1, 5));
+                    int nextStep = protocolStepToLegacyStep(step);
 
                     Log.d(TAG, "[DECISION] SOFT_FINISH: " + from +
                             " снова вызвал нас -> RESUME шаг=" + nextStep);
