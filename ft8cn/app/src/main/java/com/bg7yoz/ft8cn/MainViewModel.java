@@ -151,6 +151,10 @@ public class MainViewModel extends ViewModel {
     // Battery low threshold for transmit blocking
     private static final int BATTERY_LOW_THRESHOLD_PERCENT = 1;
 
+    // [FIX] Prevent duplicate state machine evaluations in the same slot
+    // This can happen when afterDecode() is called multiple times (e.g., normal + deep decode)
+    private long lastEvaluatedSlot = -1;
+
     // USB auto-connect receiver
     private BroadcastReceiver usbReceiver;
 
@@ -743,7 +747,7 @@ public class MainViewModel extends ViewModel {
 
                     // Check 2: Audio focus lost? (optional enhancement)
                     if (GeneralVariables.connectMode != ConnectMode.NETWORK && !hamRecorder.isRunning()) {
-                        Log.d(TAG, "Watchdog: Mic mode but not recording - may need audio focus recovery");
+                        //Log.d(TAG, "Watchdog: Mic mode but not recording - may need audio focus recovery");
                     }
 
                     // Check 3: Rig connected but PTT stuck? (optional)
@@ -787,6 +791,14 @@ public class MainViewModel extends ViewModel {
      * @param currentSlot Current UTC slot number (for timeout calculations)
      */
     private void evaluateStateMachine(ArrayList<Ft8Message> messages, long currentSlot) {
+        // [FIX] Prevent duplicate evaluations in the same slot
+        // This can happen when afterDecode() is called multiple times (e.g., normal + deep decode)
+        if (currentSlot == lastEvaluatedSlot) {
+            Log.d(TAG, "[SKIP] evaluateStateMachine already processed slot " + currentSlot);
+            return;
+        }
+        lastEvaluatedSlot = currentSlot;
+
         Log.d(TAG, "[DEBUG] evaluateStateMachine called. Mode: " + stationContext.opMode +
                 ", Messages: " + (messages != null ? messages.size() : 0));
         StationContext ctx = stationContext;
@@ -1317,7 +1329,7 @@ public class MainViewModel extends ViewModel {
                             new FT8TransmitSignal.TransmitCallsign(msg.i3, msg.n3, ctx.currentTarget,
                                     msg.freq_hz, msg.getSequence(), msg.snr),
                             1, msg.extraInfo);
-                    return;
+                    return; // Exit early - dialogue resumed
                 }
             }
         }
@@ -1348,6 +1360,9 @@ public class MainViewModel extends ViewModel {
      */
     public void resetStateMachineOnFreqChange() {
         Log.d(TAG, "=== resetStateMachineOnFreqChange ===");
+
+        // [FIX] Reset slot tracker to allow evaluation on new frequency
+        lastEvaluatedSlot = -1;
 
         // Reset decision context
         stationContext.userOverrideActive = false;

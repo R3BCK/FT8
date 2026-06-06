@@ -2072,7 +2072,6 @@ public class DatabaseOpr extends SQLiteOpenHelper {
         if (callsign == null || callsign.isEmpty()) return;
         callsign = callsign.toUpperCase().trim();
 
-        // [ИСПРАВЛЕНО] Используем единый классификатор вместо parseMessageState
         int detectedState = classifyMessageToLegacyCode(msg);
 
         worldModelLock.lock();
@@ -2174,21 +2173,6 @@ public class DatabaseOpr extends SQLiteOpenHelper {
                 return 1; // По умолчанию — Grid
         }
     }
-
-    /**
-     * [УДАЛЕНО] Старый метод parseMessageState больше не используется.
-     * Вся логика классификации перенесена в classifyMessageToLegacyCode()
-     * с использованием единого FT8MessageClassifier.
-     *
-     * Удалённая логика (для справки):
-     *   - extra.contains("RR73") || extra.contains("RRR") -> 4
-     *   - extra.matches("^R[-+]?\\d{1,3}$") -> 3
-     *   - extra.matches("^[-+]?\\d{1,3}$") -> 2
-     *   - grid.length() >= 4 -> 1
-     *
-     * Теперь эта логика централизована в com.bg7yoz.ft8cn.protocol.FT8MessageClassifier
-     */
-    // private int parseMessageState(Ft8Message msg) { ... } <- УДАЛЁН
 
     private float calculatePriorityScore(StationRecord record) {
         if (record == null) return 0f;
