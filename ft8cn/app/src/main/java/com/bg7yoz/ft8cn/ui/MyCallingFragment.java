@@ -436,18 +436,10 @@ public class MyCallingFragment extends Fragment {
         binding.setTransmitImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mainViewModel.isManualControlAllowed()) {
-                    Log.d(TAG, "[UI_CLICK] Requesting manual CQ through ViewModel");
-                    mainViewModel.requestManualCQ();
-                } else {
-                    Log.w(TAG, "[UI_CLICK] Manual CQ blocked (opMode=" +
-                            mainViewModel.stationContext.opMode +
-                            " subState=" + mainViewModel.stationContext.subState + ")");
-                    Toast.makeText(getContext(), "Manual CQ not allowed in current state", Toast.LENGTH_SHORT).show();
-                }
-                // Toggle activated state for UI feedback only
-                mainViewModel.ft8TransmitSignal.setActivated(!mainViewModel.ft8TransmitSignal.isActivated());
+                boolean newState = !mainViewModel.ft8TransmitSignal.isActivated();
+                mainViewModel.ft8TransmitSignal.setActivated(newState);
                 GeneralVariables.resetLaunchSupervision();
+                Log.d(TAG, "[UI_CLICK] Transmit " + (newState ? "enabled" : "disabled"));
             }
         });
 

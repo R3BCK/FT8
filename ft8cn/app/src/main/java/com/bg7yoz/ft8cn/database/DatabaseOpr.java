@@ -2067,12 +2067,11 @@ public class DatabaseOpr extends SQLiteOpenHelper {
     /**
      * Update station record from decoded message - RAM cache + SYNC DB save
      */
-    public void updateStationFromMessage(Ft8Message msg, String qth, String dxcc, int ituZone, int cqZone, float bearing) {
+    public void updateStationFromMessage(Ft8Message msg, String qth, String dxcc,
+                                         int ituZone, int cqZone, float bearing) {
         String callsign = msg.getCallsignFrom();
         if (callsign == null || callsign.isEmpty()) return;
         callsign = callsign.toUpperCase().trim();
-
-        int detectedState = classifyMessageToLegacyCode(msg);
 
         worldModelLock.lock();
         try {
@@ -2081,6 +2080,8 @@ public class DatabaseOpr extends SQLiteOpenHelper {
                 record = new StationRecord(callsign);
                 stationWorldModel.put(callsign, record);
             }
+
+            // Обновляем ТОЛЬКО технические данные
             record.lastFreqHz = Math.round(msg.freq_hz);
             record.lastSeenUtcSec = msg.utcTime;
             record.lastSnr = msg.snr;
@@ -2089,41 +2090,54 @@ public class DatabaseOpr extends SQLiteOpenHelper {
             if (dxcc != null) record.dxccCode = dxcc;
             record.lastItuZone = ituZone;
             record.lastCqZone = cqZone;
+
             long fullFrequency = GeneralVariables.band + Math.round(msg.freq_hz);
             int bandBit = freqToBandBit(fullFrequency);
             record.bandsBitmap |= (1L << bandBit);
             record.lastSequential = msg.getSequence();
-            Log.d(TAG, "[SEQUENTIAL] " + callsign + " TX in slot " + msg.getSequence());
 
-            boolean isRelevantToUs = GeneralVariables.checkIsMyCallsign(msg.getCallsignTo());
-            boolean isCQ = msg.checkIsCQ();
-
-            if (isRelevantToUs && detectedState >= 1 && detectedState <= 4) {
-                int oldState = record.ft8StateRelative;
-                record.ft8StateRelative = detectedState;
-                if (record.ft8StateRelative != oldState) {
-                    Log.d(TAG, "[STATE] " + callsign + ": " + oldState + " → " + record.ft8StateRelative);
-                }
-            } else if (isCQ && record.ft8StateRelative < 1) {
-                record.ft8StateRelative = 6;
-            }
+            // НЕ обновляем ft8StateRelative — это бизнес-логика!
+            // DecisionEngine сам решит, что делать
 
             record.priorityScore = calculatePriorityScore(record);
 
-            // [SYNC FIX] Немедленная запись в БД
-            try {
-                String sql = "INSERT OR REPLACE INTO station_world_model VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                db.execSQL(sql, new Object[]{
-                        record.callsign, record.bandsBitmap, record.lastFreqHz, record.lastSeenUtcSec,
-                        record.lastSnr, record.lastQth, record.lastBearing, record.dxccCode, record.lastItuZone, record.lastCqZone,
-                        record.ft8StateRelative, record.priorityScore, record.isNewDx ? 1 : 0, System.currentTimeMillis() / 1000,
-                        record.lastSequential
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "[SYNC FIX] Failed to write single record to DB: " + e.getMessage());
-            }
+            // Сохраняем в БД
+            saveToDb(record);
         } finally {
             worldModelLock.unlock();
+        }
+    }
+
+    private void saveToDb(StationRecord record) {
+        try {
+            String sql = "INSERT OR REPLACE INTO station_world_model VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            db.execSQL(sql, new Object[]{
+                    record.callsign, record.bandsBitmap, record.lastFreqHz, record.lastSeenUtcSec,
+                    record.lastSnr, record.lastQth, record.lastBearing, record.dxccCode,
+                    record.lastItuZone, record.lastCqZone,
+                    record.ft8StateRelative, record.priorityScore, record.isNewDx ? 1 : 0,
+                    System.currentTimeMillis() / 1000,
+                    record.lastSequential
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "[SYNC FIX] Failed to write single record to DB: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Update only the ft8StateRelative field in database.
+     * Called by DecisionEngine after business logic determines the state.
+     */
+    public void updateStationStateInDb(StationRecord record) {
+        try {
+            String sql = "UPDATE station_world_model SET ft8_state_relative = ?, priority_score = ? WHERE callsign = ?";
+            db.execSQL(sql, new Object[]{
+                    record.ft8StateRelative,
+                    record.priorityScore,
+                    record.callsign
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to update station state in DB: " + e.getMessage());
         }
     }
 

@@ -220,16 +220,7 @@ public class MainViewModel extends ViewModel {
     // ========================================================================
     // [STATE MACHINE] Context for My Station State Management
     // ========================================================================
-    // Uses shared enums from StationState to avoid circular dependencies.
-    // This is the "memory" of the state machine, passed to evaluateStateMachine().
-    // Thread-safe: accessed only from main thread or synchronized blocks.
-    // ========================================================================
 
-    /**
-     * Context object holding the current state and temporary variables.
-     * [STATE MACHINE] This is the "memory" of the state machine.
-     * It's passed to evaluateStateMachine() and updated on each transition.
-     */
     public static class StationContext {
         // Current state triple: (opMode, subState, step)
         public StationState.OperationalMode opMode = StationState.OperationalMode.OPERATING;
@@ -461,6 +452,46 @@ public class MainViewModel extends ViewModel {
                                     ArrayList<Ft8Message> messages, boolean isDeep) {
                 if (messages.size() == 0) return;
 
+                // [NEW] Логируем начало цикла декодирования
+                Log.d(TAG, String.format("[DECODE] === Slot %d | Messages: %d | Deep: %s ===",
+                        sequential, messages.size(), isDeep));
+
+                // [NEW] Логируем каждое декодированное сообщение
+                for (Ft8Message msg : messages) {
+                    String from = msg.getCallsignFrom() != null ? msg.getCallsignFrom() : "?";
+                    String to = msg.getCallsignTo() != null ? msg.getCallsignTo() : "?";
+                    String extra = msg.extraInfo != null ? msg.extraInfo : "";
+                    int snr = msg.snr;
+                    float freq = msg.freq_hz;
+
+                    // Определяем тип сообщения через FT8MessageClassifier (единая точка правды)
+                    String msgType;
+                    if (msg.checkIsCQ()) {
+                        msgType = "CQ";
+                    } else if (FT8MessageClassifier.isSeventyThree(msg)) {
+                        msgType = "73";
+                    } else if (FT8MessageClassifier.isRR73(msg)) {
+                        msgType = "RR73";
+                    } else if (FT8MessageClassifier.isRReport(msg)) {
+                        msgType = "R-REPORT";
+                    } else if (FT8MessageClassifier.isReport(msg)) {
+                        msgType = "REPORT";
+                    } else if (FT8MessageClassifier.isGrid(msg)) {
+                        msgType = "GRID";
+                    } else {
+                        msgType = "UNKNOWN";
+                    }
+
+                    // Проверяем, адресовано ли сообщение нам
+                    boolean toMe = GeneralVariables.checkIsMyCallsign(to);
+                    String marker = toMe ? " → US" : "";
+
+                    Log.d(TAG, String.format("[DECODE] %s → %s%s | %-8s | %-6s | SNR=%+d freq=%.0fHz",
+                            from, to, marker, msgType,
+                            extra.isEmpty() ? "(empty)" : extra,
+                            snr, freq));
+                }
+
                 synchronized (ft8Messages) {
                     ft8Messages.addAll(messages);
                 }
@@ -479,18 +510,19 @@ public class MainViewModel extends ViewModel {
                 }
                 // Evaluate state transitions based on fresh messages and current context
                 evaluateStateMachine(messages, UtcTimer.getNowSequential());
+                //evaluateStateMachine(messages, sequential);
                 findIncludedCallsigns(messages);
                 // ============================================================
 
                 // findIncludedCallsigns(messages); // [DEBUG] Temporarily disabled for testing
-                /* old logic
-                if (!ft8TransmitSignal.isTransmitting()
-                        && !isDeep
-                        && (ft8SignalListener.timeSec + GeneralVariables.pttDelay
-                        + GeneralVariables.transmitDelay <= 2000)) {
-                    ft8TransmitSignal.parseMessageToFunction(messages);
-                }
-                */
+    /* old logic
+    if (!ft8TransmitSignal.isTransmitting()
+            && !isDeep
+            && (ft8SignalListener.timeSec + GeneralVariables.pttDelay
+            + GeneralVariables.transmitDelay <= 2000)) {
+        ft8TransmitSignal.parseMessageToFunction(messages);
+    }
+    */
 
                 currentMessages = messages;
                 currentDecodeCount = isDeep ? currentDecodeCount + messages.size() : messages.size();
@@ -792,79 +824,81 @@ public class MainViewModel extends ViewModel {
      */
     private void evaluateStateMachine(ArrayList<Ft8Message> messages, long currentSlot) {
         // [FIX] Prevent duplicate evaluations in the same slot
-        // This can happen when afterDecode() is called multiple times (e.g., normal + deep decode)
-        if (currentSlot == lastEvaluatedSlot) {
-            Log.d(TAG, "[SKIP] evaluateStateMachine already processed slot " + currentSlot);
+// [FIX] Allow re-evaluation if we're in the same slot but different messages
+// This handles the case when decode finishes late in the slot
+        if (currentSlot != lastEvaluatedSlot) {
+            lastEvaluatedSlot = currentSlot;
+            Log.d(TAG, "[SLOT] Processing slot " + currentSlot);
+        } else {
+            // Same slot - check if we have new messages that weren't processed
+            // For now, skip to avoid duplicate processing
+            Log.d(TAG, "[SKIP] Slot " + currentSlot + " already processed");
             return;
         }
-        lastEvaluatedSlot = currentSlot;
 
         Log.d(TAG, "[DEBUG] evaluateStateMachine called. Mode: " + stationContext.opMode +
                 ", Messages: " + (messages != null ? messages.size() : 0));
-        StationContext ctx = stationContext;
 
-        // === [CRITICAL FIX #1] Check for replies from current dialogue partner FIRST ===
-        // This MUST run before manual CQ check and DecisionEngine evaluation
+        // Шаг 1: Обновляем технические данные в World Model (DAO)
+        for (Ft8Message msg : messages) {
+            databaseOpr.updateStationFromMessage(msg, msg.maidenGrid, null, 0, 0, 0);
+        }
+
+        // Шаг 2: Обновляем бизнес-логику состояния диалога (DecisionEngine)
+        decisionEngine.updateWorldModelState(messages);
+
+        // Шаг 3: Проверяем ответы от текущего партнёра
+        StationContext ctx = stationContext;
         if (ctx.isInDialogue() && !ctx.currentTarget.isEmpty() && messages != null && !messages.isEmpty()) {
             for (Ft8Message msg : messages) {
-                // Check if this message is FROM our current target AND addressed TO us
                 if (msg.getCallsignFrom().equalsIgnoreCase(ctx.currentTarget) &&
                         GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())) {
-
                     Log.d(TAG, "[DIALOGUE] Reply detected from " + ctx.currentTarget +
                             ": " + msg.getMessageText(false));
-
-                    // [CRITICAL] Advance our protocol step based on World Model state
                     advanceDialogueStep(msg, ctx);
-
-                    // Update last reply timestamp to prevent timeout abort
                     ctx.lastReplySlot = currentSlot;
                     ctx.noReplyCount = 0;
-
-                    // No need to check other messages for this target in this slot
                     break;
                 }
             }
         }
-        // ========================================================================
 
-        // [NEW] Check for manual CQ request (after reply processing)
+        // Шаг 4: Проверяем ручной CQ запрос
         if (stationContext.manualCQRequested) {
             StationAction manualAction = processManualCQRequest();
             executeAction(manualAction, currentSlot);
-            return; // Exit early, do not call DecisionEngine
+            return;
         }
 
-        // [STATE MACHINE] Skip evaluation if not in OPERATING mode
+        // Шаг 5: Пропускаем, если не в OPERATING mode
         if (ctx.opMode != StationState.OperationalMode.OPERATING) {
             return;
         }
 
-        // === [DECISION ENGINE] Build context and evaluate ===
+        // Шаг 6: DecisionEngine принимает решение
         DecisionContext decisionCtx = buildDecisionContext(messages, currentSlot);
         StationAction action = decisionEngine.evaluate(decisionCtx, messages, databaseOpr);
 
-        // ========================================================================
-        // [FIX] STATE PERSISTENCE: Update context based on decided action
-        // ========================================================================
+        // Шаг 7: Обновляем контекст на основе решения
         if (action.type == StationAction.ActionType.TRANSMIT && action.targetCallsign != null && !action.targetCallsign.isEmpty()) {
-            // 1. Remember who we're talking to
-            stationContext.currentTarget = action.targetCallsign;
-
-            // 2. Enter dialogue mode
-            stationContext.subState = StationState.OperatingSubState.IN_DIALOGUE;
-            Log.d(TAG, "[CONTEXT UPDATE] currentTarget=" + stationContext.currentTarget +
-                    " subState=" + stationContext.subState);
-            // 3. Update protocol step
-            if (action.protocolStep > 0 && action.protocolStep <= StationState.DialogueStep.values().length) {
-                stationContext.step = StationState.DialogueStep.values()[action.protocolStep - 1];
+            // [FIX] Check if transmission is actually allowed BEFORE updating context
+            if (!ft8TransmitSignal.isActivated()) {
+                Log.d(TAG, "[CONTEXT SKIP] Transmission blocked (isActivated=false), NOT entering IN_DIALOGUE");
+                // Do NOT update context - stay in SEEKING
+            } else {
+                // Transmission allowed - update context normally
+                stationContext.currentTarget = action.targetCallsign;
+                stationContext.subState = StationState.OperatingSubState.IN_DIALOGUE;
+                Log.d(TAG, "[CONTEXT UPDATE] currentTarget=" + stationContext.currentTarget +
+                        " subState=" + stationContext.subState);
+                if (action.protocolStep > 0 && action.protocolStep <= StationState.DialogueStep.values().length) {
+                    stationContext.step = StationState.DialogueStep.values()[action.protocolStep - 1];
+                }
+                stationContext.lastReplySlot = currentSlot;
             }
-
-            // 4. Record last contact time
-            stationContext.lastReplySlot = currentSlot;
         }
 
-        // === Log decision ===
+        // Шаг 8: Логируем решение
         Log.d(TAG, String.format("[DECISION] slot=%d state=%s action=%s target=%s priority=%.2f reason=\"%s\"",
                 currentSlot,
                 ctx.subState,
@@ -873,7 +907,7 @@ public class MainViewModel extends ViewModel {
                 action.priority,
                 action.reason));
 
-        // === Execute action ===
+        // Шаг 9: Выполняем действие
         executeAction(action, currentSlot);
     }
 
@@ -2025,6 +2059,7 @@ public class MainViewModel extends ViewModel {
         // Immediately re-evaluate state (do not wait for next slot)
         // [FIX] executeAction requires (StationAction, long currentSlot)
         evaluateStateMachine(null, UtcTimer.getNowSequential());
+
     }
 
     // [NEW] Check if manual control is allowed in current state
@@ -2035,12 +2070,6 @@ public class MainViewModel extends ViewModel {
                 !stationContext.userOverrideActive;
     }
 
-    // [NEW] Process manual CQ request within state machine
-    // Called from evaluateStateMachine() when manualCQRequested is true
-    // [NEW] Process manual CQ request within state machine
-    // Called from evaluateStateMachine() when manualCQRequested is true
-// [NEW] Process manual CQ request within state machine
-// Called from evaluateStateMachine() when manualCQRequested is true
     private StationAction processManualCQRequest() {
         Log.d(TAG, "[MANUAL_CQ] Processing request in state=" + stationContext.subState);
 

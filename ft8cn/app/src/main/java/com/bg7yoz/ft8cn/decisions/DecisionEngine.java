@@ -443,4 +443,47 @@ public class DecisionEngine {
         Log.d(TAG, "[DECISION] NOMADIC: мониторинг текущей частоты");
         return StationAction.wait("Мониторинг частоты");
     }
+
+    /**
+     * Update World Model state based on decoded messages.
+     * This is business logic, not DAO logic.
+     *
+     * @param messages List of newly decoded messages
+     */
+    /**
+     * Update World Model state based on decoded messages.
+     * This is business logic, not DAO logic.
+     *
+     * @param messages List of newly decoded messages
+     */
+    public void updateWorldModelState(List<Ft8Message> messages) {
+        if (messages == null) return;
+
+        for (Ft8Message msg : messages) {
+            String callsign = msg.getCallsignFrom();
+            if (callsign == null || callsign.isEmpty()) continue;
+
+            // [ИСПРАВЛЕНО] Используем полное имя DatabaseOpr.StationRecord
+            DatabaseOpr.StationRecord record = DatabaseOpr.getStationRecord(callsign);
+            if (record == null) continue;
+
+            int detectedState = FT8MessageClassifier.getLegacyCode(msg);
+            boolean isRelevantToUs = GeneralVariables.checkIsMyCallsign(msg.getCallsignTo());
+            boolean isCQ = msg.checkIsCQ();
+
+            // Бизнес-логика определения состояния диалога
+            if (isRelevantToUs && detectedState >= 1 && detectedState <= 4) {
+                int oldState = record.ft8StateRelative;
+                record.ft8StateRelative = detectedState;
+                if (record.ft8StateRelative != oldState) {
+                    Log.d(TAG, "[STATE] " + callsign + ": " + oldState + " → " + record.ft8StateRelative);
+                }
+            } else if (isCQ && record.ft8StateRelative < 1) {
+                record.ft8StateRelative = 6;
+            }
+
+            // Обновляем в БД
+            DatabaseOpr.getInstance(null, null).updateStationStateInDb(record);
+        }
+    }
 }
