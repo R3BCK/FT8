@@ -1,4 +1,4 @@
-his repository is a fork of the original [N0BOY/FT8CN](https://github.com/N0BOY/FT8CN/) with the following improvements:
+his repository is a fork of the original [N0BOY/FT8CN] with the following improvements:
 
 1. The project now includes the original C++ source files, and you can choose whether to use the original `.so` libraries or build from source.
 2. The app now supports exporting and importing QSO logs directly from the application.
@@ -20,11 +20,6 @@ his repository is a fork of the original [N0BOY/FT8CN](https://github.com/N0BOY/
 
 
 FT8CN — an app that runs FT8 natively on Android
-Check https://github.com/R3BCK/FT8CN/blob/release/ft8cn/app/build/outputs/apk/release/app-release.apk to download the latest APK file.
-
-
-
-
 
 **Thanks to:**  
 Steve Franke (K9AN), Bill Somerville (G4WJS), and Joe Taylor (K1JT) proposed the FT8 and FT4 protocols. 
