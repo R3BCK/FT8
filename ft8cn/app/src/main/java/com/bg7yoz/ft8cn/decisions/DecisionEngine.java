@@ -20,12 +20,15 @@ public class DecisionEngine {
     private static final String TAG = "DecisionEngine";
     private final HybridScorer scorer = new HybridScorer();
     private final Set<String> workedCallsignsCache = new HashSet<>();
-    private long cachedBandFreq = 0;
+
+    // [FIX] Кэш для RF частоты диапазона (например, 18100000 Hz = 18.1 MHz)
+    // НЕ путать с audioFreqHz (0-3000 Hz - аудио тон FT8 сигнала)
+    private long cachedRfBandFreq = 0;
 
     public void resetCache() {
         workedCallsignsCache.clear();
-        cachedBandFreq = 0;
-        Log.d(TAG, "[DECISION] Сброс кэша: частота изменена / история очищена");
+        cachedRfBandFreq = 0;
+        Log.d(TAG, "[DECISION] Сброс кэша: RF частота изменена / история очищена");
     }
 
     private boolean evaluateOverrideLifecycle(DecisionContext ctx) {
@@ -99,7 +102,6 @@ public class DecisionEngine {
             String caller = directCallMsg.getCallsignFrom();
             Log.d(TAG, "[DECISION] Обнаружен прямой вызов от " + caller);
 
-            // [НОВОЕ] Используем FT8MessageClassifier вместо checkFunOrder
             ProtocolStep step = FT8MessageClassifier.classify(directCallMsg);
             int nextStep = protocolStepToLegacyStep(step);
 
@@ -125,7 +127,6 @@ public class DecisionEngine {
         if (ctx.directCaller != null) {
             Ft8Message msg = findMessageByCallsign(messages, ctx.directCaller.callsign);
             if (msg != null) {
-                // [НОВОЕ] Используем FT8MessageClassifier
                 ProtocolStep step = FT8MessageClassifier.classify(msg);
                 int nextStep = protocolStepToLegacyStep(step);
 
@@ -182,11 +183,24 @@ public class DecisionEngine {
         return null;
     }
 
+    /**
+     * Создаёт действие передачи.
+     *
+     * ВАЖНО о частотах:
+     * - msg.freq_hz = АУДИО частота (audioFreqHz), диапазон 0-3000 Hz (тон FT8 сигнала в аудио)
+     * - GeneralVariables.band = RF частота (rfBandFreq), диапазон МГц (например 18100000 Hz = 18.1 MHz)
+     *
+     * В StationAction передаётся RF частота для настройки трансивера.
+     * Аудио частота используется для генерации тона внутри FT8TransmitSignal.
+     */
     private StationAction createTransmitAction(String callsign, int step, String reason, Ft8Message msg) {
         if (msg != null) {
-            Log.d(TAG, "[DECISION] Создание TRANSMIT с freq=" + msg.freq_hz + " snr=" + msg.snr);
+            // [FIX] Чёткое разделение audio и RF частот в логах
+            Log.d(TAG, "[DECISION] Создание TRANSMIT: audioFreqHz=" + msg.freq_hz +
+                    " (тон FT8), rfBandHz=" + GeneralVariables.band +
+                    " (диапазон), snr=" + msg.snr);
             return StationAction.transmit(callsign, step, reason,
-                    GeneralVariables.band,
+                    GeneralVariables.band,  // RF частота для трансивера
                     msg.snr, msg.i3, msg.n3, msg.extraInfo);
         } else {
             Log.w(TAG, "[DECISION] Нет сообщения для " + callsign + ", используются параметры по умолчанию");
@@ -194,17 +208,24 @@ public class DecisionEngine {
         }
     }
 
-    private boolean isCallsignWorkedOnBand(String callsign, long bandFreq, DatabaseOpr db) {
-        if (bandFreq != cachedBandFreq) {
+    /**
+     * Проверяет, отработан ли позывной на данной RF частоте диапазона.
+     *
+     * @param callsign Позывной для проверки
+     * @param rfBandFreq RF частота диапазона в Hz (например 18100000 для 18.1 MHz)
+     * @param db DatabaseOpr для запросов
+     */
+    private boolean isCallsignWorkedOnBand(String callsign, long rfBandFreq, DatabaseOpr db) {
+        if (rfBandFreq != cachedRfBandFreq) {
             workedCallsignsCache.clear();
-            cachedBandFreq = bandFreq;
+            cachedRfBandFreq = rfBandFreq;
         }
-        String cacheKey = callsign + "@" + bandFreq;
+        String cacheKey = callsign + "@" + rfBandFreq;
         if (workedCallsignsCache.contains(cacheKey)) return true;
 
         boolean isWorked = false;
         try {
-            String bandString = BaseRigOperation.getMeterFromFreq(bandFreq);
+            String bandString = BaseRigOperation.getMeterFromFreq(rfBandFreq);
 
             Cursor cursor = db.getDb().rawQuery(
                     "SELECT id FROM QSLTable WHERE call = ? AND band = ? LIMIT 1",
@@ -246,16 +267,8 @@ public class DecisionEngine {
             }
 
             if (targetVisible) {
-                if (targetRecord != null && targetRecord.lastSequential >= 0) {
-                    int expectedOurSlot = (targetRecord.lastSequential == 0) ? 1 : 0;
-                    if (ctx.currentSlot != expectedOurSlot) {
-                        Log.d(TAG, "[DECISION] SEEKING: Ожидание правильного слота. Target seq=" +
-                                targetRecord.lastSequential + ", наш ожидаемый=" + expectedOurSlot +
-                                ", текущий=" + ctx.currentSlot);
-                        return StationAction.wait("Ожидание правильного последовательного слота");
-                    }
-                }
-
+                // [FIX] Удалена некорректная проверка слотов в SEEKING
+                // Если цель видна - мы просто ждём ответа, проверка слотов не нужна
                 Log.d(TAG, "[DECISION] SEEKING: Уже есть цель=" + ctx.currentTarget +
                         ", ожидание ответа. НЕ ищем другие CQ");
                 return StationAction.wait("Ожидание ответа от цели");
@@ -274,6 +287,7 @@ public class DecisionEngine {
                     continue;
                 }
 
+                // [FIX] Используем RF частоту диапазона
                 if (isCallsignWorkedOnBand(s.callsign, GeneralVariables.band, db)) {
                     Log.d(TAG, "[DECISION] ПРОПУСК " + s.callsign + " (уже в журнале QSL)");
                     continue;
@@ -284,21 +298,15 @@ public class DecisionEngine {
                     continue;
                 }
 
-                if (s.lastSequential >= 0) {
-                    int expectedOurSlot = (s.lastSequential == 0) ? 1 : 0;
-                    if (ctx.currentSlot != expectedOurSlot) {
-                        Log.d(TAG, "[DECISION] ПРОПУСК " + s.callsign + " (неправильный слот: их seq=" +
-                                s.lastSequential + ", наш ожидаемый=" + expectedOurSlot +
-                                ", текущий=" + ctx.currentSlot + ")");
-                        continue;
-                    }
-                }
+                // [FIX] Удалена некорректная проверка слотов
+                // Логика: если мы декодировали CQ в текущем слоте, мы ВСЕГДА можем ответить в следующем
+                // Проверка "текущий слот приёма == наш слот передачи" бессмысленна
 
                 cqCandidates.add(s);
             }
         }
 
-        Log.d(TAG, "[DECISION] SEEKING: найдено " + cqCandidates.size() + " кандидатов CQ (после фильтра QSL + свежее сообщение + слот)");
+        Log.d(TAG, "[DECISION] SEEKING: найдено " + cqCandidates.size() + " кандидатов CQ (после фильтра QSL + свежее сообщение)");
 
         if (!cqCandidates.isEmpty() && ctx.autoFollowCQ) {
             DatabaseOpr.StationRecord best = scorer.findBestCandidate(cqCandidates, ctx);
@@ -310,7 +318,14 @@ public class DecisionEngine {
             }
         }
 
-        Log.d(TAG, "[DECISION] SEEKING: нет подходящего CQ -> давайте ПОДОЖДЕМ");
+        // [FIX] Если нет CQ кандидатов, но передача активна - запускаем собственное CQ
+        // Проверяем что передача активна (пользователь нажал Transmit button)
+        if (ctx.isTransmitActivated) {
+            Log.d(TAG, "[DECISION] SEEKING: нет CQ кандидатов, но передача активна -> TX_OWN_CQ");
+            return StationAction.txOwnCQ();
+        }
+
+        Log.d(TAG, "[DECISION] SEEKING: нет подходящего CQ и передача не активна -> WAIT");
         return StationAction.wait("Подходящий CQ не найден, ожидание");
     }
 
@@ -322,38 +337,31 @@ public class DecisionEngine {
         }
 
         if (ctx.currentTarget != null && ctx.directCaller == null) {
-            DatabaseOpr.StationRecord target = DatabaseOpr.getStationRecord(ctx.currentTarget);
-            if (target != null && target.lastSequential >= 0) {
-                int expectedOurSlot = (target.lastSequential == 0) ? 1 : 0;
+            // [FIX] УДАЛЕНА некорректная проверка слотов!
+            // В IN_DIALOGUE мы должны ОБРАБОТАТЬ любое сообщение от цели,
+            // чтобы понять - ответил ли он нам, или снова передал CQ.
+            // Проверка "текущий слот приёма == наш слот передачи" здесь бессмысленна,
+            // так как мы ПРИНИМАЕМ в текущем слоте, а ПЕРЕДАЁМ в следующем.
 
-                if (ctx.currentSlot != expectedOurSlot) {
-                    Log.d(TAG, "[DECISION] IN_DIALOGUE: Ожидание правильного слота. " +
-                            "Target seq=" + target.lastSequential +
-                            ", наш ожидаемый=" + expectedOurSlot +
-                            ", текущий=" + ctx.currentSlot);
-                    return StationAction.wait("Ожидание правильного последовательного слота");
-                }
+            if (messages != null) {
+                for (Ft8Message msg : messages) {
+                    if (msg.getCallsignFrom().equalsIgnoreCase(ctx.currentTarget) &&
+                            GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())) {
 
-                if (messages != null) {
-                    for (Ft8Message msg : messages) {
-                        if (msg.getCallsignFrom().equalsIgnoreCase(ctx.currentTarget) &&
-                                GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())) {
+                        // [НОВОЕ] Полностью переписан determineNextStep
+                        int nextStep = determineNextStepNew(msg);
 
-                            // [НОВОЕ] Полностью переписан determineNextStep
-                            int nextStep = determineNextStepNew(msg);
+                        Log.d(TAG, "[DECISION] IN_DIALOGUE: Ответ от " + ctx.currentTarget +
+                                " (msg=" + msg.getMessageText() + ") -> шаг " + nextStep);
 
-                            Log.d(TAG, "[DECISION] IN_DIALOGUE: Ответ от " + ctx.currentTarget +
-                                    " (msg=" + msg.getMessageText() + ") -> шаг " + nextStep);
-
-                            return createTransmitAction(ctx.currentTarget, nextStep,
-                                    "Ответ от " + ctx.currentTarget, msg);
-                        }
+                        return createTransmitAction(ctx.currentTarget, nextStep,
+                                "Ответ от " + ctx.currentTarget, msg);
                     }
                 }
-
-                Log.d(TAG, "[DECISION] IN_DIALOGUE: Нет ответа от " + ctx.currentTarget +
-                        " в слоте " + ctx.currentSlot);
             }
+
+            Log.d(TAG, "[DECISION] IN_DIALOGUE: Нет ответа от " + ctx.currentTarget +
+                    " в слоте " + ctx.currentSlot);
         }
 
         Log.d(TAG, "[DECISION] IN_DIALOGUE: продолжение диалога с " + ctx.currentTarget);
@@ -407,7 +415,6 @@ public class DecisionEngine {
                 String from = msg.getCallsignFrom();
                 if (!ctx.recentTargets.contains(from)) continue;
 
-                // [НОВОЕ] Используем FT8MessageClassifier
                 ProtocolStep step = FT8MessageClassifier.classify(msg);
 
                 if (step == ProtocolStep.RR73 || step == ProtocolStep.SEVENTY_THREE) {
@@ -440,16 +447,10 @@ public class DecisionEngine {
             Log.d(TAG, "[DECISION] NOMADIC: noReplyCount >= 3 -> NOMADIC_SWITCH");
             return StationAction.nomadicSwitch(0, "Триггер кочевого переключения");
         }
-        Log.d(TAG, "[DECISION] NOMADIC: мониторинг текущей частоты");
-        return StationAction.wait("Мониторинг частоты");
+        Log.d(TAG, "[DECISION] NOMADIC: мониторинг текущей RF частоты");
+        return StationAction.wait("Мониторинг RF частоты");
     }
 
-    /**
-     * Update World Model state based on decoded messages.
-     * This is business logic, not DAO logic.
-     *
-     * @param messages List of newly decoded messages
-     */
     /**
      * Update World Model state based on decoded messages.
      * This is business logic, not DAO logic.
@@ -463,7 +464,6 @@ public class DecisionEngine {
             String callsign = msg.getCallsignFrom();
             if (callsign == null || callsign.isEmpty()) continue;
 
-            // [ИСПРАВЛЕНО] Используем полное имя DatabaseOpr.StationRecord
             DatabaseOpr.StationRecord record = DatabaseOpr.getStationRecord(callsign);
             if (record == null) continue;
 

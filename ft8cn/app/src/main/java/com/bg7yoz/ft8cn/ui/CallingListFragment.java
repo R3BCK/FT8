@@ -1,4 +1,6 @@
+//CallingListFragment.java
 package com.bg7yoz.ft8cn.ui;
+
 /**
  * Decode interface fragment.
  * @author BGY70Z
@@ -377,8 +379,10 @@ public class CallingListFragment extends Fragment {
             GeneralVariables.transmitMessages.add(message); // Add message to follow list
         }
         // Call the initiator
+        Log.d(TAG, "[TX_TRIGGER] CallingListFragment.doCallNow() → setTransmit(" + message.getCallsignFrom() + ")");
         mainViewModel.ft8TransmitSignal.setTransmit(message.getFromCallTransmitCallsign()
                 , 1, message.extraInfo);
+        Log.d(TAG, "[TX_TRIGGER] CallingListFragment.doCallNow() → transmitNow()");
         mainViewModel.ft8TransmitSignal.transmitNow();
         GeneralVariables.resetLaunchSupervision(); // Reset auto supervision
         navigateToMyCallFragment(); // Navigate to transmit interface
@@ -417,12 +421,14 @@ public class CallingListFragment extends Fragment {
 
         // [CRITICAL] Use EXISTING setTransmit() with functionOrder = state
         // This is the SAME call used by auto-logic, just with user-selected step
+        Log.d(TAG, "[TX_TRIGGER] CallingListFragment.queueStateUsingExistingLogic() → setTransmit(" + targetCallsign + ", state=" + state + ")");
         mainViewModel.ft8TransmitSignal.setTransmit(
                 message.getFromCallTransmitCallsign(),  // Existing helper method
                 state,                                   // functionOrder: 1=CALL, 2=REPORT, 3=R-REPORT, 4=RR73
                 message.extraInfo);                      // Existing extra info
 
         // [FIX] Trigger immediate transmit using EXISTING method
+        Log.d(TAG, "[TX_TRIGGER] CallingListFragment.queueStateUsingExistingLogic() → transmitNow()");
         mainViewModel.ft8TransmitSignal.transmitNow();
         GeneralVariables.resetLaunchSupervision();
 
@@ -530,8 +536,10 @@ public class CallingListFragment extends Fragment {
                     GeneralVariables.resetLaunchSupervision(); // Reset auto supervision
                 }
                 // Call the target station
+                Log.d(TAG, "[TX_TRIGGER] CallingListFragment.onContextItemSelected(MENU_CALL_TO) → setTransmit(" + ft8Message.getCallsignTo() + ")");
                 mainViewModel.ft8TransmitSignal.setTransmit(ft8Message.getToCallTransmitCallsign()
                         , 1, ft8Message.extraInfo);
+                Log.d(TAG, "[TX_TRIGGER] CallingListFragment.onContextItemSelected(MENU_CALL_TO) → transmitNow()");
                 mainViewModel.ft8TransmitSignal.transmitNow();
 
                 navigateToMyCallFragment(); // Navigate to transmit interface
@@ -554,8 +562,10 @@ public class CallingListFragment extends Fragment {
                     GeneralVariables.transmitMessages.add(ft8Message); // Add message to follow list
                 }
                 // Call the initiator
+                Log.d(TAG, "[TX_TRIGGER] CallingListFragment.onContextItemSelected(MENU_REPLY) → setTransmit(" + ft8Message.getCallsignFrom() + ")");
                 mainViewModel.ft8TransmitSignal.setTransmit(ft8Message.getFromCallTransmitCallsign()
                         , -1, ft8Message.extraInfo);
+                Log.d(TAG, "[TX_TRIGGER] CallingListFragment.onContextItemSelected(MENU_REPLY) → transmitNow()");
                 mainViewModel.ft8TransmitSignal.transmitNow();
                 GeneralVariables.resetLaunchSupervision(); // Reset auto supervision
                 navigateToMyCallFragment(); // Navigate to transmit interface

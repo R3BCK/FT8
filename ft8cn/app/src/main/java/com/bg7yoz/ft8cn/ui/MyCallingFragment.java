@@ -1,3 +1,4 @@
+//MyCallingFragment.java
 package com.bg7yoz.ft8cn.ui;
 /**
  * Calling interface.
@@ -94,6 +95,7 @@ public class MyCallingFragment extends Fragment {
         GeneralVariables.transmitMessages.add(message);
 
         // [FIX] Use new method that updates state machine
+        Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.doCallNow() → manualCallStation(" + message.getCallsignFrom() + ")");
         mainViewModel.manualCallStation(
                 message.getCallsignFrom(),
                 message.i3,
@@ -130,8 +132,10 @@ public class MyCallingFragment extends Fragment {
                 if (!mainViewModel.ft8TransmitSignal.isActivated()) {
                     mainViewModel.ft8TransmitSignal.setActivated(true);
                 }
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.onContextItemSelected(case 1) → setTransmit(" + ft8Message.getCallsignTo() + ")");
                 mainViewModel.ft8TransmitSignal.setTransmit(ft8Message.getToCallTransmitCallsign()
                         , 1, ft8Message.extraInfo);
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.onContextItemSelected(case 1) → transmitNow()");
                 mainViewModel.ft8TransmitSignal.transmitNow();
                 break;
 
@@ -154,8 +158,10 @@ public class MyCallingFragment extends Fragment {
                     GeneralVariables.transmitMessages.add(ft8Message);//add message to follow list
                 }
                 //call initiator
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.onContextItemSelected(case 4 REPLY) → setTransmit(" + ft8Message.getCallsignFrom() + ")");
                 mainViewModel.ft8TransmitSignal.setTransmit(ft8Message.getFromCallTransmitCallsign()
                         , -1, ft8Message.extraInfo);
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.onContextItemSelected(case 4 REPLY) → transmitNow()");
                 mainViewModel.ft8TransmitSignal.transmitNow();
                 break;
 
@@ -173,11 +179,13 @@ public class MyCallingFragment extends Fragment {
                 break;
             case 9: // [NEW] Call TARGET MYCALL SWR
                 Log.d(TAG, "Call SWR to: " + ft8Message.getCallsignTo());
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.onContextItemSelected(case 9 SWR) → sendCustomTransmission(" + ft8Message.getCallsignTo() + ", SWR)");
                 mainViewModel.sendCustomTransmission(ft8Message.getCallsignTo(), "SWR");
                 break;
 
             case 10: // [NEW] Call TARGET MYCALL RSWR
                 Log.d(TAG, "Call RSWR to: " + ft8Message.getCallsignTo());
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.onContextItemSelected(case 10 RSWR) → sendCustomTransmission(" + ft8Message.getCallsignTo() + ", RSWR)");
                 mainViewModel.sendCustomTransmission(ft8Message.getCallsignTo(), "RSWR");
                 break;
 
@@ -481,6 +489,7 @@ public class MyCallingFragment extends Fragment {
             //@RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "[TX_TRIGGER] MyCallingFragment.resetToCQImageView.onClick() → resetToCQ()");
                 mainViewModel.ft8TransmitSignal.resetToCQ();
                 GeneralVariables.resetLaunchSupervision();//reset auto supervision
             }

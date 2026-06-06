@@ -1,7 +1,21 @@
 //FT8TransmitSignal.java
 package com.bg7yoz.ft8cn.ft8transmit;
 /**
- * Class related to transmitting signals. Includes automatic procedures for analyzing QSO process.
+ * Class related to transmitting signals.
+ *
+ * ARCHITECTURE NOTE (IMPORTANT!):
+ * This class is now a PASSIVE EXECUTOR only. It does NOT make any decisions
+ * about WHAT or WHEN to transmit. All decision logic is in:
+ *   - MainViewModel.evaluateStateMachine()
+ *   - DecisionEngine.evaluate()
+ *
+ * MainViewModel calls:
+ *   - setTransmit(...) to prepare transmission parameters
+ *   - transmitNow() to explicitly trigger transmission
+ *
+ * The autonomous UtcTimer that used to auto-trigger doTransmit() every 15 seconds
+ * has been DISABLED to prevent conflicts with DecisionEngine (which caused the
+ * infinite "73" transmission bug).
  *
  * @author BGY7YOZ
  * @date 2023-03-20
@@ -79,6 +93,9 @@ public class FT8TransmitSignal {
 
     private float[] currentAudioBuffer = null;
 
+    // [ARCHITECTURE FIX] utcTimer is no longer used for autonomous transmission triggering.
+    // Kept as field for potential future use, but NOT started automatically.
+    // Transmission is now triggered ONLY by explicit transmitNow() calls from MainViewModel.
     public UtcTimer utcTimer;
 
     public ArrayList<FunctionOfTransmit> functionList = new ArrayList<>();
@@ -172,6 +189,22 @@ public class FT8TransmitSignal {
             if (audioTrack != null) audioTrack.setVolume(aFloat);
         });
 
+        // ========================================================================
+        // [ARCHITECTURE FIX] AUTONOMOUS TIMER DISABLED
+        // ========================================================================
+        // The following block has been COMMENTED OUT to fix the infinite "73" bug.
+        //
+        // PROBLEM: This timer used to call doTransmit() every 15 seconds whenever
+        // (currentSlot == sequential && activated), regardless of what DecisionEngine
+        // decided. This caused:
+        //   1. MainViewModel decides: "Send 73 once, then go to SOFT_FINISH"
+        //   2. FT8TransmitSignal's timer: "Keep sending 73 every 15 sec forever!"
+        //   Result: Conflict → infinite 73 transmissions
+        //
+        // SOLUTION: FT8TransmitSignal is now a PASSIVE executor.
+        // MainViewModel controls WHEN to transmit via explicit transmitNow() calls.
+        // ========================================================================
+        /*
         utcTimer = new UtcTimer(FT8Common.FT8_SLOT_TIME_M, false, new OnUtcTimer() {
             @Override public void doHeartBeatTimer(long utc) {}
             @Override public void doOnSecTimer(long utc) {
@@ -189,35 +222,101 @@ public class FT8TransmitSignal {
             }
         });
         utcTimer.start();
+        */
+        // ========================================================================
+        // [END ARCHITECTURE FIX]
+        // ========================================================================
+
+        Log.d(TAG, "[ARCHITECTURE] Autonomous timer DISABLED. " +
+                "FT8TransmitSignal is now a passive executor. " +
+                "Transmission is triggered only by explicit transmitNow() calls from MainViewModel.");
     }
 
+    /**
+     * Explicitly trigger transmission.
+     * Called by MainViewModel when DecisionEngine decides to transmit.
+     *
+     * This is the ONLY way to start transmission now (autonomous timer disabled).
+     */
     public void transmitNow() {
         if (GeneralVariables.myCallsign.length() < 3) {
             ToastMessage.show(GeneralVariables.getStringFromResource(R.string.callsign_error));
             return;
         }
+
+        int currentSlot = UtcTimer.getNowSequential();
+        long systemTime = UtcTimer.getSystemTime();
+        long timeInSlot = systemTime % 15000;
+
+        Log.w(TAG, "[TRANSMIT_NOW] ========================================");
+        Log.w(TAG, "[TRANSMIT_NOW] transmitNow() CALLED");
+        Log.w(TAG, "[TRANSMIT_NOW]   target=" + (toCallsign != null ? toCallsign.callsign : "NULL"));
+        Log.w(TAG, "[TRANSMIT_NOW]   functionOrder=" + functionOrder);
+        Log.w(TAG, "[TRANSMIT_NOW]   targetSequential=" + sequential);
+        Log.w(TAG, "[TRANSMIT_NOW]   currentSlot=" + currentSlot);
+        Log.w(TAG, "[TRANSMIT_NOW]   systemTime=" + systemTime + " timeInSlot=" + timeInSlot);
+        Log.w(TAG, "[TRANSMIT_NOW]   isActivated=" + isActivated());
+        Log.w(TAG, "[TRANSMIT_NOW]   isTransmitting=" + isTransmitting());
+
         ToastMessage.show(String.format(GeneralVariables.getStringFromResource(R.string.adjust_call_target), toCallsign.callsign));
         resetTargetReport();
-        if (UtcTimer.getNowSequential() == sequential && (UtcTimer.getSystemTime() % 15000) < 2500) {
+
+        // [FIX] НЕ игнорируем проверку слота!
+        // Передаём только если текущий слот совпадает с целевым
+        if (currentSlot == sequential && timeInSlot < 2500) {
+            Log.w(TAG, "[TRANSMIT_NOW] STARTING TRANSMISSION (correct slot)");
             setTransmitting(false);
             doTransmit();
+        } else {
+            Log.w(TAG, "[TRANSMIT_NOW] WAITING for correct slot (current=" + currentSlot + " target=" + sequential + ")");
+            // Передача произойдёт автоматически через utcTimer когда придёт нужный слот
         }
+        Log.w(TAG, "[TRANSMIT_NOW] ========================================");
     }
 
     public void doTransmit() {
-        if (!activated) return;
-        if (BaseRigOperation.checkIsWSPR2(GeneralVariables.band + Math.round(GeneralVariables.getBaseFrequency()))) {
+        Log.w(TAG, "[DO_TRANSMIT] ========================================");
+        Log.w(TAG, "[DO_TRANSMIT] doTransmit() CALLED");
+        Log.w(TAG, "[DO_TRANSMIT]   isActivated=" + isActivated());
+
+        if (!isActivated()) {
+            Log.w(TAG, "[DO_TRANSMIT] ❌ BLOCKED: not activated");
+            Log.w(TAG, "[DO_TRANSMIT] ========================================");
+            return;
+        }
+
+        long rfFreq = GeneralVariables.band + Math.round(GeneralVariables.getBaseFrequency());
+        boolean isWSPR2 = BaseRigOperation.checkIsWSPR2(rfFreq);
+        Log.w(TAG, "[DO_TRANSMIT]   rfFreq=" + rfFreq + " isWSPR2=" + isWSPR2);
+
+        if (isWSPR2) {
             ToastMessage.show(String.format(GeneralVariables.getStringFromResource(R.string.use_wspr2_error),
                     BaseRigOperation.getFrequencyAllInfo(GeneralVariables.band)));
             setActivated(false);
+            Log.w(TAG, "[DO_TRANSMIT]  BLOCKED: WSPR2 frequency");
+            Log.w(TAG, "[DO_TRANSMIT] ========================================");
             return;
         }
+
+        Log.w(TAG, "[DO_TRANSMIT]  Submitting to thread pool");
+        Log.w(TAG, "[DO_TRANSMIT] ========================================");
         doTransmitThreadPool.execute(doTransmitRunnable);
         mutableFunctions.postValue(functionList);
     }
 
     @SuppressLint("DefaultLocale")
     public void setTransmit(TransmitCallsign transmitCallsign, int functionOrder, String toMaidenheadGrid) {
+        // [TX_DEBUG] Детальное логирование всех параметров вызова setTransmit
+        Log.d(TAG, "[TX_DEBUG] setTransmit() called:");
+        Log.d(TAG, "  target=" + (transmitCallsign != null ? transmitCallsign.callsign : "NULL"));
+        Log.d(TAG, "  functionOrder=" + functionOrder);
+        Log.d(TAG, "  extraInfo=\"" + toMaidenheadGrid + "\"");
+        Log.d(TAG, "  freq_hz=" + (transmitCallsign != null ? transmitCallsign.frequency : "N/A"));
+        Log.d(TAG, "  sequential=" + (transmitCallsign != null ? transmitCallsign.sequential : "N/A"));
+        Log.d(TAG, "  snr=" + (transmitCallsign != null ? transmitCallsign.snr : "N/A"));
+        Log.d(TAG, "  current UTC slot=" + UtcTimer.getNowSequential());
+        Log.d(TAG, "  isActivated=" + isActivated());
+
         // [DEBUG] Трассировка всех вызовов setTransmit
         Log.w(TAG, "[SET_TRANSMIT_CALLED] targetCallsign=" + transmitCallsign.callsign +
                 " functionOrder=" + functionOrder +
@@ -283,33 +382,49 @@ public class FT8TransmitSignal {
     }
 
     public Ft8Message getFunctionCommand(int order) {
+        // [TX_DEBUG] Логирование формирования сообщения для каждого шага
+        Log.d(TAG, "[TX_DEBUG] getFunctionCommand() called with order=" + order);
+        Log.d(TAG, "  targetCallsign=" + (toCallsign != null ? toCallsign.callsign : "NULL"));
+        Log.d(TAG, "  myCallsign=" + GeneralVariables.myCallsign);
+        Log.d(TAG, "  myGrid=" + GeneralVariables.getMyMaidenhead4Grid());
+
         switch (order) {
             case 1:
+                Log.d(TAG, "  → STEP 1: Call with grid");
                 resetTargetReport();
                 return new Ft8Message(1, 0, toCallsign.callsign, GeneralVariables.myCallsign, GeneralVariables.getMyMaidenhead4Grid());
 
             case 2: {
+                Log.d(TAG, "  → STEP 2: Send signal report");
                 int snr = toCallsign.snr;
                 if (snr == -100 || snr < -30 || snr > 30) snr = -10;
                 sentTargetReport = snr;
+                Log.d(TAG, "    report value=" + snr);
                 return new Ft8Message(1, 0, toCallsign.callsign, GeneralVariables.myCallsign, String.valueOf(snr));
             }
             case 3: {
+                Log.d(TAG, "  → STEP 3: Send R-report");
                 int snr = toCallsign.snr;
                 if (snr == -100 || snr < -30 || snr > 30) snr = -10;
                 sentTargetReport = snr;
+                Log.d(TAG, "    R-report value=R" + snr);
                 return new Ft8Message(1, 0, toCallsign.callsign, GeneralVariables.myCallsign, "R" + snr);
             }
             case 4:
+                Log.d(TAG, "  → STEP 4: Send RR73");
                 return new Ft8Message(1, 0, toCallsign.callsign, GeneralVariables.myCallsign, "RR73");
             case 5:
+                Log.d(TAG, "  → STEP 5: Send 73");
                 return new Ft8Message(1, 0, toCallsign.callsign, GeneralVariables.myCallsign, "73");
             case 6:
+                Log.d(TAG, "  → STEP 6: Send CQ");
                 resetTargetReport();
                 Ft8Message msg = new Ft8Message(1, 0, "CQ", GeneralVariables.myCallsign, GeneralVariables.getMyMaidenhead4Grid());
                 msg.modifier = GeneralVariables.toModifier;
+                Log.d(TAG, "    CQ modifier=" + GeneralVariables.toModifier);
                 return msg;
         }
+        Log.w(TAG, "  → UNKNOWN ORDER " + order + ", fallback to CQ");
         return new Ft8Message("CQ", GeneralVariables.myCallsign, GeneralVariables.getMyMaidenhead4Grid());
     }
 
@@ -338,6 +453,11 @@ public class FT8TransmitSignal {
     }
 
     private void playFT8Signal(Ft8Message msg) {
+        Log.w(TAG, "[PLAY_FT8] ========================================");
+        Log.w(TAG, "[PLAY_FT8] playFT8Signal() CALLED");
+        Log.w(TAG, "[PLAY_FT8]   message=" + msg.getMessageText());
+        Log.w(TAG, "[PLAY_FT8]   connectMode=" + GeneralVariables.connectMode);
+
         if (GeneralVariables.connectMode == ConnectMode.NETWORK) {
             if (onDoTransmitted != null) onDoTransmitted.onTransmitByWifi(msg);
             long now = System.currentTimeMillis();
@@ -345,8 +465,10 @@ public class FT8TransmitSignal {
                 try { Thread.sleep(1); if (System.currentTimeMillis() - now > 13100) { isTransmitting = false; break; } }
                 catch (InterruptedException e) { e.printStackTrace(); }
             }
-            afterPlayAudio(); return;
+            afterPlayAudio();
+            return;
         }
+
         if (GeneralVariables.controlMode == ControlMode.CAT && onDoTransmitted != null && onDoTransmitted.supportTransmitOverCAT()) {
             onDoTransmitted.onTransmitOverCAT(msg);
             long now = System.currentTimeMillis();
@@ -354,37 +476,75 @@ public class FT8TransmitSignal {
                 try { Thread.sleep(1); if (System.currentTimeMillis() - now > 13000) { isTransmitting = false; break; } }
                 catch (InterruptedException e) { e.printStackTrace(); }
             }
-            afterPlayAudio(); return;
+            afterPlayAudio();
+            return;
         }
+
         float[] buffer = GenerateFT8.generateFt8(msg, GeneralVariables.getBaseFrequency(), GeneralVariables.audioSampleRate);
-        if (buffer == null) { afterPlayAudio(); return; }
+        if (buffer == null) {
+            afterPlayAudio();
+            return;
+        }
 
         currentAudioBuffer = buffer;
 
-        attributes = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build();
-        myFormat = new AudioFormat.Builder().setSampleRate(GeneralVariables.audioSampleRate)
+        attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
+        myFormat = new AudioFormat.Builder()
+                .setSampleRate(GeneralVariables.audioSampleRate)
                 .setEncoding(GeneralVariables.audioOutput32Bit ? AudioFormat.ENCODING_PCM_FLOAT : AudioFormat.ENCODING_PCM_16BIT)
-                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build();
-        audioTrack = new AudioTrack(attributes, myFormat,
-                GeneralVariables.audioOutput32Bit ? GeneralVariables.audioSampleRate * 15 * 4 : GeneralVariables.audioSampleRate * 15 * 2,
-                AudioTrack.MODE_STATIC, 0);
+                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                .build();
+
+        // [FIX] Используем MODE_STREAM вместо MODE_STATIC
+        // MODE_STATIC не работает для больших буферов (>1MB)
+        int minBufferSize = AudioTrack.getMinBufferSize(
+                GeneralVariables.audioSampleRate,
+                AudioFormat.CHANNEL_OUT_MONO,
+                GeneralVariables.audioOutput32Bit ? AudioFormat.ENCODING_PCM_FLOAT : AudioFormat.ENCODING_PCM_16BIT
+        );
+
+        // Берем максимум из минимального размера и размера данных
+        int bufferSize = Math.max(minBufferSize,
+                GeneralVariables.audioOutput32Bit ? buffer.length * 4 : (buffer.length + 8) * 2);
+
+        audioTrack = new AudioTrack(
+                attributes,
+                myFormat,
+                bufferSize,
+                AudioTrack.MODE_STREAM,  // STREAM вместо STATIC
+                0
+        );
+
+        if (audioTrack == null || audioTrack.getState() != AudioTrack.STATE_INITIALIZED) {
+            Log.w(TAG, "[PLAY_FT8] AudioTrack init failed");
+            afterPlayAudio();
+            return;
+        }
+
         int writeResult;
         if (GeneralVariables.audioOutput32Bit) {
-            writeResult = audioTrack.write(buffer, 0, buffer.length, AudioTrack.WRITE_NON_BLOCKING);
+            writeResult = audioTrack.write(buffer, 0, buffer.length, AudioTrack.WRITE_BLOCKING);
         } else {
-            writeResult = audioTrack.write(float2Short(buffer), 0, buffer.length + 8, AudioTrack.WRITE_NON_BLOCKING);
+            writeResult = audioTrack.write(float2Short(buffer), 0, buffer.length + 8, AudioTrack.WRITE_BLOCKING);
         }
-        if (writeResult == AudioTrack.ERROR_INVALID_OPERATION || writeResult == AudioTrack.ERROR_BAD_VALUE ||
-                writeResult == AudioTrack.ERROR_DEAD_OBJECT || writeResult == AudioTrack.ERROR) {
-            Log.e(TAG, "Playback error: " + writeResult); afterPlayAudio(); return;
+
+        if (writeResult <= 0) {
+            afterPlayAudio();
+            return;
         }
+
         audioTrack.setNotificationMarkerPosition(buffer.length);
         audioTrack.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener() {
             @Override public void onMarkerReached(AudioTrack track) { afterPlayAudio(); }
             @Override public void onPeriodicNotification(AudioTrack track) {}
         });
 
-        audioTrack.play(); audioTrack.setVolume(GeneralVariables.volumePercent);
+        audioTrack.play();
+        audioTrack.setVolume(GeneralVariables.volumePercent);
     }
 
     private void afterPlayAudio() {
@@ -1016,7 +1176,16 @@ public class FT8TransmitSignal {
         if (toCallsign == null) { int i3 = GenerateFT8.checkI3ByCallsign(GeneralVariables.myCallsign); setTransmit(new TransmitCallsign(i3, 0, "CQ", (UtcTimer.getNowSequential() + 1) % 2), 6, ""); }
         else { functionOrder = 6; toCallsign.callsign = "CQ"; mutableToCallsign.postValue(toCallsign); generateFun(); }
     }
+
+    // [ARCHITECTURE FIX] setTimer_sec is now a no-op since autonomous timer is disabled.
+    // Kept for API compatibility but does nothing.
+    /*
     public void setTimer_sec(int sec) { utcTimer.setTime_sec(sec); }
+    */
+    public void setTimer_sec(int sec) {
+        Log.d(TAG, "[setTimer_sec] Called with sec=" + sec + " (no-op, autonomous timer disabled)");
+    }
+
     public boolean isTransmitFreeText() { return transmitFreeText; }
     public void setFreeText(String freeText) { this.freeText = freeText; }
     public void setTransmitFreeText(boolean transmitFreeText) {
@@ -1028,17 +1197,49 @@ public class FT8TransmitSignal {
     private static class DoTransmitRunnable implements Runnable {
         FT8TransmitSignal transmitSignal;
         public DoTransmitRunnable(FT8TransmitSignal transmitSignal) { this.transmitSignal = transmitSignal; }
+
         @SuppressLint("DefaultLocale") @Override public void run() {
-            if (transmitSignal.functionOrder == 1 || transmitSignal.functionOrder == 2) transmitSignal.messageStartTime = UtcTimer.getSystemTime();
-            if (transmitSignal.messageStartTime == 0) transmitSignal.messageStartTime = UtcTimer.getSystemTime();
-            Ft8Message msg = transmitSignal.transmitFreeText ? new Ft8Message("CQ", GeneralVariables.myCallsign, transmitSignal.freeText) : transmitSignal.getFunctionCommand(transmitSignal.functionOrder);
+            Log.w(TAG, "[RUNNABLE] ========================================");
+            Log.w(TAG, "[RUNNABLE] DoTransmitRunnable.run() STARTED");
+
+            if (transmitSignal.functionOrder == 1 || transmitSignal.functionOrder == 2) {
+                transmitSignal.messageStartTime = UtcTimer.getSystemTime();
+            }
+            if (transmitSignal.messageStartTime == 0) {
+                transmitSignal.messageStartTime = UtcTimer.getSystemTime();
+            }
+
+            Ft8Message msg = transmitSignal.transmitFreeText
+                    ? new Ft8Message("CQ", GeneralVariables.myCallsign, transmitSignal.freeText)
+                    : transmitSignal.getFunctionCommand(transmitSignal.functionOrder);
+
             if (transmitSignal.transmitFreeText) { msg.i3 = 0; msg.n3 = 0; }
             msg.modifier = GeneralVariables.toModifier;
-            if (transmitSignal.onDoTransmitted != null) transmitSignal.onDoTransmitted.onBeforeTransmit(msg, transmitSignal.functionOrder);
-            transmitSignal.isTransmitting = true; transmitSignal.mutableIsTransmitting.postValue(true);
+
+            Log.w(TAG, "[RUNNABLE] Message created: " + msg.getMessageText());
+            Log.w(TAG, "[RUNNABLE] Calling onBeforeTransmit() — THIS ACTIVATES PTT!");
+
+            if (transmitSignal.onDoTransmitted != null) {
+                transmitSignal.onDoTransmitted.onBeforeTransmit(msg, transmitSignal.functionOrder);
+                Log.w(TAG, "[RUNNABLE] onBeforeTransmit() completed — PTT should be ON now");
+            } else {
+                Log.w(TAG, "[RUNNABLE] onDoTransmitted is NULL — PTT will NOT be activated!");
+            }
+
+            transmitSignal.isTransmitting = true;
+            transmitSignal.mutableIsTransmitting.postValue(true);
             transmitSignal.mutableTransmittingMessage.postValue(String.format(" (%.0fHz) %s", GeneralVariables.getBaseFrequency(), msg.getMessageText()));
-            try { Thread.sleep(GeneralVariables.pttDelay); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            Log.w(TAG, "[RUNNABLE] Sleeping for PTT delay: " + GeneralVariables.pttDelay + "ms");
+            try {
+                Thread.sleep(GeneralVariables.pttDelay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Log.w(TAG, "[RUNNABLE] Calling playFT8Signal() — AUDIO GENERATION STARTS");
             transmitSignal.playFT8Signal(msg);
+            Log.w(TAG, "[RUNNABLE] ========================================");
         }
     }
 }
