@@ -9,11 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +47,10 @@ import java.util.Set;
 public class ScanFragment extends Fragment {
     private static final String TAG = "ScanFragment";
 
+    // [NEW] Static persistent cache: survives fragment recreation
+    private static final Map<Long, int[]> STATIC_FREQ_STATS_CACHE = new HashMap<>();
+    private static boolean STATIC_SCAN_COMPLETED = false;
+
     private MainViewModel mainViewModel;
     private NavController navController;
     private Button btnStartStop;
@@ -51,12 +58,32 @@ public class ScanFragment extends Fragment {
     private EditText etScanCycles;
     private LinearLayout containerScanContent;
     private TextView tvTotalAll, tvTotalNew, tvUtcTime, tvUtcDelay, tvRfFreq, tvConnStatus, tvRigType;
+    private TextView tvScanSlotStatus;
     private CheckBox cbHeaderHide, cbHeaderSelect;
+    // [NEW] Replaced Continuous checkbox with Post-Scan Action Spinner
+    private Spinner spPostScanAction;
+
+    // [NEW] Post-scan action constants
+    private static final int ACTION_STOP = 0;
+    private static final int ACTION_CONTINUOUS = 1;
+    private static final int ACTION_SWITCH_MAX_NEW = 2;
+    private static final int ACTION_SWITCH_MAX_DX = 3;
+    private static final int ACTION_SWITCH_MAX_ITU = 4;
+    private static final int ACTION_SWITCH_MAX_CQ = 5; // CQ Zone used for "Country" mapping
+    private int selectedPostScanAction = ACTION_STOP;
 
     private Handler scanHandler, utcDelayHandler;
     private boolean isScanning = false;
+    private boolean isScanPaused = false;
     private int scanCycles = 5;
     private int currentFreqIndex = 0;
+    private int currentCycle = 1;
+
+    // [NEW] State for pause/resume
+    private int pausedFreqIndex = -1;
+    private int pausedSlotCount = 0;
+    private int pausedCycles = 0;
+    private List<Long> pausedFreqList = null;
 
     private boolean wasListenerPaused = false;
     private final Object freqSwitchLock = new Object();
@@ -64,9 +91,11 @@ public class ScanFragment extends Fragment {
     private final List<Long> activeScanFrequencies = new ArrayList<>();
     private final Object scanListLock = new Object();
 
-    // Simple collection: RF frequency -> unique callsigns heard on it
+    // Temporary working data (cleared on view destroy)
     private final Map<Long, Set<String>> freqCallsigns = new HashMap<>();
+
     private long currentScanFreq = -1;
+    private int lastProcessedMessageIndex = 0;
 
     private Observer<ArrayList<Ft8Message>> scanMessageObserver;
     private Observer<Long> scanTimerObserver;
@@ -106,6 +135,26 @@ public class ScanFragment extends Fragment {
         tvRigType = view.findViewById(R.id.tvRigType);
         cbHeaderHide = view.findViewById(R.id.cbHeaderHide);
         cbHeaderSelect = view.findViewById(R.id.cbHeaderSelect);
+        // [NEW] Bind Post-Scan Action Spinner
+        spPostScanAction = view.findViewById(R.id.spPostScanAction);
+        tvScanSlotStatus = view.findViewById(R.id.tvScanSlotStatus);
+
+        // [NEW] Setup Spinner Adapter and Listener
+        if (spPostScanAction != null) {
+            String[] actions = {"Stop", "Continuous", "Switch to max New", "Switch to max DX", "Switch to max ITU", "Switch to max CQ"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, actions);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spPostScanAction.setAdapter(adapter);
+            spPostScanAction.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    selectedPostScanAction = position;
+                    Log.d(TAG, "Post-scan action selected: " + position);
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            });
+        }
 
         // Disable header GO button programmatically (safety)
         Button btnHeaderGo = view.findViewById(R.id.btnHeaderGo);
@@ -120,7 +169,11 @@ public class ScanFragment extends Fragment {
 
         btnStartStop.setOnClickListener(v -> {
             synchronized (freqSwitchLock) {
-                if (!isScanning) {
+                if (isScanPaused) {
+                    // [NEW] Continue paused scan
+                    continueScan();
+                } else if (!isScanning) {
+                    // Start new scan
                     if (mainViewModel == null || mainViewModel.baseRig == null || !mainViewModel.baseRig.isConnected()) {
                         Toast.makeText(getContext(), "Rig not connected", Toast.LENGTH_SHORT).show();
                         return;
@@ -131,7 +184,9 @@ public class ScanFragment extends Fragment {
                     startRealScan();
                     saveScanState();
                 } else {
+                    // Stop scan
                     isScanning = false;
+                    isScanPaused = false;
                     btnStartStop.setText("Start");
                     stopScan();
                     saveScanState();
@@ -140,13 +195,20 @@ public class ScanFragment extends Fragment {
         });
 
         btnClearTable.setOnClickListener(v -> {
+            // [FIX] Clear both temporary data AND static persistent cache
             resetRowCounters();
             synchronized (this) {
                 freqCallsigns.clear();
                 currentScanFreq = -1;
+                lastProcessedMessageIndex = 0;
             }
-            if (tvTotalAll != null) tvTotalAll.setText("0");
-            if (tvTotalNew != null) tvTotalNew.setText("0");
+            // Clear static cache
+            synchronized (STATIC_FREQ_STATS_CACHE) {
+                STATIC_FREQ_STATS_CACHE.clear();
+                STATIC_SCAN_COMPLETED = false;
+                currentCycle = 1;
+            }
+            updateHeaderTotalsFromCache();
             saveScanState();
             Toast.makeText(getContext(), "Counters reset", Toast.LENGTH_SHORT).show();
         });
@@ -191,9 +253,49 @@ public class ScanFragment extends Fragment {
         populateFrequencyTable();
         restoreScanState();
 
+        // [FIX] Restore UI from STATIC cache if ANY data exists
+        synchronized (STATIC_FREQ_STATS_CACHE) {
+            if (!STATIC_FREQ_STATS_CACHE.isEmpty()) {
+                restoreUiFromStaticCache();
+            }
+        }
+
         if (etScanCycles.getText().toString().isEmpty()) {
             etScanCycles.setText(String.valueOf(scanCycles));
         }
+    }
+
+    // [NEW] Restore table UI from static persistent cache
+    private void restoreUiFromStaticCache() {
+        if (containerScanContent == null) return;
+
+        synchronized (STATIC_FREQ_STATS_CACHE) {
+            if (STATIC_FREQ_STATS_CACHE.isEmpty()) return;
+
+            Log.d(TAG, "restoreUiFromStaticCache: Restoring " + STATIC_FREQ_STATS_CACHE.size() + " frequency rows");
+
+            for (Map.Entry<Long, int[]> entry : STATIC_FREQ_STATS_CACHE.entrySet()) {
+                long freq = entry.getKey();
+                int[] stats = entry.getValue();
+                updateRowWithStats(freq, stats);
+            }
+
+            updateHeaderTotalsFromCache();
+            Log.d(TAG, "restoreUiFromStaticCache: UI restored successfully");
+        }
+    }
+
+    // [NEW] Update header totals from persistent cache
+    private void updateHeaderTotalsFromCache() {
+        int sumTot = 0, sumNew = 0;
+        synchronized (STATIC_FREQ_STATS_CACHE) {
+            for (int[] s : STATIC_FREQ_STATS_CACHE.values()) {
+                sumTot += s[0];
+                sumNew += s[1];
+            }
+        }
+        if (tvTotalAll != null) tvTotalAll.setText(String.valueOf(sumTot));
+        if (tvTotalNew != null) tvTotalNew.setText(String.valueOf(sumNew));
     }
 
     @Override
@@ -206,6 +308,10 @@ public class ScanFragment extends Fragment {
     public void onPause() {
         super.onPause();
         saveScanState();
+        // [NEW] If scanning, pause instead of stop when fragment goes to background
+        if (isScanning && !isScanPaused) {
+            pauseScan();
+        }
     }
 
     @Override
@@ -213,7 +319,7 @@ public class ScanFragment extends Fragment {
         super.onDestroyView();
         saveScanState();
 
-        if (isScanning) {
+        if (isScanning && !isScanPaused) {
             isScanning = false;
             stopScan();
         }
@@ -232,6 +338,13 @@ public class ScanFragment extends Fragment {
                 scanMessageObserver = null;
             }
             if (scanHandler != null) scanHandler.removeCallbacksAndMessages(null);
+        }
+
+        // [FIX] Clear ONLY temporary working data; static cache persists
+        synchronized (this) {
+            freqCallsigns.clear();
+            currentScanFreq = -1;
+            lastProcessedMessageIndex = 0;
         }
     }
 
@@ -308,7 +421,6 @@ public class ScanFragment extends Fragment {
                 if (tv != null) tv.setText("0");
             }
         }
-        synchronized (this) { freqCallsigns.clear(); }
     }
 
     private int parseScanCycles() {
@@ -431,9 +543,8 @@ public class ScanFragment extends Fragment {
     private void safeSwitchToFrequencyAndNavigate(long RFfreq) {
         Log.d(TAG, ">>> ENTRY safeSwitchToFrequencyAndNavigate: RFfreq=" + RFfreq);
         if (isScanning) {
-            isScanning = false;
-            if (btnStartStop != null) btnStartStop.setText("Start");
-            stopScan();
+            // [NEW] Pause scan instead of stopping when switching frequency
+            pauseScan();
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 switchToFrequency(RFfreq);
                 if (navController != null) navController.navigate(R.id.menu_nav_mycalling);
@@ -441,6 +552,60 @@ public class ScanFragment extends Fragment {
         } else {
             switchToFrequency(RFfreq);
             if (navController != null) navController.navigate(R.id.menu_nav_mycalling);
+        }
+    }
+
+    // [NEW] Pause scan without clearing data - allows resume later
+    private void pauseScan() {
+        synchronized (freqSwitchLock) {
+            if (!isScanning) return;
+            isScanning = false;
+            isScanPaused = true;
+
+            // Save current state for resume
+            pausedFreqIndex = currentFreqIndex;
+            pausedCycles = scanCycles;
+            synchronized (scanListLock) {
+                if (activeScanFrequencies != null) {
+                    pausedFreqList = new ArrayList<>(activeScanFrequencies);
+                }
+            }
+
+            // Remove timer observer but keep message observer
+            if (scanTimerObserver != null && mainViewModel != null) {
+                try { mainViewModel.timerSec.removeObserver(scanTimerObserver); } catch (Exception ignored) {}
+            }
+            if (scanHandler != null) scanHandler.removeCallbacksAndMessages(null);
+
+            // Update UI
+            if (btnStartStop != null) btnStartStop.setText("Continue");
+            updateScanSlotStatus(0, 0, -1);
+
+            Log.d(TAG, "pauseScan: Paused at freq index " + pausedFreqIndex + ", cycles=" + pausedCycles);
+        }
+    }
+
+    // [NEW] Resume paused scan from saved state
+    private void continueScan() {
+        synchronized (freqSwitchLock) {
+            if (!isScanPaused || pausedFreqIndex < 0) {
+                Log.w(TAG, "continueScan: Nothing to resume");
+                return;
+            }
+
+            isScanning = true;
+            isScanPaused = false;
+            currentFreqIndex = pausedFreqIndex;
+            scanCycles = pausedCycles;
+
+            if (btnStartStop != null) btnStartStop.setText("Stop");
+
+            Log.d(TAG, "continueScan: Resuming from freq index " + currentFreqIndex);
+
+            // Resume scanning
+            if (pausedFreqList != null && !pausedFreqList.isEmpty()) {
+                scanNextFrequency(pausedFreqList);
+            }
         }
     }
 
@@ -479,24 +644,186 @@ public class ScanFragment extends Fragment {
         GeneralVariables.QSL_Callsign_list_other_band = other_callsigns;
     }
 
+    // [NEW] Calculate and update UI stats for a single frequency IMMEDIATELY
+    private void updateRowStatsForFrequency(long RFfreq) {
+        Set<String> calls;
+        synchronized (this) {
+            calls = freqCallsigns.get(RFfreq);
+        }
+        if (calls == null || calls.isEmpty()) {
+            Log.d(TAG, "updateRowStatsForFrequency: No callsigns for freq " + RFfreq);
+            return;
+        }
+
+        int total = calls.size();
+        int newCount = 0;
+        Set<String> dxcc = new HashSet<>();
+        Set<Integer> itu = new HashSet<>();
+        Set<Integer> cq = new HashSet<>();
+
+        Log.d(TAG, "updateRowStatsForFrequency: Processing " + calls.size() + " callsigns");
+
+        for (String call : calls) {
+            if (GeneralVariables.QSL_Callsign_list == null ||
+                    !GeneralVariables.QSL_Callsign_list.contains(call)) {
+                newCount++;
+            }
+
+            DatabaseOpr.StationRecord rec = DatabaseOpr.getStationRecord(call);
+
+            String foundDxcc = null;
+            int foundCq = 0;
+            int foundItu = 0;
+
+            if (rec != null) {
+                // [EXACT FIELD NAMES from StationRecord class - NO FALLBACK]
+                if (rec.dxccCode != null && !rec.dxccCode.isEmpty()) {
+                    foundDxcc = rec.dxccCode;
+                }
+                if (rec.lastCqZone > 0) {
+                    foundCq = rec.lastCqZone;
+                }
+                if (rec.lastItuZone > 0) {
+                    foundItu = rec.lastItuZone;
+                }
+
+                // [DIAGNOSTIC] Log if record exists but fields are empty
+                if (foundDxcc == null || foundCq == 0 || foundItu == 0) {
+                    Log.w(TAG, "StationRecord for " + call + " has empty geo fields: " +
+                            "dxccCode=" + rec.dxccCode +
+                            " lastCqZone=" + rec.lastCqZone +
+                            " lastItuZone=" + rec.lastItuZone);
+                }
+            } else {
+                Log.w(TAG, "StationRecord is NULL for callsign: " + call);
+            }
+
+            if (foundDxcc != null && !foundDxcc.isEmpty()) dxcc.add(foundDxcc);
+            if (foundCq > 0) cq.add(foundCq);
+            if (foundItu > 0) itu.add(foundItu);
+        }
+
+        final int[] newStats = new int[]{total, newCount, dxcc.size(), cq.size(), itu.size()};
+
+        // [NEW] Accumulate or overwrite based on continuous mode
+        synchronized (STATIC_FREQ_STATS_CACHE) {
+            if (selectedPostScanAction == ACTION_CONTINUOUS && STATIC_FREQ_STATS_CACHE.containsKey(RFfreq)) {
+                int[] old = STATIC_FREQ_STATS_CACHE.get(RFfreq);
+                old[0] += newStats[0];
+                old[1] += newStats[1];
+                old[2] += newStats[2];
+                old[3] += newStats[3];
+                old[4] += newStats[4];
+            } else {
+                STATIC_FREQ_STATS_CACHE.put(RFfreq, newStats.clone());
+            }
+        }
+
+        if (getActivity() == null) return;
+        requireActivity().runOnUiThread(() -> {
+            updateRowWithStats(RFfreq, STATIC_FREQ_STATS_CACHE.get(RFfreq));
+            updateHeaderTotalsFromCache();
+            Log.d(TAG, "updateRowStatsForFrequency: UI Updated for " + RFfreq +
+                    " | Total=" + newStats[0] + " | New=" + newStats[1] +
+                    " | D=" + newStats[2] + " | C=" + newStats[3] + " | I=" + newStats[4]);
+        });
+    }
+
+    // [NEW] Collect and process messages for a specific frequency
+    private void collectAndProcessMessagesForFrequency(long RFfreq) {
+        if (mainViewModel == null) return;
+
+        ArrayList<Ft8Message> messages = mainViewModel.mutableFt8MessageList.getValue();
+        if (messages == null) return;
+
+        int startIdx = lastProcessedMessageIndex;
+        int endIdx = messages.size();
+
+        if (startIdx >= endIdx) {
+            Log.d(TAG, "collectAndProcessMessagesForFrequency: No new messages for freq " + RFfreq);
+            return;
+        }
+
+        Log.d(TAG, "collectAndProcessMessagesForFrequency: Processing messages " + startIdx + " to " + endIdx +
+                " for freq " + RFfreq);
+
+        try {
+            for (int i = startIdx; i < endIdx; i++) {
+                Ft8Message msg = messages.get(i);
+                String callsign = msg.getCallsignFrom();
+                if (callsign != null && !callsign.isEmpty()) {
+                    String upperCall = callsign.toUpperCase();
+                    synchronized (this) {
+                        freqCallsigns.computeIfAbsent(RFfreq, k -> new HashSet<>())
+                                .add(upperCall);
+                    }
+                }
+            }
+            lastProcessedMessageIndex = endIdx;
+
+            Log.d(TAG, "collectAndProcessMessagesForFrequency: Collected " +
+                    freqCallsigns.get(RFfreq).size() + " unique callsigns for " + RFfreq);
+        } catch (Exception e) {
+            Log.e(TAG, "Error processing messages for freq " + RFfreq + ": " + e.getMessage());
+        }
+    }
+
+    // [NEW] Find frequency with maximum value in specified stat column
+    // stats array: [0]=total, [1]=new, [2]=dxcc, [3]=cq, [4]=itu
+    private long findFreqWithMaxStat(int statIndex) {
+        long bestFreq = -1;
+        int maxVal = -1;
+        synchronized (STATIC_FREQ_STATS_CACHE) {
+            for (Map.Entry<Long, int[]> entry : STATIC_FREQ_STATS_CACHE.entrySet()) {
+                if (entry.getValue() != null && entry.getValue().length > statIndex) {
+                    if (entry.getValue()[statIndex] > maxVal) {
+                        maxVal = entry.getValue()[statIndex];
+                        bestFreq = entry.getKey();
+                    }
+                }
+            }
+        }
+        return bestFreq;
+    }
+
+    // [NEW] Switch to frequency and trigger CQ calling sequence
+    // TODO: Replace the commented call with the exact method from your calling window/viewmodel
+    private void switchToAndStartCalling(long freq) {
+        if (freq <= 0) return;
+        Log.d(TAG, "switchToAndStartCalling: Switching to " + freq + " and starting call");
+        switchToFrequency(freq);
+
+        // [TODO] Hook into your calling window logic here. Example:
+        // if (mainViewModel != null) mainViewModel.startCQCall();
+        // or navigate to calling fragment and trigger transmission
+        Toast.makeText(getContext(), "Switched to " + freq + ". Starting CQ call...", Toast.LENGTH_SHORT).show();
+    }
+
     private void startRealScan() {
         if (containerScanContent == null) return;
         if (mainViewModel == null || mainViewModel.ft8SignalListener == null) {
             Log.e(TAG, "Cannot start scan: listener not ready"); return;
         }
 
-        // [FIX] Decoder stays running - messages flow to mutableFt8MessageList automatically
-
         currentFreqIndex = 0;
+        currentCycle = 1;
         synchronized (this) {
             freqCallsigns.clear();
             currentScanFreq = -1;
+            lastProcessedMessageIndex = 0;
         }
-        resetRowCounters();
-        if (tvTotalAll != null) tvTotalAll.setText("0");
-        if (tvTotalNew != null) tvTotalNew.setText("0");
 
-        // Load worked callsigns like Decode does
+        // [FIX] Clear static cache ONLY when starting a truly fresh scan (not continuous loop)
+        if (selectedPostScanAction != ACTION_CONTINUOUS) {
+            synchronized (STATIC_FREQ_STATS_CACHE) {
+                STATIC_FREQ_STATS_CACHE.clear();
+            }
+            STATIC_SCAN_COMPLETED = false;
+        }
+
+        resetRowCounters();
+        updateHeaderTotalsFromCache();
+
         if (mainViewModel.databaseOpr != null) {
             loadWorkedCallsigns();
         }
@@ -508,59 +835,7 @@ public class ScanFragment extends Fragment {
             isScanning = false; if (btnStartStop != null) btnStartStop.setText("Start"); return;
         }
 
-        Log.d(TAG, "startRealScan: === STARTING SCAN ===");
-
-        // [FIX] Create observer ONCE at the start of scan
-        scanMessageObserver = messages -> {
-            if (!isScanning || messages == null) return;
-
-            // Get current scan frequency under lock
-            long targetFreq;
-            synchronized (this) {
-                targetFreq = currentScanFreq;
-            }
-
-            // Skip if no target frequency set yet
-            if (targetFreq < 0) return;
-
-            // [DEBUG] Log that we received messages
-            Log.d(TAG, "scanMessageObserver: RECEIVED " + messages.size() +
-                    " messages on freq " + targetFreq);
-
-            try {
-                for (Ft8Message msg : messages) {
-                    String callsign = msg.getCallsignFrom();
-                    if (callsign != null && !callsign.isEmpty()) {
-                        // [FIX] Calculate actual RF frequency of this message
-                        // msg.freq_hz is offset from GeneralVariables.band
-                        long msgRfFreq = GeneralVariables.band + Math.round(msg.freq_hz);
-
-                        // [FIX] Only count messages that match current scan frequency (±3 kHz tolerance for FT8)
-                        if (Math.abs(msgRfFreq - targetFreq) <= 3000) {
-                            String upperCall = callsign.toUpperCase();
-                            synchronized (this) {
-                                freqCallsigns.computeIfAbsent(targetFreq, k -> new HashSet<>())
-                                        .add(upperCall);
-                            }
-                            Log.d(TAG, "scanMessageObserver: Added callsign " + upperCall +
-                                    " to freq " + targetFreq +
-                                    " (total now: " + freqCallsigns.get(targetFreq).size() + ")");
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error processing scan messages: " + e.getMessage());
-            }
-        };
-
-        // [FIX] Attach observer ONCE for entire scan session
-        if (mainViewModel != null) {
-            try {
-                mainViewModel.mutableFt8MessageList.removeObserver(scanMessageObserver);
-            } catch (Exception ignored) {}
-            mainViewModel.mutableFt8MessageList.observe(getViewLifecycleOwner(), scanMessageObserver);
-            Log.d(TAG, "startRealScan: Observer attached for entire scan session");
-        }
+        Log.d(TAG, "startRealScan: === STARTING SCAN (Cycle " + currentCycle + ") ===");
 
         scanNextFrequency(initialFreqs);
     }
@@ -582,15 +857,51 @@ public class ScanFragment extends Fragment {
     private void scanNextFrequency(List<Long> currentList) {
         synchronized (freqSwitchLock) {
             if (!isScanning || mainViewModel == null) {
-                stopScan();
-                Toast.makeText(getContext(), "Scan complete", Toast.LENGTH_SHORT).show();
+                if (!isScanPaused) {
+                    stopScan();
+                    Toast.makeText(getContext(), "Scan complete", Toast.LENGTH_SHORT).show();
+                }
                 return;
             }
 
+            // [NEW] Handle cycle completion based on spinner selection
             if (currentFreqIndex >= currentList.size()) {
-                Log.d(TAG, "scanNextFrequency: All frequencies scanned. Calculating stats...");
-                postScanCalculateAndShow();
-                return;
+                switch (selectedPostScanAction) {
+                    case ACTION_CONTINUOUS:
+                        currentCycle++;
+                        Log.d(TAG, "Continuous: Cycle " + currentCycle + " complete. Restarting...");
+                        currentFreqIndex = 0;
+                        freqCallsigns.clear(); // Fresh set for new cycle
+                        Toast.makeText(getContext(), "Cycle " + (currentCycle - 1) + " done. Restarting...", Toast.LENGTH_SHORT).show();
+                        scanNextFrequency(currentList);
+                        return;
+
+                    case ACTION_SWITCH_MAX_NEW:
+                        switchToAndStartCalling(findFreqWithMaxStat(1)); // index 1 = new
+                        stopScan();
+                        return;
+
+                    case ACTION_SWITCH_MAX_DX:
+                        switchToAndStartCalling(findFreqWithMaxStat(2)); // index 2 = dxcc
+                        stopScan();
+                        return;
+
+                    case ACTION_SWITCH_MAX_ITU:
+                        switchToAndStartCalling(findFreqWithMaxStat(4)); // index 4 = itu
+                        stopScan();
+                        return;
+
+                    case ACTION_SWITCH_MAX_CQ: // Used for Country/DXCC mapping
+                        switchToAndStartCalling(findFreqWithMaxStat(3)); // index 3 = cq
+                        stopScan();
+                        return;
+
+                    case ACTION_STOP:
+                    default:
+                        Log.d(TAG, "scanNextFrequency: All frequencies scanned. Stopping.");
+                        postScanCalculateAndShow();
+                        return;
+                }
             }
 
             long RFfreq = currentList.get(currentFreqIndex);
@@ -599,7 +910,7 @@ public class ScanFragment extends Fragment {
             if (mainViewModel.baseRig == null || !mainViewModel.baseRig.isConnected()) {
                 Log.e(TAG, "Rig disconnected during scan");
                 Toast.makeText(getContext(), "Rig disconnected", Toast.LENGTH_SHORT).show();
-                stopScan(); return;
+                pauseScan(); return;
             }
 
             try {
@@ -615,19 +926,13 @@ public class ScanFragment extends Fragment {
                 if (tvRfFreq != null) tvRfFreq.setText(String.valueOf(RFfreq));
             } catch (Exception e) {
                 Log.e(TAG, "Error setting band: " + e.getMessage());
-                stopScan(); return;
+                pauseScan(); return;
             }
 
-            // [FIX] Update currentScanFreq BEFORE starting to listen
-            // This ensures observer filters messages correctly for new frequency
             synchronized (this) {
                 currentScanFreq = RFfreq;
-                // Ensure HashSet exists for this frequency (will be empty at start)
                 freqCallsigns.putIfAbsent(RFfreq, new HashSet<>());
             }
-
-            // [FIX] Do NOT re-attach observer here - it was attached once in startRealScan()
-            // The observer stays active and filters by currentScanFreq
 
             Log.d(TAG, "scanNextFrequency: Starting listen cycle immediately for " + RFfreq);
             if (isScanning) {
@@ -636,6 +941,8 @@ public class ScanFragment extends Fragment {
         }
     }
 
+    // OLD CODE - BEGIN (DO NOT DELETE, ONLY COMMENT)
+    /*
     private void listenForMessages(long RFfreq, int cycles, List<Long> currentList) {
         if (scanHandler == null || !isScanning) return;
         final int[] slotsProcessed = {0};
@@ -652,78 +959,64 @@ public class ScanFragment extends Fragment {
 
             if (slotsProcessed[0] >= cycles) {
                 mainViewModel.timerSec.removeObserver(scanTimerObserver);
-                // [FIX] Do NOT remove scanMessageObserver here - it stays active for next frequency
                 currentFreqIndex++;
                 scanNextFrequency(currentList);
             }
         };
         mainViewModel.timerSec.observe(getViewLifecycleOwner(), scanTimerObserver);
     }
+    */
+    // OLD CODE - END
 
-    // Post-scan calculation using Decode infrastructure (World Model + QSL list)
-    private void postScanCalculateAndShow() {
-        new Thread(() -> {
-            Map<Long, int[]> freqStats = new HashMap<>();
-            synchronized (this) {
-                Log.d(TAG, "postScanCalculateAndShow: Processing " + freqCallsigns.size() + " frequencies");
-                for (Map.Entry<Long, Set<String>> entry : freqCallsigns.entrySet()) {
-                    long freq = entry.getKey();
-                    Set<String> calls = entry.getValue();
-                    int total = calls.size();
-                    int newCount = 0;
-                    Set<String> dxcc = new HashSet<>();
-                    Set<Integer> itu = new HashSet<>();
-                    Set<Integer> cq = new HashSet<>();
+    // NEW CODE - BEGIN
+    private void listenForMessages(long RFfreq, int cycles, List<Long> currentList) {
+        if (scanHandler == null || !isScanning) return;
+        final int[] slotsProcessed = {0};
+        final int startSequential = UtcTimer.getNowSequential();
 
-                    Log.d(TAG, "postScanCalculateAndShow: Freq " + freq + " has " + total + " callsigns");
+        updateScanSlotStatus(0, cycles, RFfreq);
 
-                    for (String call : calls) {
-                        // Check new against worked list
-                        if (GeneralVariables.QSL_Callsign_list == null ||
-                                !GeneralVariables.QSL_Callsign_list.contains(call)) {
-                            newCount++;
-                        }
-                        // Pull stats from World Model (populated by Decode pipeline)
-                        DatabaseOpr.StationRecord rec = DatabaseOpr.getStationRecord(call);
-                        if (rec != null) {
-                            Log.d(TAG, "postScanCalculateAndShow: Found record for " + call +
-                                    " dxcc=" + rec.dxccCode + " itu=" + rec.lastItuZone +
-                                    " cq=" + rec.lastCqZone);
-                            if (rec.dxccCode != null && !rec.dxccCode.isEmpty())
-                                dxcc.add(rec.dxccCode);
-                            if (rec.lastItuZone > 0) itu.add(rec.lastItuZone);
-                            if (rec.lastCqZone > 0) cq.add(rec.lastCqZone);
-                        } else {
-                            Log.w(TAG, "postScanCalculateAndShow: NO record for " + call +
-                                    " in World Model!");
-                        }
-                    }
-                    freqStats.put(freq, new int[]{total, newCount, dxcc.size(), cq.size(), itu.size()});
-                    Log.d(TAG, "postScanCalculateAndShow: Freq " + freq + " stats: total=" + total +
-                            ", new=" + newCount + ", dxcc=" + dxcc.size() +
-                            ", itu=" + itu.size() + ", cq=" + cq.size());
-                }
+        scanTimerObserver = utcMillis -> {
+            if (!isScanning) {
+                mainViewModel.timerSec.removeObserver(scanTimerObserver);
+                return;
             }
+            int currentSequential = UtcTimer.sequential(utcMillis);
+            int expectedSequential = (startSequential + slotsProcessed[0]) % 2;
+            if (currentSequential != expectedSequential) return;
 
-            if (getActivity() == null) return;
-            requireActivity().runOnUiThread(() -> {
-                Log.d(TAG, "postScanCalculateAndShow: Updating UI with " + freqStats.size() + " frequency stats");
-                for (Map.Entry<Long, int[]> e : freqStats.entrySet()) {
-                    updateRowWithStats(e.getKey(), e.getValue());
-                }
-                updateTotalsFromScan(freqStats);
-                saveScanState();
-                stopScan();
-                Toast.makeText(getContext(), "Scan complete", Toast.LENGTH_SHORT).show();
-            });
-        }).start();
+            slotsProcessed[0]++;
+
+            Log.d(TAG, "listenForMessages: Slot " + slotsProcessed[0] + "/" + cycles + " completed on " + RFfreq);
+
+            updateScanSlotStatus(slotsProcessed[0], cycles, RFfreq);
+
+            if (slotsProcessed[0] >= cycles) {
+                mainViewModel.timerSec.removeObserver(scanTimerObserver);
+
+                collectAndProcessMessagesForFrequency(RFfreq);
+                updateRowStatsForFrequency(RFfreq);
+
+                currentFreqIndex++;
+                updateScanSlotStatus(0, 0, -1);
+                scanNextFrequency(currentList);
+            }
+        };
+        mainViewModel.timerSec.observe(getViewLifecycleOwner(), scanTimerObserver);
+    }
+    // NEW CODE - END
+
+    private void postScanCalculateAndShow() {
+        // [FIX] In continuous/switch modes, this is skipped. Headers are updated incrementally.
+        if (selectedPostScanAction != ACTION_STOP) return;
+
+        STATIC_SCAN_COMPLETED = true;
+        Toast.makeText(getContext(), "Scan complete", Toast.LENGTH_SHORT).show();
+        stopScan();
     }
 
     private void updateRowWithStats(long RFfreq, int[] stats) {
         if (containerScanContent == null) return;
-        Log.d(TAG, "updateRowWithStats: Updating row for freq " + RFfreq +
-                " with stats: total=" + stats[0] + ", new=" + stats[1] +
-                ", dxcc=" + stats[2] + ", cq=" + stats[3] + ", itu=" + stats[4]);
 
         for (int i = 0; i < containerScanContent.getChildCount(); i++) {
             View row = containerScanContent.getChildAt(i);
@@ -734,30 +1027,23 @@ public class ScanFragment extends Fragment {
                 TextView tvD = row.findViewById(R.id.tvRowD);
                 TextView tvC = row.findViewById(R.id.tvRowC);
                 TextView tvI = row.findViewById(R.id.tvRowI);
+
                 if (tvTot != null) tvTot.setText(String.valueOf(stats[0]));
                 if (tvNew != null) tvNew.setText(String.valueOf(stats[1]));
                 if (tvD != null) tvD.setText(String.valueOf(stats[2]));
                 if (tvC != null) tvC.setText(String.valueOf(stats[3]));
                 if (tvI != null) tvI.setText(String.valueOf(stats[4]));
-                Log.d(TAG, "updateRowWithStats: Successfully updated UI for freq " + RFfreq);
                 break;
             }
         }
     }
 
-    private void updateTotalsFromScan(Map<Long, int[]> statsMap) {
-        int sumTot = 0, sumNew = 0;
-        for (int[] s : statsMap.values()) { sumTot += s[0]; sumNew += s[1]; }
-        if (tvTotalAll != null) tvTotalAll.setText(String.valueOf(sumTot));
-        if (tvTotalNew != null) tvTotalNew.setText(String.valueOf(sumNew));
-        Log.d(TAG, "updateTotalsFromScan: Total stations=" + sumTot + ", new=" + sumNew);
-    }
-
     private void stopScan() {
         synchronized (freqSwitchLock) {
-            if (!isScanning) return;
+            if (!isScanning && !isScanPaused) return;
             isScanning = false;
-            // [FIX] Remove observer only when scan fully stops
+            isScanPaused = false;
+
             if (scanMessageObserver != null && mainViewModel != null) {
                 try { mainViewModel.mutableFt8MessageList.removeObserver(scanMessageObserver); } catch (Exception ignored) {}
                 scanMessageObserver = null;
@@ -786,4 +1072,23 @@ public class ScanFragment extends Fragment {
             cb.setChecked(select);
         }
     }
+
+    private void updateScanSlotStatus(int current, int total, long freqHz) {
+        if (getActivity() == null || tvScanSlotStatus == null) return;
+
+        requireActivity().runOnUiThread(() -> {
+            if (tvScanSlotStatus == null) return;
+
+            if (total > 0) {
+                String prefix = selectedPostScanAction == ACTION_CONTINUOUS ? "Cyc." + currentCycle + ": " : "";
+                String status = prefix + "Slot " + current + "/" + total;
+                tvScanSlotStatus.setText(status);
+                tvScanSlotStatus.setTextColor(getResources().getColor(R.color.is_qsl_text_color, null));
+            } else {
+                tvScanSlotStatus.setText("--/--");
+                tvScanSlotStatus.setTextColor(getResources().getColor(R.color.is_qsl_text_color, null));
+            }
+        });
+    }
+
 }

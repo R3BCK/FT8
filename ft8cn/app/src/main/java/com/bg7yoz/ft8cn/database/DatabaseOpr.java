@@ -2517,7 +2517,7 @@ public class DatabaseOpr extends SQLiteOpenHelper {
             if (isRelevantToUs && detectedState >= 1 && detectedState <= 4) {
                 // Сообщение нам адресовано - обновляем состояние диалога
                 int oldState = record.ft8StateRelative;
-                record.ft8StateRelative = Math.max(record.ft8StateRelative, detectedState);
+                record.ft8StateRelative = detectedState;
                 if (record.ft8StateRelative != oldState) {
                     Log.d(TAG, "[STATE] " + callsign + ": " + oldState + " → " + record.ft8StateRelative);
                 }
@@ -2563,16 +2563,39 @@ public class DatabaseOpr extends SQLiteOpenHelper {
     }
     private int parseMessageState(Ft8Message msg) {
         if (msg == null) return 0;
-        String extra = msg.extraInfo != null ? msg.extraInfo : "";
+        String extra = msg.extraInfo != null ? msg.extraInfo.toUpperCase().trim() : "";
         boolean toMe = GeneralVariables.checkIsMyCallsign(msg.getCallsignTo());
+
         if (!toMe) return msg.checkIsCQ() ? 6 : 0;
-        if (extra.contains("RR73") || extra.contains("RRR") || extra.contains("RRR73")) return 4;
-        if (extra.startsWith("R") && extra.length() <= 4) return 3;
-        if (extra.matches("^-?\\d{1,3}$")) return 2;
+
+        // Шаг 4: RR73, RRR, RRR73
+        if (extra.contains("RR73") || extra.contains("RRR") || extra.contains("RRR73")) {
+            return 4;
+        }
+
+        // Шаг 3: R-репорт (R-10, R+05, R+08, и т.д.)
+        // [ИСПРАВЛЕНИЕ] Было: extra.startsWith("R") && extra.length() <= 4
+        // Теперь правильно распознает R-10, R+05, R+08
+        if (extra.matches("^R[-+]?\\d{1,3}$")) {
+            return 3;
+        }
+
+        // Шаг 2: Сигнал-репорт (-10, +08, +05, и т.д.)
+        // [ИСПРАВЛЕНИЕ] Было: ^-?\\d{1,3}$ (НЕ распознавало +08!)
+        // Теперь распознает И отрицательные, И положительные репорты
+        if (extra.matches("^[-+]?\\d{1,3}$")) {
+            return 2;
+        }
+
+        // Шаг 1: Grid locator (4+ символа типа KN34, IO91)
         String grid = msg.maidenGrid != null ? msg.maidenGrid : "";
-        if (grid.length() >= 4) return 1;
+        if (grid.length() >= 4) {
+            return 1;
+        }
+
         return 1;
     }
+
     private float calculatePriorityScore(StationRecord record) {
         if (record == null) return 0f;
         float score = 10f + record.lastSnr * 1.2f;

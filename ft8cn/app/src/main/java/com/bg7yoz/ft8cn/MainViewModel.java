@@ -1,6 +1,4 @@
-// [FIX-2026-05-17] BEGIN: Fixed initialization of worked entities maps
-// Issue: QslCallsigns table in fork does not contain dxcc/cq_zone/itu_zone columns
-// Fix: Load callsigns from log, then query DXCC info via CallsignDatabase for each
+//MainViewModel.java
 package com.bg7yoz.ft8cn;
 
 /**
@@ -1043,13 +1041,25 @@ public class MainViewModel extends ViewModel {
                                 txFrequency, txSequential, action.snr),
                         action.protocolStep, txExtraInfo);
 
-                // [FIX 2026-05-23] Reset counter on new target, do NOT increment on transmit
+                // [FIX 2026-05-23] STATE MACHINE TRANSITION AFTER 73
+                // If we just transmitted step 5 (73), we MUST transition state machine to terminal state
+                // to prevent DecisionEngine from generating "Transmit 73" again in the next slot.
+                if (action.protocolStep == 5) {
+                    Log.d(TAG, "[STATE TRANSITION] 73 sent. Forcing transition to SOFT_FINISH to stop loop.");
+                    // [FIX] НЕ добавляем в recentTargets - это вызывает бесконечный цикл!
+                    stationContext.subState = StationState.OperatingSubState.SOFT_FINISH;
+                    stationContext.step = StationState.DialogueStep.IDLE;
+                    stationContext.currentTarget = "";  // Очищаем target
+                    Log.d(TAG, "State: entered SOFT_FINISH (no recentTargets)");
+                    return;
+                }
+
+                // [FIX 2026-05-23] Reset counter on new target
                 if (action.targetCallsign != null &&
                         !action.targetCallsign.equals(stationContext.currentTarget)) {
                     stationContext.noReplyCount = 0;
                     Log.d(TAG, "[NEW TARGET] Switched to " + action.targetCallsign + ", reset counter");
                 }
-                // Counter will increment in WAIT if no reply received
 
                 Log.d(TAG, "[ACTION] TX started (noReplyCount=" + stationContext.noReplyCount +
                         " to " + action.targetCallsign + ")");
@@ -2089,6 +2099,12 @@ public class MainViewModel extends ViewModel {
 
         Log.d(TAG, "[SEQUENTIAL] Partner=" + partnerSequential + " -> Our=" + ourSequential);
 
+        // [FIX] Activate transmission signal if not already active
+        if (!ft8TransmitSignal.isActivated()) {
+            ft8TransmitSignal.setActivated(true);
+            Log.d(TAG, "[MANUAL_CALL] Transmission signal activated");
+        }
+
         // Trigger transmission with PRE-CALCULATED sequential (not -1!)
         // This preserves state machine context: next decode will update cache properly
         ft8TransmitSignal.setTransmit(
@@ -2097,22 +2113,22 @@ public class MainViewModel extends ViewModel {
                 extraInfo
         );
 
-        /* OLD CODE COMMENTED OUT
-        DatabaseOpr.StationRecord record = DatabaseOpr.getStationRecord(callsign);
-        if (record != null && record.lastSequential >= 0) {
-            int expectedOurSlot = (record.lastSequential == 0) ? 1 : 0;
-            long currentSlot = UtcTimer.getNowSequential();
-            if (currentSlot % 2 != expectedOurSlot) {
-                Log.w(TAG, "[MANUAL_CALL] Wrong slot! ... Waiting for correct slot...");
-                return;
-            }
+    /* OLD CODE COMMENTED OUT
+    DatabaseOpr.StationRecord record = DatabaseOpr.getStationRecord(callsign);
+    if (record != null && record.lastSequential >= 0) {
+        int expectedOurSlot = (record.lastSequential == 0) ? 1 : 0;
+        long currentSlot = UtcTimer.getNowSequential();
+        if (currentSlot % 2 != expectedOurSlot) {
+            Log.w(TAG, "[MANUAL_CALL] Wrong slot! ... Waiting for correct slot...");
+            return;
         }
-        ft8TransmitSignal.setTransmit(
-                new TransmitCallsign(i3, n3, callsign, freqHz, -1, snr),
-                1,
-                extraInfo
-        );
-        */
+    }
+    ft8TransmitSignal.setTransmit(
+            new TransmitCallsign(i3, n3, callsign, freqHz, -1, snr),
+            1,
+            extraInfo
+    );
+    */
     }
 
     private int findPartnerSequentialFromMessages(String callsign) {
@@ -2304,6 +2320,18 @@ public class MainViewModel extends ViewModel {
         } catch (Exception e) {
             Log.e("DXCC_INIT", "Exception: " + e.getMessage(), e);
         }
+    }
+
+    // Check if callsign is in recentTargets list
+// [FIX] Check if callsign is in recentTargets list (for SOFT_FINISH logic)
+    public boolean isInRecentTargets(String callsign) {
+        if (callsign == null || stationContext == null || stationContext.recentTargets == null) return false;
+        for (String target : stationContext.recentTargets) {
+            if (target != null && target.equalsIgnoreCase(callsign)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -1,3 +1,4 @@
+//DecisionEngine.java
 package com.bg7yoz.ft8cn.decisions;
 
 import android.database.Cursor;
@@ -22,7 +23,7 @@ public class DecisionEngine {
     public void resetCache() {
         workedCallsignsCache.clear();
         cachedBandFreq = 0;
-        Log.d(TAG, "[DECISION] Cache reset: freq changed / history cleared");
+        Log.d(TAG, "[DECISION] Сброс кэша: частота изменена / история очищена");
     }
 
     private boolean evaluateOverrideLifecycle(DecisionContext ctx) {
@@ -33,10 +34,10 @@ public class DecisionEngine {
 
         if (GeneralVariables.noReplyLimit > 0 && ctx.noReplyCount >= GeneralVariables.noReplyLimit) {
             shouldClear = true;
-            reason = "Max retries reached (" + ctx.noReplyCount + ")";
+            reason = "Достигнут лимит попыток (" + ctx.noReplyCount + ")";
         } else if (ctx.currentTarget == null || ctx.currentTarget.isEmpty()) {
             shouldClear = true;
-            reason = "Target cleared";
+            reason = "Цель очищена";
         } else if (ctx.currentTarget != null && !ctx.currentTarget.isEmpty() && ctx.visibleStations != null) {
             boolean targetVisible = false;
             for (DatabaseOpr.StationRecord s : ctx.visibleStations) {
@@ -47,21 +48,36 @@ public class DecisionEngine {
             }
             if (!targetVisible && ctx.noReplyCount > 0) {
                 shouldClear = true;
-                reason = "Target disappeared from waterfall";
+                reason = "Цель исчезла из водопада";
             }
         }
 
         if (shouldClear) {
-            Log.d(TAG, "[OVERRIDE] Auto-clear conditions met: " + reason);
+            Log.d(TAG, "[OVERRIDE] Условия автоочистки выполнены: " + reason);
             return true;
         }
         return false;
     }
 
+    private Ft8Message findDirectCallToUs(DecisionContext ctx, List<Ft8Message> messages) {
+        if (messages == null) return null;
+
+        for (Ft8Message msg : messages) {
+            if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())) {
+                String caller = msg.getCallsignFrom();
+                if (!GeneralVariables.checkIsMyCallsign(caller)) {
+                    Log.d(TAG, "[DECISION] Найден прямой вызов от " + caller + " нам");
+                    return msg;
+                }
+            }
+        }
+        return null;
+    }
+
     public StationAction evaluate(DecisionContext ctx, List<Ft8Message> messages, DatabaseOpr db) {
         if (ctx.emergencyStop) {
             Log.d(TAG, "[DECISION] emergencyStop=true -> ABORT");
-            return StationAction.abort("Emergency stop triggered");
+            return StationAction.abort("Сработала аварийная остановка");
         }
 
         if (ctx.forceOwnCQ) {
@@ -72,50 +88,56 @@ public class DecisionEngine {
         boolean overrideShouldClear = evaluateOverrideLifecycle(ctx);
 
         if (overrideShouldClear) {
-            return StationAction.abort("Override cleared by state machine");
+            return StationAction.abort("Override очищен машиной состояний");
+        }
+
+        // [ИСПРАВЛЕНИЕ] Проверяем прямые вызовы НАМ ПЕРВЫМ - наивысший приоритет
+        Ft8Message directCallMsg = findDirectCallToUs(ctx, messages);
+        if (directCallMsg != null) {
+            String caller = directCallMsg.getCallsignFrom();
+            Log.d(TAG, "[DECISION] Обнаружен прямой вызов от " + caller);
+
+            int msgState = GeneralVariables.checkFunOrder(directCallMsg);
+            if (msgState == -1) msgState = 0;
+            int nextStep = Math.min(msgState + 1, 5);
+            if (nextStep < 1) nextStep = 1;
+
+            boolean isCurrentTarget = (ctx.currentTarget != null &&
+                    ctx.currentTarget.equalsIgnoreCase(caller));
+
+            String reason = isCurrentTarget ?
+                    "Прямой вызов от текущей цели" :
+                    "Обнаружен прямой вызов (переопределение ручной цели)";
+
+            return createTransmitAction(caller, nextStep, reason, directCallMsg);
         }
 
         if (ctx.userOverrideActive && ctx.currentTarget != null && !ctx.currentTarget.isEmpty()) {
-            Log.d(TAG, "[DECISION] userOverrideActive=true -> TRANSMIT to " + ctx.currentTarget);
+            Log.d(TAG, "[DECISION] userOverrideActive=true -> ПЕРЕДАЧА к " + ctx.currentTarget);
             Ft8Message msg = findMessageByCallsign(messages, ctx.currentTarget);
-            return createTransmitAction(ctx.currentTarget, 1, "Manual override", msg);
+            return createTransmitAction(ctx.currentTarget, 1, "Ручное переопределение", msg);
         }
 
+        // [КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ] Обрабатываем directCaller используя РЕАЛЬНОЕ содержимое сообщения
+        // dbState может быть устаревшим (например, все еще 6 от CQ) из-за ошибки parseMessageState
         if (ctx.directCaller != null) {
             Ft8Message msg = findMessageByCallsign(messages, ctx.directCaller.callsign);
             if (msg != null) {
-                int dbState = ctx.directCaller.ft8StateRelative;
+                // [ИСПРАВЛЕНИЕ] Используем msgState из реального сообщения, НЕ dbState из кэша
                 int msgState = GeneralVariables.checkFunOrder(msg);
                 if (msgState == -1) msgState = 0;
 
-                int nextStep;
-                boolean isRepeat = (dbState > msgState && msgState > 0);
+                int nextStep = Math.max(1, Math.min(msgState + 1, 5));
 
-                if (isRepeat) {
-                    nextStep = msgState + 1;
-                    Log.d(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign +
-                            " REPEAT detected (DB=" + dbState + " Msg=" + msgState +
-                            ") -> Answering based on MSG -> step=" + nextStep);
-                } else {
-                    if (dbState == 0 || msgState > dbState) {
-                        nextStep = msgState + 1;
-                        Log.d(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign +
-                                " NEW/SYNC (DB=" + dbState + " Msg=" + msgState +
-                                ") -> Answering based on MSG to sync -> step=" + nextStep);
-                    } else {
-                        nextStep = dbState + 1;
-                        Log.d(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign +
-                                " FIRST TIME (DB=" + dbState + " Msg=" + msgState +
-                                ") -> Answering based on DB -> step=" + nextStep);
-                    }
-                }
+                Log.d(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign +
+                        " msgState=" + msgState + " (dbState=" + ctx.directCaller.ft8StateRelative +
+                        ") -> шаг=" + nextStep);
 
-                if (nextStep < 1) nextStep = 1;
-                if (nextStep > 5) nextStep = 5;
-
-                return createTransmitAction(ctx.directCaller.callsign, nextStep, "Direct call detected", msg);
+                return createTransmitAction(ctx.directCaller.callsign, nextStep,
+                        "Обнаружен прямой вызов", msg);
             } else {
-                Log.w(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign + " but msg not in current decode");
+                Log.w(TAG, "[DECISION] directCaller=" + ctx.directCaller.callsign +
+                        " но сообщение не в текущем декодировании");
             }
         }
 
@@ -129,8 +151,8 @@ public class DecisionEngine {
             case NOMADIC:
                 return evaluateNomadic(ctx);
             default:
-                Log.d(TAG, "[DECISION] subState=" + ctx.subState + " not implemented -> WAIT");
-                return StationAction.wait("State " + ctx.subState + " not fully implemented");
+                Log.d(TAG, "[DECISION] subState=" + ctx.subState + " не реализовано -> WAIT");
+                return StationAction.wait("Состояние " + ctx.subState + " не полностью реализовано");
         }
     }
 
@@ -146,13 +168,12 @@ public class DecisionEngine {
 
     private StationAction createTransmitAction(String callsign, int step, String reason, Ft8Message msg) {
         if (msg != null) {
-            Log.d(TAG, "[DECISION] Creating TRANSMIT with freq=" + msg.freq_hz + " snr=" + msg.snr);
-            // [FIX] Use RF frequency (band), NOT audio offset (msg.freq_hz)
+            Log.d(TAG, "[DECISION] Создание TRANSMIT с freq=" + msg.freq_hz + " snr=" + msg.snr);
             return StationAction.transmit(callsign, step, reason,
-                    GeneralVariables.band,  // <- RF частота трансивера
+                    GeneralVariables.band,
                     msg.snr, msg.i3, msg.n3, msg.extraInfo);
         } else {
-            Log.w(TAG, "[DECISION] No message for " + callsign + ", using default params");
+            Log.w(TAG, "[DECISION] Нет сообщения для " + callsign + ", используются параметры по умолчанию");
             return StationAction.transmit(callsign, step, reason);
         }
     }
@@ -167,11 +188,8 @@ public class DecisionEngine {
 
         boolean isWorked = false;
         try {
-            // UI использует QSLTable для отрисовки перечёркивания.
-            // Проверяем ИМЕННО ЭТУ таблицу, чтобы логика совпадала с глазами пользователя.
             String bandString = BaseRigOperation.getMeterFromFreq(bandFreq);
 
-            // 1. Основной лог QSO (QSLTable)
             Cursor cursor = db.getDb().rawQuery(
                     "SELECT id FROM QSLTable WHERE call = ? AND band = ? LIMIT 1",
                     new String[]{callsign, bandString}
@@ -179,7 +197,6 @@ public class DecisionEngine {
             isWorked = (cursor != null && cursor.getCount() > 0);
             if (cursor != null) cursor.close();
 
-            // 2. Fallback: таблица сводки по позывным (QslCallsigns)
             if (!isWorked) {
                 cursor = db.getDb().rawQuery(
                         "SELECT ID FROM QslCallsigns WHERE callsign = ? AND band = ? LIMIT 1",
@@ -189,7 +206,7 @@ public class DecisionEngine {
                 if (cursor != null) cursor.close();
             }
         } catch (Exception e) {
-            Log.e(TAG, "[QSL] Direct query failed: " + e.getMessage());
+            Log.e(TAG, "[QSL] Прямой запрос не удался: " + e.getMessage());
         }
 
         if (isWorked) {
@@ -199,13 +216,11 @@ public class DecisionEngine {
     }
 
     private StationAction evaluateSeeking(DecisionContext ctx, List<Ft8Message> messages, DatabaseOpr db) {
-        Log.d(TAG, "[DEBUG] visibleStations count: " + ctx.visibleStations.size());
+        Log.d(TAG, "[DEBUG] количество visibleStations: " + ctx.visibleStations.size());
 
-        // [CRITICAL FIX #1] Если уже есть currentTarget, НЕ ищем другие CQ!
         if (ctx.currentTarget != null && !ctx.currentTarget.isEmpty()) {
             DatabaseOpr.StationRecord targetRecord = DatabaseOpr.getStationRecord(ctx.currentTarget);
 
-            // Проверяем, видна ли наша цель
             boolean targetVisible = false;
             for (DatabaseOpr.StationRecord s : ctx.visibleStations) {
                 if (s.callsign.equals(ctx.currentTarget)) {
@@ -215,61 +230,50 @@ public class DecisionEngine {
             }
 
             if (targetVisible) {
-                // [CRITICAL FIX #2] Проверяем sequential slot!
                 if (targetRecord != null && targetRecord.lastSequential >= 0) {
                     int expectedOurSlot = (targetRecord.lastSequential == 0) ? 1 : 0;
                     if (ctx.currentSlot != expectedOurSlot) {
-                        Log.d(TAG, "[DECISION] SEEKING: Waiting for correct slot. Target seq=" +
-                                targetRecord.lastSequential + ", our expected=" + expectedOurSlot +
-                                ", current=" + ctx.currentSlot);
-                        return StationAction.wait("Waiting for correct sequential slot");
+                        Log.d(TAG, "[DECISION] SEEKING: Ожидание правильного слота. Target seq=" +
+                                targetRecord.lastSequential + ", наш ожидаемый=" + expectedOurSlot +
+                                ", текущий=" + ctx.currentSlot);
+                        return StationAction.wait("Ожидание правильного последовательного слота");
                     }
                 }
 
-                Log.d(TAG, "[DECISION] SEEKING: Already have target=" + ctx.currentTarget +
-                        ", waiting for reply. NOT searching for other CQs");
-                return StationAction.wait("Waiting for target reply");
+                Log.d(TAG, "[DECISION] SEEKING: Уже есть цель=" + ctx.currentTarget +
+                        ", ожидание ответа. НЕ ищем другие CQ");
+                return StationAction.wait("Ожидание ответа от цели");
             } else if (ctx.noReplyCount > 0) {
-                // Цель пропала и мы уже пытались её позвать
-                Log.d(TAG, "[DECISION] Target " + ctx.currentTarget + " DISAPPEARED. ABORT.");
-                return StationAction.abort("Target disappeared from waterfall");
+                Log.d(TAG, "[DECISION] Цель " + ctx.currentTarget + " ИСЧЕЗЛА. ABORT.");
+                return StationAction.abort("Цель исчезла из водопада");
             }
         }
 
-        // Ищем CQ только если currentTarget пустой
         List<DatabaseOpr.StationRecord> cqCandidates = new ArrayList<>();
         for (DatabaseOpr.StationRecord s : ctx.visibleStations) {
             if (s.ft8StateRelative == 6) {
-                // [FIX 2026-05-23] Skip own callsign to prevent self-calling
-                // This prevents the state machine from selecting our own CQ as a target
                 if (s.callsign != null && GeneralVariables.myCallsign != null &&
                         s.callsign.equals(GeneralVariables.myCallsign)) {
-                    Log.d(TAG, "[DECISION] SKIP " + s.callsign + " (own callsign)");
+                    Log.d(TAG, "[DECISION] ПРОПУСК " + s.callsign + " (собственный позывной)");
                     continue;
                 }
-                // [END FIX]
-
-                /* OLD CODE COMMENTED OUT
-                if (s.ft8StateRelative == 6) {
-                */
 
                 if (isCallsignWorkedOnBand(s.callsign, GeneralVariables.band, db)) {
-                    Log.d(TAG, "[DECISION] SKIP " + s.callsign + " (already in QSL log)");
+                    Log.d(TAG, "[DECISION] ПРОПУСК " + s.callsign + " (уже в журнале QSL)");
                     continue;
                 }
 
                 if (messages == null || findMessageByCallsign(messages, s.callsign) == null) {
-                    Log.d(TAG, "[DECISION] SKIP " + s.callsign + " (no fresh message in current decode)");
+                    Log.d(TAG, "[DECISION] ПРОПУСК " + s.callsign + " (нет свежего сообщения в текущем декодировании)");
                     continue;
                 }
 
-                // [CRITICAL FIX #3] Проверяем sequential slot кандидата!
                 if (s.lastSequential >= 0) {
                     int expectedOurSlot = (s.lastSequential == 0) ? 1 : 0;
                     if (ctx.currentSlot != expectedOurSlot) {
-                        Log.d(TAG, "[DECISION] SKIP " + s.callsign + " (wrong slot: their seq=" +
-                                s.lastSequential + ", our expected=" + expectedOurSlot +
-                                ", current=" + ctx.currentSlot + ")");
+                        Log.d(TAG, "[DECISION] ПРОПУСК " + s.callsign + " (неправильный слот: их seq=" +
+                                s.lastSequential + ", наш ожидаемый=" + expectedOurSlot +
+                                ", текущий=" + ctx.currentSlot + ")");
                         continue;
                     }
                 }
@@ -278,92 +282,141 @@ public class DecisionEngine {
             }
         }
 
-        Log.d(TAG, "[DECISION] SEEKING: found " + cqCandidates.size() + " CQ candidates (after QSL + fresh msg + slot filter)");
+        Log.d(TAG, "[DECISION] SEEKING: найдено " + cqCandidates.size() + " кандидатов CQ (после фильтра QSL + свежее сообщение + слот)");
 
         if (!cqCandidates.isEmpty() && ctx.autoFollowCQ) {
             DatabaseOpr.StationRecord best = scorer.findBestCandidate(cqCandidates, ctx);
             if (best != null) {
-                Log.d(TAG, "[DECISION] SEEKING: selected best CQ=" + best.callsign +
-                        " score=" + scorer.score(best, ctx) + " seq=" + best.lastSequential);
+                Log.d(TAG, "[DECISION] SEEKING: выбран лучший CQ=" + best.callsign +
+                        " оценка=" + scorer.score(best, ctx) + " seq=" + best.lastSequential);
                 Ft8Message msg = findMessageByCallsign(messages, best.callsign);
-                return createTransmitAction(best.callsign, 1, "Best CQ by scoring", msg);
+                return createTransmitAction(best.callsign, 1, "Лучший CQ по оценке", msg);
             }
         }
 
-        Log.d(TAG, "[DECISION] SEEKING: no suitable CQ -> let`s WAIT");
-        return StationAction.wait("No suitable CQ found, waiting");
+        Log.d(TAG, "[DECISION] SEEKING: нет подходящего CQ -> давайте ПОДОЖДЕМ");
+        return StationAction.wait("Подходящий CQ не найден, ожидание");
     }
 
     private StationAction evaluateInDialogue(DecisionContext ctx, List<Ft8Message> messages) {
         int maxAttempts = ctx.noReplyLimit > 0 ? ctx.noReplyLimit : 5;
         if (ctx.noReplyCount >= maxAttempts) {
             Log.w(TAG, "[DECISION] IN_DIALOGUE: noReplyCount=" + ctx.noReplyCount + " >= " + maxAttempts + " -> ABORT");
-            return StationAction.abort("Max attempts (" + maxAttempts + ") reached");
+            return StationAction.abort("Достигнуто максимальное количество попыток (" + maxAttempts + ")");
         }
 
-        // [CRITICAL FIX] Check if we have a target and need to wait for alternating slot
         if (ctx.currentTarget != null && ctx.directCaller == null) {
             DatabaseOpr.StationRecord target = DatabaseOpr.getStationRecord(ctx.currentTarget);
             if (target != null && target.lastSequential >= 0) {
-                // Calculate which slot WE should transmit in (opposite of partner)
                 int expectedOurSlot = (target.lastSequential == 0) ? 1 : 0;
 
-                // If current slot is NOT our expected slot, wait
                 if (ctx.currentSlot != expectedOurSlot) {
-                    Log.d(TAG, "[DECISION] IN_DIALOGUE: Waiting for correct slot. " +
+                    Log.d(TAG, "[DECISION] IN_DIALOGUE: Ожидание правильного слота. " +
                             "Target seq=" + target.lastSequential +
-                            ", our expected=" + expectedOurSlot +
-                            ", current=" + ctx.currentSlot);
-                    return StationAction.wait("Waiting for correct sequential slot");
+                            ", наш ожидаемый=" + expectedOurSlot +
+                            ", текущий=" + ctx.currentSlot);
+                    return StationAction.wait("Ожидание правильного последовательного слота");
                 }
 
-                // We're in the right slot to transmit, but check if target replied
-                // Look for messages FROM our target addressed TO us
                 if (messages != null) {
                     for (Ft8Message msg : messages) {
                         if (msg.getCallsignFrom().equalsIgnoreCase(ctx.currentTarget) &&
                                 GeneralVariables.checkIsMyCallsign(msg.getCallsignTo())) {
-                            // Target replied! Reset counter
-                            Log.d(TAG, "[DECISION] IN_DIALOGUE: Reply from " + ctx.currentTarget);
-                            return StationAction.wait("Received reply, continuing dialogue");
+
+                            int nextStep = determineNextStep(msg, 1);
+
+                            Log.d(TAG, "[DECISION] IN_DIALOGUE: Ответ от " + ctx.currentTarget +
+                                    " (msg=" + msg.getMessageText() + ") -> шаг " + nextStep);
+
+                            return createTransmitAction(ctx.currentTarget, nextStep,
+                                    "Ответ от " + ctx.currentTarget, msg);
                         }
                     }
                 }
 
-                // No reply yet in this slot - increment counter ONLY if we're in the right slot
-                Log.d(TAG, "[DECISION] IN_DIALOGUE: No reply from " + ctx.currentTarget +
-                        " in slot " + ctx.currentSlot);
+                Log.d(TAG, "[DECISION] IN_DIALOGUE: Нет ответа от " + ctx.currentTarget +
+                        " в слоте " + ctx.currentSlot);
             }
         }
 
-        Log.d(TAG, "[DECISION] IN_DIALOGUE: continuing dialogue with " + ctx.currentTarget);
-        return StationAction.wait("Awaiting reply in dialogue");
+        Log.d(TAG, "[DECISION] IN_DIALOGUE: продолжение диалога с " + ctx.currentTarget);
+        return StationAction.wait("Ожидание ответа в диалоге");
+    }
+
+    private int determineNextStep(Ft8Message msg, int currentStep) {
+        String msgText = msg.getMessageText().toUpperCase().trim();
+
+        if (msgText.matches(".*\\bR[-+]\\d{2,3}\\b.*")) {
+            Log.d(TAG, "[STEP] Получен R-репорт -> отправка RR73 (шаг 4)");
+            return 4;
+        }
+
+        if (msgText.matches(".*\\b[-+]\\d{2,3}\\b.*")) {
+            Log.d(TAG, "[STEP] Получен сигнал-репорт -> отправка R-репорта (шаг 3)");
+            return 3;
+        }
+
+        if (msgText.contains("RR73")) {
+            Log.d(TAG, "[STEP] Получен RR73 -> отправка 73 (шаг 5)");
+            return 5;
+        }
+
+        if (msgText.matches(".*\\b73\\b.*") && !msgText.contains("RR73")) {
+            Log.d(TAG, "[STEP] Получен 73 -> QSO завершено (шаг 5)");
+            return 5;
+        }
+
+        if (msgText.matches(".*\\b[A-R]{2}[0-9]{2}.*")) {
+            Log.d(TAG, "[STEP] Получен grid -> отправка репорта (шаг 2)");
+            return 2;
+        }
+
+        int nextStep = Math.min(currentStep + 1, 5);
+        Log.d(TAG, "[STEP] Прогрессия по умолчанию: шаг " + currentStep + " -> " + nextStep);
+        return nextStep;
     }
 
     private StationAction evaluateSoftFinish(DecisionContext ctx, List<Ft8Message> messages) {
-        for (DatabaseOpr.StationRecord s : ctx.visibleStations) {
-            if (ctx.recentTargets.contains(s.callsign) && s.ft8StateRelative >= 1 && s.ft8StateRelative <= 4) {
-                Log.d(TAG, "[DECISION] SOFT_FINISH: recent target " + s.callsign + " called -> RESUME");
-                Ft8Message msg = findMessageByCallsign(messages, s.callsign);
-                return createTransmitAction(s.callsign, 1, "Recent target called", msg);
+        if (messages != null && !ctx.recentTargets.isEmpty()) {
+            for (Ft8Message msg : messages) {
+                String from = msg.getCallsignFrom();
+                if (!ctx.recentTargets.contains(from)) continue;
+
+                String msgText = msg.getMessageText().toUpperCase().trim();
+
+                if (msgText.contains("RR73") || msgText.matches(".*\\b73\\b.*")) {
+                    Log.d(TAG, "[DECISION] SOFT_FINISH: " + from +
+                            " отправил RR73/73 — QSO завершено, игнорируем (без возобновления)");
+                    continue;
+                }
+
+                if (GeneralVariables.checkIsMyCallsign(msg.getCallsignTo()) && !msg.checkIsCQ()) {
+                    int msgState = GeneralVariables.checkFunOrder(msg);
+                    if (msgState == -1) msgState = 0;
+                    int nextStep = Math.max(1, Math.min(msgState + 1, 5));
+
+                    Log.d(TAG, "[DECISION] SOFT_FINISH: " + from +
+                            " снова вызвал нас -> RESUME шаг=" + nextStep);
+                    return createTransmitAction(from, nextStep, "Недавняя цель возобновила QSO", msg);
+                }
             }
         }
 
         if (ctx.currentSlot - ctx.lastReplySlot > 8) {
-            Log.d(TAG, "[DECISION] SOFT_FINISH: timeout -> NO_OP");
-            return StationAction.noOp("Soft finish timeout");
+            Log.d(TAG, "[DECISION] SOFT_FINISH: тайм-аут -> NO_OP");
+            return StationAction.noOp("Тайм-аут мягкого завершения");
         }
 
-        Log.d(TAG, "[DECISION] SOFT_FINISH: listening for resume");
-        return StationAction.wait("Listening for resume");
+        Log.d(TAG, "[DECISION] SOFT_FINISH: прослушивание для возобновления");
+        return StationAction.wait("Прослушивание для возобновления");
     }
 
     private StationAction evaluateNomadic(DecisionContext ctx) {
         if (ctx.noReplyCount >= 3) {
             Log.d(TAG, "[DECISION] NOMADIC: noReplyCount >= 3 -> NOMADIC_SWITCH");
-            return StationAction.nomadicSwitch(0, "Nomadic switch trigger");
+            return StationAction.nomadicSwitch(0, "Триггер кочевого переключения");
         }
-        Log.d(TAG, "[DECISION] NOMADIC: monitoring current frequency");
-        return StationAction.wait("Monitoring frequency");
+        Log.d(TAG, "[DECISION] NOMADIC: мониторинг текущей частоты");
+        return StationAction.wait("Мониторинг частоты");
     }
 }

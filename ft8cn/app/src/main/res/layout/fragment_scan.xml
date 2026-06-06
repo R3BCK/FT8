@@ -45,13 +45,20 @@
             android:textColorHint="@color/bar_text_view_color" />
 
         <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
-
+        <Spinner
+            android:id="@+id/spPostScanAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:textSize="10sp"
+            android:background="@color/white"
+            android:spinnerMode="dropdown"/>
         <Button
             android:id="@+id/btnScanStartStop"
             android:layout_width="72dp"
             android:layout_height="32dp"
             android:text="Start"
-            android:textSize="9sp"
+            android:textSize="10sp"
             android:backgroundTint="@color/button_start_color"
             android:textColor="@color/white" />
     </LinearLayout>
@@ -71,6 +78,14 @@
         <TextView android:id="@+id/tvUtcTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="--:--:--" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_view_color" />
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="4dp" android:text="Delay:" android:textSize="10sp" android:textColor="@color/text_view_color" />
         <TextView android:id="@+id/tvUtcDelay" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+0" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_view_color" />
+        <TextView
+            android:id="@+id/tvScanSlotStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Slot --/--"
+            android:textSize="12sp"
+            android:textColor="@color/text_view_color"
+            android:layout_marginStart="8dp"/>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="4dp" android:text="RF:" android:textSize="10sp" android:textColor="@color/text_view_color" />
         <TextView android:id="@+id/tvRfFreq" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.000 MHz" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/button_start_color" />
     </LinearLayout>
